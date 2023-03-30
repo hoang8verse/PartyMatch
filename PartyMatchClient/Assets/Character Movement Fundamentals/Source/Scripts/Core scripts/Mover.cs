@@ -337,7 +337,7 @@ namespace CMF
 			{
 
 				LevelManager.instance.SetLooseScreen();
-				Destroy(this.gameObject);
+				//Destroy(this.gameObject);
 
 			}
 

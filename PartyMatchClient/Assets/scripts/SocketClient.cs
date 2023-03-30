@@ -63,6 +63,7 @@ public class SocketClient : MonoBehaviour
 
     [SerializeField]
     private GameObject spectatorPrefab;
+    bool isEndGame = false;
 
     void Awake()
     {
@@ -129,7 +130,11 @@ public class SocketClient : MonoBehaviour
             OnMoving(_h, _v);
         } 
         yield return new WaitForSeconds(Time.fixedDeltaTime);
-        LoopCheckPlayerMoving();
+        if (!isEndGame)
+        {
+            LoopCheckPlayerMoving();
+        }
+
         
     }
     void LoopCheckPlayerMoving()
@@ -428,6 +433,11 @@ public class SocketClient : MonoBehaviour
             case "playerDie":
                 Debug.Log("  playerDie data ==========  " + data);
 
+                if (clientId == data["clientId"].ToString())
+                {
+                    isEndGame = true;
+                }
+
                 break;
             case "playerWin":
                 Debug.Log("  playerWin data ==========  " + data);
@@ -599,17 +609,6 @@ public class SocketClient : MonoBehaviour
         jsData.Add("timer", "");
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData).ToString());
     }
-    public void OnHeadTurn()
-    {
-        if (!isHost) return;
-        JObject jsData = new JObject();
-        jsData.Add("meta", "headTurn");
-        jsData.Add("clientId", clientId);
-        jsData.Add("room", ROOM);
-        jsData.Add("maxTime","");
-        jsData.Add("currentTime","");
-        Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
-    }
     public void OnMoving(float _h, float _v)
     {
         JObject jsData = new JObject();
@@ -673,6 +672,7 @@ public class SocketClient : MonoBehaviour
     {
         clientId = "";
         ROOM = "";
+        isEndGame = true;
 
         await webSocket.Close();
     }
@@ -680,10 +680,10 @@ public class SocketClient : MonoBehaviour
     {
         clientId = "";
         ROOM = "";
-
+        isEndGame = true;
         if (player)
         {
-            SceneManager.LoadScene("MainMenu");
+            SceneManager.LoadScene("Menu");
         }
     }
 

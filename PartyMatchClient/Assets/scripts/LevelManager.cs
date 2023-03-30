@@ -47,6 +47,7 @@ public class LevelManager : MonoBehaviour
         Loosepanel.SetActive(true);
         isStartGame = false;
         RigObject.SetActive(false);
+        SocketClient.instance.OnPlayerDie();
     }
     private void Update()
     {
