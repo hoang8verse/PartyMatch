@@ -70,6 +70,7 @@ public class LevelManager : MonoBehaviour
 
                 winbool = true;
                 winpanel.SetActive(true);
+                RigObject.SetActive(false);
             }
           
         }
