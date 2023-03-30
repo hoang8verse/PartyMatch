@@ -1,16 +1,24 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class CharacterSelection : MonoBehaviour
+public class MainMenu : MonoBehaviour
 {
+	public static MainMenu instance;
+
 	public GameObject[] characters;
 	public int selectedCharacter = 0;
 	public GameObject Starts;
 	public GameObject Unlock;
 	public AudioClip Click;
 	public AudioClip StartSound;
-	public GameObject NoAds;
-	public AudioSource AdSource;
+	public AudioSource AudioSource;
+    private void Awake()
+    {
+		if (instance == null)
+			instance = this;
+		else if (instance != this)
+			Destroy(gameObject);
+	}
     private void Start()
     {
 
@@ -30,12 +38,12 @@ public class CharacterSelection : MonoBehaviour
 			Starts.SetActive(true);
 			Unlock.SetActive(false);
 		}
-		AdSource.PlayOneShot(Click);
+		AudioSource.PlayOneShot(Click);
 	}
 
 	public void PreviousCharacter()
 	{
-		AdSource.PlayOneShot(Click);
+		AudioSource.PlayOneShot(Click);
 
 		characters[selectedCharacter].SetActive(false);
 		selectedCharacter--;
@@ -58,49 +66,18 @@ public class CharacterSelection : MonoBehaviour
 	}
 	public void Unlocking()
     {
-	//	Reward.instance.ShowAd();
-		//IronSourceDemoScript.instance.ShowRewardedAd((value) =>
-		//{
-		//	if (value)
-		//	{
-		//		AdSource.PlayOneShot(StartSound);
-
-		//		PlayerPrefs.SetInt("selectedCharacter", selectedCharacter);
-		//		SceneManager.LoadScene("start");
-		//	}
-
-		//});
-
 
 #if UNITY_EDITOR
-		AdSource.PlayOneShot(StartSound);
+		AudioSource.PlayOneShot(StartSound);
 
 		PlayerPrefs.SetInt("selectedCharacter", selectedCharacter);
 		SceneManager.LoadScene("Game");
 #endif
 	}
-	private void CompleteMethods(bool completed, string advertiser)
-	{
-		Debug.Log("Closed rewarded from: " + advertiser + " -> Completed " + completed);
-		if (completed == true)
-		{
-            //give the reward
-
-            AdSource.PlayOneShot(StartSound);
-
-            PlayerPrefs.SetInt("selectedCharacter", selectedCharacter);
-            SceneManager.LoadScene("Game");
-        }
-		else
-		{
-			//no reward
-		}
-	}
-
-	
+		
 	public void StartGame()
 	{
-		AdSource.PlayOneShot(StartSound);
+		AudioSource.PlayOneShot(StartSound);
 
 		PlayerPrefs.SetInt("selectedCharacter", selectedCharacter);
 		SceneManager.LoadScene("Game");
