@@ -78,12 +78,16 @@ namespace CMF
 		[Tooltip("Optional camera transform used for calculating movement direction. If assigned, character movement will take camera view into account.")]
 		public Transform cameraTransform;
 		public Camera cameraPlayer;
+
+		public float moving_h = 0f;
+		public float moving_v = 0f;
+
 		//Get references to all necessary components;
 		void Awake () {
 			animationcontroller = GetComponent<AnimationControl>();
 			levelmanager.GetComponent<LevelManager>();
 			animator = GetComponentInChildren<Animator>();
-			animatorTransform = animator.transform;
+			//animatorTransform = animator.transform;
 			mover = GetComponent<Mover>();
 			tr = transform;
 			characterInput = GetComponent<CharacterInput>();
@@ -220,57 +224,12 @@ namespace CMF
 
                 //If a camera transform has been assigned, use the assigned transform's axes for movement direction;
                 //Project movement direction so movement stays parallel to the ground;
-                _velocity += Vector3.ProjectOnPlane(cameraTransform.right, tr.up).normalized * characterInput.GetHorizontalMovementInput();
-                _velocity += Vector3.ProjectOnPlane(cameraTransform.forward, tr.up).normalized * characterInput.GetVerticalMovementInput();
 
-                //if (Input.touchCount > 0)
-				//{
-				//	Touch touch = Input.GetTouch(0);
+                //_velocity += Vector3.ProjectOnPlane(cameraTransform.right, tr.up).normalized * characterInput.GetHorizontalMovementInput();
+                //_velocity += Vector3.ProjectOnPlane(cameraTransform.forward, tr.up).normalized * characterInput.GetVerticalMovementInput();
+				_velocity += Vector3.ProjectOnPlane(cameraTransform.right, tr.up).normalized * moving_h;
+				_velocity += Vector3.ProjectOnPlane(cameraTransform.forward, tr.up).normalized * moving_v;
 
-
-				//	if (touch.phase == TouchPhase.Began)
-				//	{
-				//		// Touch began, do something
-				//	}
-				//	else if (touch.phase == TouchPhase.Moved)
-				//	{
-				//		//Vector3 direction = new Vector3(touch.rawPosition.x, 0, touch.rawPosition.y).normalized;
-				//		//Vector3 direction = new Vector3(Input.GetAxis("Mouse X"), 0, Input.GetAxis("Mouse Y")).normalized;
-				//		//Debug.Log(" direction mobile =============  " + direction);
-				//		//_velocity += direction;
-				//		//Debug.Log(" mobileeee aeeeeeeeeeeeeee =============  " + _velocity);
-				//		Vector2 PlayerMouseInput = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
-				//		Vector3 MoveVector = transform.TransformDirection(PlayerMouseInput) * 12;
-				//		//_velocity += MoveVector;
-
-				//		Vector3 touchPosition = Input.GetTouch(0).position;
-
-				//		// Convert the touch position to world position
-				//		touchPosition = Camera.main.ScreenToWorldPoint(touchPosition);
-
-				//		// Calculate the direction of the swipe
-				//		Vector3 direction = touchPosition - transform.position;
-				//		Debug.Log(" mobileeee direction.normalized =============  " + new Vector3(direction.x,0, direction.z).normalized);
-				//		_velocity += new Vector3(direction.x, direction.y, direction.z);
-				//		// Apply the swipe force to the object
-				//		//rb.velocity = direction.normalized * swipeForce;
-				//	}
-				//	else if (touch.phase == TouchPhase.Ended)
-				//	{
-				//		// Touch ended, do another thing
-				//	}
-				//}
-				//if (Input.GetMouseButton(0)) // 0 : left , 1 : right, 2 : wheel
-				//{
-				//	//Vector3 direction = new Vector3( Input.GetAxis("Mouse X"), 0, Input.GetAxis("Mouse Y")).normalized;
-				//	//Debug.Log(" direction =============  " + direction);
-				//	//_velocity += direction;
-				//	//Debug.Log(" addddddddddddddddddddddddddddddddddd =============  " + _velocity);
-				//	//Vector2 PlayerMouseInput = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
-				//	//Vector3 MoveVector = transform.TransformDirection(PlayerMouseInput) * 12;
-				//	//_velocity += MoveVector;
-				//	//transform.position = Vector3.MoveTowards(transform.position, Input.mousePosition, Time.deltaTime * 12);
-				//}
 
 			}
 

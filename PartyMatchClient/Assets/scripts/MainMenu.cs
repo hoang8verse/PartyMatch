@@ -77,6 +77,7 @@ public class MainMenu : MonoBehaviour
 		
 	public void StartGame()
 	{
+		SocketClient.instance.OnGotoGame();
 		AudioSource.PlayOneShot(StartSound);
 
 		PlayerPrefs.SetInt("selectedCharacter", selectedCharacter);

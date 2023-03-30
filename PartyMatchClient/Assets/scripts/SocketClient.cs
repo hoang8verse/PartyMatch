@@ -17,6 +17,7 @@ using NativeWebSocket;
 using Random = UnityEngine.Random;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using CMF;
 //using System.Globalization;
 
 public class SocketClient : MonoBehaviour
@@ -33,7 +34,7 @@ public class SocketClient : MonoBehaviour
     [SerializeField]
     private string url = "";
     static string baseUrl = "ws://192.168.1.39";
-    static string HOST = "8081";
+    static string HOST = "3000";
 
     //static string baseUrl = "wss://rlgl2-api.brandgames.vn";
     //static string HOST = "8081";
@@ -50,14 +51,10 @@ public class SocketClient : MonoBehaviour
     public static bool IS_FIRST_JOIN = true;
 
     [SerializeField]
-    private GameObject playerMenPrefab;
-    [SerializeField]
-    private GameObject playerWomenPrefab;
+    private GameObject playerPrefab;
     public GameObject player = null;
     [SerializeField]
-    private GameObject otherPlayerMenPrefab;
-    [SerializeField]
-    private GameObject otherPlayerWomenPrefab;
+    private GameObject otherPlayerPrefab;
     public JArray players;
 
     private Dictionary<string,GameObject> otherPlayers;
@@ -78,8 +75,8 @@ public class SocketClient : MonoBehaviour
         //Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
     }
     void Start()
-    {        
-        //OnConnectWebsocket();
+    {
+        OnConnectWebsocket();
 
         otherPlayers = new Dictionary<string, GameObject>();
     }
@@ -104,10 +101,40 @@ public class SocketClient : MonoBehaviour
         Debug.Log("WebSocket closed.");
     }
 
+    private const string CHARS = "0123456789";
+    public string Generate()
+    {
+        string result = "";
+        System.Random rand = new System.Random();
+        while (result.Length < 6)
+        {
+            result += CHARS[rand.Next(0, CHARS.Length)];
+        }
+        return result;
+    }
     private Vector3 RandomPosition()
     {
         Vector3 randomPoint = new Vector3(Random.Range(-0.5f, 0.5f), 0, 0);
         return randomPoint;
+    }
+
+    IEnumerator CheckPlayerMoving()
+    {
+        if (!player) yield return null ;
+        float _h =  player.GetComponent<CharacterInput>().GetHorizontalMovementInput();
+        float _v = player.GetComponent<CharacterInput>().GetVerticalMovementInput();
+        //if(_h != 0 || _v != 0)
+        {
+            Debug.Log("CheckPlayerMoving ---------------------------------- _h = " + _h + " :  v = " + _v );
+            OnMoving(_h, _v);
+        } 
+        yield return new WaitForSeconds(Time.fixedDeltaTime);
+        LoopCheckPlayerMoving();
+        
+    }
+    void LoopCheckPlayerMoving()
+    {
+        StartCoroutine(CheckPlayerMoving());
     }
 
     public void OnConnectWebsocket()
@@ -301,11 +328,12 @@ public class SocketClient : MonoBehaviour
                         {
                             if (_player["gender"].ToString() == "0")
                             {
-                                player = Instantiate(playerMenPrefab, clientPosStart, Quaternion.identity);
+                                player = Instantiate(playerPrefab, clientPosStart, Quaternion.identity);
                             }
                             else
                             {
-                                player = Instantiate(playerWomenPrefab, clientPosStart, Quaternion.identity);
+                                //player = Instantiate(playerPrefab, clientPosStart, Quaternion.identity);
+                                player = Instantiate(playerPrefab);
                             }
                             player.name = "Player-" + playerJoinName;
                             player.SetActive(true);
@@ -323,11 +351,11 @@ public class SocketClient : MonoBehaviour
                             // other player
                             if (_player["gender"].ToString() == "0")
                             {
-                                otherPlayers[_clientId] = Instantiate(otherPlayerMenPrefab, pos, Quaternion.identity);
+                                otherPlayers[_clientId] = Instantiate(otherPlayerPrefab, pos, Quaternion.identity);
                             }
                             else
                             {
-                                otherPlayers[_clientId] = Instantiate(otherPlayerWomenPrefab, pos, Quaternion.identity);
+                                otherPlayers[_clientId] = Instantiate(otherPlayerPrefab, pos, Quaternion.identity);
                             }
 
                             otherPlayers[_clientId].name = "otherplayer-" + playerJoinName;
@@ -340,6 +368,9 @@ public class SocketClient : MonoBehaviour
                         }
 
                     }
+
+                    // start moving
+                    LoopCheckPlayerMoving();
 
                 }
                 
@@ -368,6 +399,25 @@ public class SocketClient : MonoBehaviour
                 break;
             case "moving":
                 Debug.Log("  moving data ==========  " + data);
+                float h = float.Parse(data["h"].ToString());
+                float v = float.Parse(data["v"].ToString());
+                if (clientId == data["clientId"].ToString())
+                {
+                    player.GetComponent<AdvancedWalkerController>().moving_h = h;
+                    player.GetComponent<AdvancedWalkerController>().moving_v = v;
+                } 
+                else
+                {
+                    if(otherPlayers.Count > 0)
+                    {
+                        if (otherPlayers.ContainsKey(data["clientId"].ToString()))
+                        {
+                            otherPlayers[data["clientId"].ToString()].GetComponent<AdvancedWalkerController>().moving_h = h;
+                            otherPlayers[data["clientId"].ToString()].GetComponent<AdvancedWalkerController>().moving_v = v;
+                        }
+                            
+                    }
+                }
 
                 break;
             case "stopMove":
@@ -474,13 +524,13 @@ public class SocketClient : MonoBehaviour
     public void OnRequestRoom()
     {
 
-        string room = "";
+        string room = Generate();
         JObject jsData = new JObject();
         jsData.Add("meta", "requestRoom");
         jsData.Add("playerLen", 30);
         jsData.Add("room", room);
-        jsData.Add("host", "");
-        jsData.Add("isSpectator","");
+        jsData.Add("host", "1");
+        jsData.Add("isSpectator","0");
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData).ToString());
     }
     public void OnJoinLobbyRoom()
@@ -560,13 +610,14 @@ public class SocketClient : MonoBehaviour
         jsData.Add("currentTime","");
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
     }
-    public void OnMoving()
+    public void OnMoving(float _h, float _v)
     {
         JObject jsData = new JObject();
         jsData.Add("meta", "moving");
         jsData.Add("clientId", clientId);
         jsData.Add("room", ROOM);
-        jsData.Add("isMoving", true);
+        jsData.Add("h", _h);
+        jsData.Add("v", _v);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
     }
 

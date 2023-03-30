@@ -8,6 +8,7 @@ public class LevelManager : MonoBehaviour
     public static LevelManager instance;
     private void Awake()
     {
+        SocketClient.instance.OnJoinRoom();
         Time.timeScale = 0;
         //Advertisements.Instance.ShowBanner(BannerPosition.TOP, BannerType.Adaptive);
         if (instance != null)

@@ -2322,11 +2322,9 @@ MonoBehaviour:
   currentPlayerJoined: 0
   isHost: 0
   isSpectator: 0
-  playerMenPrefab: {fileID: 0}
-  playerWomenPrefab: {fileID: 0}
+  playerPrefab: {fileID: 845060874412290578, guid: dbc3ee54fc78cdd47b5d179d1771a6ee, type: 3}
   player: {fileID: 0}
-  otherPlayerMenPrefab: {fileID: 0}
-  otherPlayerWomenPrefab: {fileID: 0}
+  otherPlayerPrefab: {fileID: 5060106146085938206, guid: b1d39be2e527c424088293c128e86d73, type: 3}
   spectatorPrefab: {fileID: 0}
 --- !u!4 &295360701
 Transform:
@@ -2336,7 +2334,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 295360699}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -31.094845, y: -7.033287, z: -29.040993}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4767,7 +4765,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 529463505}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -35.72932, y: -0.57151985, z: -36.917187}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6515,7 +6513,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 774804165}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -31.094845, y: -7.033287, z: -29.040993}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

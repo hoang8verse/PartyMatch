@@ -124,41 +124,41 @@ namespace CMF
 
         private void Update()
         {
-			if (Input.touchCount > 0)
-			{
-				Touch touch = Input.GetTouch(0);
-				if (touch.phase == TouchPhase.Began)
-				{
-					// Touch began, do something
-				}
-				else if (touch.phase == TouchPhase.Moved)
-				{
-					// Touch moved, do something else
-				}
-				else if (touch.phase == TouchPhase.Ended)
-				{
-					// Touch ended, do another thing
-				}
-			}
-			if (Input.GetMouseButtonDown(0)) // 0 : left , 1 : right, 2 : wheel
-			{
-				Debug.Log(" ======================== GetMouseButtonDown ===========  ");
-				isMoving = true;
+			//if (Input.touchCount > 0)
+			//{
+			//	Touch touch = Input.GetTouch(0);
+			//	if (touch.phase == TouchPhase.Began)
+			//	{
+			//		// Touch began, do something
+			//	}
+			//	else if (touch.phase == TouchPhase.Moved)
+			//	{
+			//		// Touch moved, do something else
+			//	}
+			//	else if (touch.phase == TouchPhase.Ended)
+			//	{
+			//		// Touch ended, do another thing
+			//	}
+			//}
+			//if (Input.GetMouseButtonDown(0)) // 0 : left , 1 : right, 2 : wheel
+			//{
+			//	Debug.Log(" ======================== GetMouseButtonDown ===========  ");
+			//	isMoving = true;
 
-			}
-			else
-			if (Input.GetMouseButton(0)) // 0 : left , 1 : right, 2 : wheel
-			{
-				isMoving = true;
-				//anim.Play("Walk");            
-				//Debug.Log(" ======================== GetMouseButton movingggggggggggggggggggggggggg ===========  ");
-			}
-			else
-			if (Input.GetMouseButtonUp(0))
-			{
-				isMoving = false;
-				Debug.Log(" ======================== GetMouseButtonUp dasdadadadad ===========  ");
-			}
+			//}
+			//else
+			//if (Input.GetMouseButton(0)) // 0 : left , 1 : right, 2 : wheel
+			//{
+			//	isMoving = true;
+			//	//anim.Play("Walk");            
+			//	//Debug.Log(" ======================== GetMouseButton movingggggggggggggggggggggggggg ===========  ");
+			//}
+			//else
+			//if (Input.GetMouseButtonUp(0))
+			//{
+			//	isMoving = false;
+			//	Debug.Log(" ======================== GetMouseButtonUp dasdadadadad ===========  ");
+			//}
 		}
     }
 }
