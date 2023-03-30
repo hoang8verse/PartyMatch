@@ -71,11 +71,7 @@ public class CharacterSelection : MonoBehaviour
 
 		//});
 
-		if(Advertisements.Instance.IsRewardVideoAvailable())
-        {
-			Advertisements.Instance.ShowRewardedVideo(CompleteMethods);
 
-        }
 #if UNITY_EDITOR
 		AdSource.PlayOneShot(StartSound);
 
