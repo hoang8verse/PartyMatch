@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class CubeManager : MonoBehaviour
 {
+    public static CubeManager instance;
+
     public GameObject[] CubeMeshs;
     public List<GameObject> cubemesh2 = new List<GameObject>();
 
@@ -19,7 +21,7 @@ public class CubeManager : MonoBehaviour
     public GameObject cam2;
 
 
-
+    int target;
     int ran1;
     int ran2;
     int ran3;
@@ -28,6 +30,13 @@ public class CubeManager : MonoBehaviour
     public LevelManager levelmanager;
 
     public GameObject counter;
+    private void Awake()
+    {
+        if (instance == null)
+            instance = this;
+        else if (instance != this)
+            Destroy(gameObject);
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -41,21 +50,40 @@ public class CubeManager : MonoBehaviour
         }
        // counter.SetActive(true);
 
-        Invoke("selectCube", 3);
+        //Invoke("selectCube", 3);
+        Invoke("SendRequestRandomTarget", 3);
     }
 
-   
+    public void SendRequestRandomTarget()
+    {
+        int _target = Random.Range(0, materiellist.Length);
+        int _ran1 = Random.Range(0, CubeMeshs.Length);
+        int _ran2 = Random.Range(0, CubeMeshs.Length);
+        int _ran3 = Random.Range(0, CubeMeshs.Length);
+        SocketClient.instance.OnRequestRandomTarget(_target, _ran1, _ran2, _ran3);
+    }
+
+    public void PerformCube(int _target, int _ran1, int _ran2, int _ran3)
+    {
+        target = _target;
+        ran1 = _ran1;
+        ran2 = _ran2;
+        ran3 = _ran3;
+        selectCube();
+    }
+
     void selectCube()
     {
         if (!levelmanager.winbool)
         {
-            targetmateriel = materiellist[Random.Range(0, materiellist.Length)];
+            //targetmateriel = materiellist[Random.Range(0, materiellist.Length)];
+            targetmateriel = materiellist[target];
             boardMateriel.GetComponent<MeshRenderer>().material = targetmateriel;
 
             cubemesh2.Clear();
-            ran1 = Random.Range(0, CubeMeshs.Length);
-            ran2 = Random.Range(0, CubeMeshs.Length);
-            ran3 = Random.Range(0, CubeMeshs.Length);
+            //ran1 = Random.Range(0, CubeMeshs.Length);
+            //ran2 = Random.Range(0, CubeMeshs.Length);
+            //ran3 = Random.Range(0, CubeMeshs.Length);
 
             for (int i = 0; i < CubeMeshs.Length; i++)
             {
@@ -202,7 +230,8 @@ public class CubeManager : MonoBehaviour
             counter.SetActive(true);
             yield return new WaitForSeconds(4);
 
-            selectCube();
+            SendRequestRandomTarget();
+            //selectCube();
         }
         //  StartCoroutine(SmoothTranlation());
 

@@ -21,7 +21,7 @@ public class MainMenu : MonoBehaviour
 	}
     private void Start()
     {
-
+		SocketClient.instance.OnConnectWebsocket();
 	}
     public void NextCharacter()
 	{
@@ -73,10 +73,12 @@ public class MainMenu : MonoBehaviour
 		PlayerPrefs.SetInt("selectedCharacter", selectedCharacter);
 		SceneManager.LoadScene("Game");
 #endif
+		SocketClient.instance.OnGotoGame();
 	}
 		
 	public void StartGame()
 	{
+		
 		SocketClient.instance.OnGotoGame();
 		AudioSource.PlayOneShot(StartSound);
 

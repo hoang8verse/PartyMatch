@@ -133,6 +133,7 @@ public class LevelManager : MonoBehaviour
 
     public void restart()
     {
+        SocketClient.instance.OnCloseConnectSocket();
         GameObject level = GameObject.Find("LevelManager");
 
         Destroy(level);

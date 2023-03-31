@@ -77,7 +77,7 @@ public class SocketClient : MonoBehaviour
     }
     void Start()
     {
-        OnConnectWebsocket();
+        //OnConnectWebsocket();
 
         otherPlayers = new Dictionary<string, GameObject>();
     }
@@ -324,6 +324,7 @@ public class SocketClient : MonoBehaviour
                         Debug.Log("  ===========  player =================  " );
                         //  player
                         isSpectator = _player["isSpectator"].ToString() == "1" ? true : false;
+                        isHost = _player["isHost"].ToString() == "1" ? true : false;
                         Debug.Log("  isSpectator =================  " + isSpectator);
                         if (_player["isSpectator"].ToString() == "1")
                         {
@@ -423,6 +424,32 @@ public class SocketClient : MonoBehaviour
                             
                     }
                 }
+
+                break;
+            case "responseTarget":
+                Debug.Log("  responseTarget data ==========  " + data);
+                int _target = int.Parse(data["target"].ToString());
+                int _ran1 = int.Parse(data["ran1"].ToString());
+                int _ran2 = int.Parse(data["ran2"].ToString());
+                int _ran3 = int.Parse(data["ran3"].ToString());
+
+                CubeManager.instance.PerformCube(_target, _ran1, _ran2, _ran3);
+
+                //if (clientId == data["clientId"].ToString())
+                //{
+                //    player.GetComponent<CubeManager>().PerformCube(_target, _ran1, _ran2, _ran3);
+                //}
+                //else
+                //{
+                //    if (otherPlayers.Count > 0)
+                //    {
+                //        if (otherPlayers.ContainsKey(data["clientId"].ToString()))
+                //        {
+                //            otherPlayers[data["clientId"].ToString()].GetComponent<CubeManager>().PerformCube(_target, _ran1, _ran2, _ran3);
+                //        }
+
+                //    }
+                //}
 
                 break;
             case "stopMove":
@@ -556,7 +583,7 @@ public class SocketClient : MonoBehaviour
         JObject jsData = new JObject();
         jsData.Add("meta", "joinLobby");
         jsData.Add("room", ROOM);
-        jsData.Add("isHost", "");
+        jsData.Add("isHost", "1");
         jsData.Add("gender","");
         jsData.Add("isSpectator","");
         jsData.Add("playerName", playerName);
@@ -578,7 +605,7 @@ public class SocketClient : MonoBehaviour
         JObject jsData = new JObject();
         jsData.Add("meta", "join");
         jsData.Add("room", ROOM);
-        jsData.Add("isHost", "");
+        jsData.Add("isHost", "1");
         jsData.Add("playerName", playerName);
         jsData.Add("pos", clientPosStart.ToString());
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
@@ -617,6 +644,20 @@ public class SocketClient : MonoBehaviour
         jsData.Add("room", ROOM);
         jsData.Add("h", _h);
         jsData.Add("v", _v);
+        Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
+    }
+
+    public void OnRequestRandomTarget(int _target, int _ran1, int _ran2, int _ran3)
+    {
+        if (!isHost) return;
+        JObject jsData = new JObject();
+        jsData.Add("meta", "requestTarget");
+        jsData.Add("clientId", clientId);
+        jsData.Add("room", ROOM);
+        jsData.Add("target", _target);
+        jsData.Add("ran1", _ran1);
+        jsData.Add("ran2", _ran2);
+        jsData.Add("ran3", _ran3);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
     }
 
@@ -672,7 +713,7 @@ public class SocketClient : MonoBehaviour
     {
         clientId = "";
         ROOM = "";
-        isEndGame = true;
+        isEndGame = false;
 
         await webSocket.Close();
     }
