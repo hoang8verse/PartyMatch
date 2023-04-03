@@ -30,6 +30,8 @@ public class CubeManager : MonoBehaviour
     public LevelManager levelmanager;
 
     public GameObject counter;
+
+    public int round = 0;
     private void Awake()
     {
         if (instance == null)
@@ -51,7 +53,7 @@ public class CubeManager : MonoBehaviour
        // counter.SetActive(true);
 
         //Invoke("selectCube", 3);
-        Invoke("SendRequestRandomTarget", 3);
+        //Invoke("SendRequestRandomTarget", 3);
     }
 
     public void SendRequestRandomTarget()
@@ -100,18 +102,12 @@ public class CubeManager : MonoBehaviour
 
             for (int i = 0; i < cubemesh2.Count; i++)
             {
-
-
                 cubemesh2[i].GetComponent<MeshRenderer>().material = nogomateriel[Random.Range(0, nogomateriel.Length)];
             }
 
             CubeMeshs[ran1].transform.tag = "go";
             CubeMeshs[ran2].transform.tag = "go";
             CubeMeshs[ran3].transform.tag = "go";
-
-
-
-
 
             print("selected number is " + ran1);
             print("selected number is " + ran2);
@@ -121,14 +117,10 @@ public class CubeManager : MonoBehaviour
             {
                 counter.SetActive(false);
 
-
-
             }
             else
             {
                 StartCoroutine(cubefall());
-
-
             }
 
         }
@@ -144,15 +136,25 @@ public class CubeManager : MonoBehaviour
         counter.SetActive(false);
 
         yield return new WaitForSeconds(3);
+        SocketClient.instance.OnCubeFall();
 
 
+        yield return new WaitForSeconds(3);
+        StartCoroutine(resetCube());
+        
+
+    }
+
+    public void PerformCubeFall()
+    {
         foreach (GameObject item in CubeMeshs)
         {
-            if (item.name== CubeMeshs[ran1].name || item.name == CubeMeshs[ran2].name || item.name == CubeMeshs[ran3].name)
+            if (item.name == CubeMeshs[ran1].name || item.name == CubeMeshs[ran2].name || item.name == CubeMeshs[ran3].name)
             {
-                print("not falling "+item.name);
+                print("not falling " + item.name);
 
-            }else
+            }
+            else
 
             {
                 item.GetComponent<Rigidbody>().isKinematic = false;
@@ -163,26 +165,51 @@ public class CubeManager : MonoBehaviour
         for (int i = 0; i < CubeMeshs.Length; i++)
 
         {
-            if(CubeMeshs[i].transform.position == spawnpoints[i])
+            if (CubeMeshs[i].transform.position == spawnpoints[i])
             {
                 backPosition = true;
 
             }
 
+        }
+    }
 
-
+   IEnumerator resetCube()
+    {
+        round++;
+        LevelManager.instance.textRound.text = round.ToString();
+        SocketClient.instance.OnRoundPass(round);
+        if(round >= 5)
+        {
+            levelmanager.SetPlayerWin();
+            SocketClient.instance.OnPlayerWin();
         }
         yield return new WaitForSeconds(3);
-        StartCoroutine(resteCube());
-        
+
+        SocketClient.instance.OnCubeReset();
+
+        yield return new WaitForSeconds(3.5f);
+       
+        if (LevelManager.instance.winbool)
+        {
+            counter.SetActive(false);
+
+        }
+        else
+        {
+
+            counter.SetActive(true);
+            yield return new WaitForSeconds(4);
+
+            SendRequestRandomTarget();
+            //selectCube();
+        }
+        //  StartCoroutine(SmoothTranlation());
 
     }
 
-   IEnumerator resteCube()
+    public void PerformCubeReset()
     {
-
-        yield return new WaitForSeconds(3);
-
         foreach (GameObject item in CubeMeshs)
         {
             item.GetComponent<MeshRenderer>().material = blue;
@@ -217,24 +244,9 @@ public class CubeManager : MonoBehaviour
             backPosition = false;
 
         }
-        yield return new WaitForSeconds(3.5f);
-       
-        if (LevelManager.instance.winbool)
-        {
-            counter.SetActive(false);
 
-        }
-        else
-        {
-
-            counter.SetActive(true);
-            yield return new WaitForSeconds(4);
-
-            SendRequestRandomTarget();
-            //selectCube();
-        }
-        //  StartCoroutine(SmoothTranlation());
-
+        // check new round already to play
+        SocketClient.instance.OnRoundAlready();
     }
     private void FixedUpdate()
     {

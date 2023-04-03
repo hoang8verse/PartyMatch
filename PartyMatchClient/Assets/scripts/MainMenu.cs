@@ -21,23 +21,23 @@ public class MainMenu : MonoBehaviour
 	}
     private void Start()
     {
-		SocketClient.instance.OnConnectWebsocket();
+		//SocketClient.instance.OnConnectWebsocket();
 	}
     public void NextCharacter()
 	{
 		characters[selectedCharacter].SetActive(false);
 		selectedCharacter = (selectedCharacter + 1) % characters.Length;
 		characters[selectedCharacter].SetActive(true);
-		if(selectedCharacter!=0)
-        {
-			Starts.SetActive(false);
-			Unlock.SetActive(true);
+		//if(selectedCharacter!=0)
+  //      {
+		//	Starts.SetActive(false);
+		//	Unlock.SetActive(true);
 
-		}else
-        {
-			Starts.SetActive(true);
-			Unlock.SetActive(false);
-		}
+		//}else
+  //      {
+		//	Starts.SetActive(true);
+		//	Unlock.SetActive(false);
+		//}
 		AudioSource.PlayOneShot(Click);
 	}
 
@@ -52,17 +52,17 @@ public class MainMenu : MonoBehaviour
 			selectedCharacter += characters.Length;
 		}
 		characters[selectedCharacter].SetActive(true);
-		if (selectedCharacter != 0)
-		{
-			Starts.SetActive(false);
-			Unlock.SetActive(true);
+		//if (selectedCharacter != 0)
+		//{
+		//	Starts.SetActive(false);
+		//	Unlock.SetActive(true);
 
-		}
-		else
-		{
-			Starts.SetActive(true);
-			Unlock.SetActive(false);
-		}
+		//}
+		//else
+		//{
+		//	Starts.SetActive(true);
+		//	Unlock.SetActive(false);
+		//}
 	}
 	public void Unlocking()
     {
@@ -70,19 +70,19 @@ public class MainMenu : MonoBehaviour
 #if UNITY_EDITOR
 		AudioSource.PlayOneShot(StartSound);
 
-		PlayerPrefs.SetInt("selectedCharacter", selectedCharacter);
+		//PlayerPrefs.SetInt("selectedCharacter", selectedCharacter);
 		SceneManager.LoadScene("Game");
 #endif
-		SocketClient.instance.OnGotoGame();
+		//SocketClient.instance.OnGotoGame();
 	}
 		
 	public void StartGame()
 	{
-		
-		SocketClient.instance.OnGotoGame();
+		SocketClient.instance.OnConnectWebsocket();
+		//SocketClient.instance.OnGotoGame();
 		AudioSource.PlayOneShot(StartSound);
 
-		PlayerPrefs.SetInt("selectedCharacter", selectedCharacter);
+		//PlayerPrefs.SetInt("selectedCharacter", selectedCharacter);
 		SceneManager.LoadScene("Game");
 	}
 }

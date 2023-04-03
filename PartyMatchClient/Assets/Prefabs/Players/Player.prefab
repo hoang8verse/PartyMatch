@@ -295,6 +295,8 @@ MonoBehaviour:
   useLocalMomentum: 1
   cameraTransform: {fileID: 842811360701075232}
   cameraPlayer: {fileID: 863518245497997078}
+  moving_h: 0
+  moving_v: 0
 --- !u!114 &732686650483875810
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -330,7 +332,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: cc807cc73869f3545a6952c9796c3330, type: 3}
   - {fileID: 8300000, guid: a99b5bfc955b81e4ba72861cac9fdade, type: 3}
   - {fileID: 8300000, guid: 94e322e217d73774db14fedcf6396058, type: 3}
-  animatorTransform: {fileID: 7283877864118989777}
   audioSource: {fileID: 0}
   useStrafeAnimations: 1
   landVelocityThreshold: 5

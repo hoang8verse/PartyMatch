@@ -2324,7 +2324,7 @@ MonoBehaviour:
   isSpectator: 0
   playerPrefab: {fileID: 845060874412290578, guid: dbc3ee54fc78cdd47b5d179d1771a6ee, type: 3}
   player: {fileID: 0}
-  otherPlayerPrefab: {fileID: 5060106146085938206, guid: b1d39be2e527c424088293c128e86d73, type: 3}
+  otherPlayerPrefab: {fileID: 845060874412290578, guid: ee65b0266d015884fab651f9f41de4bb, type: 3}
   spectatorPrefab: {fileID: 0}
 --- !u!4 &295360701
 Transform:

@@ -8,8 +8,8 @@ public class LevelManager : MonoBehaviour
     public static LevelManager instance;
     private void Awake()
     {
-        SocketClient.instance.OnJoinRoom();
-        Time.timeScale = 0;
+        
+        //Time.timeScale = 0;
         //Advertisements.Instance.ShowBanner(BannerPosition.TOP, BannerType.Adaptive);
         if (instance != null)
         {
@@ -24,23 +24,46 @@ public class LevelManager : MonoBehaviour
 
     public List<GameObject>  AI;
     public bool winbool;
+    public TMPro.TextMeshProUGUI textRound;
+    public TMPro.TextMeshProUGUI textStartGame;
+    public GameObject startObject;
     public GameObject winpanel;
     public GameObject Loosepanel;
     public GameObject RigObject;
     public GameObject JoystickControl;
     bool isMoving = false;
-    bool isStartGame = false;
+    public bool isStartGame = false;
     // Start is called before the first frame update
     private void Start()
     {
         RigObject.SetActive(false);
         JoystickControl.transform.position = new Vector3(-5000, -5000, 0);
+        StartCoroutine(CheckAlreadyPlay());
+    }
+    IEnumerator CheckAlreadyPlay()
+    {
+        yield return new WaitForSeconds(0.1f);
+        
+        SocketClient.instance.OnJoinRoom();
+        if (SocketClient.instance.isHost)
+        {
+            startGame();
+            textStartGame.text = "Ready!!!";
+            yield return new WaitForSeconds(3f);
+            CubeManager.instance.SendRequestRandomTarget();
+        } 
+        else
+        {
+            textStartGame.text = "Wating new round to join !!!";
+        }
+        Debug.Log(" SocketClient.instance.isHost------------------------ " + SocketClient.instance.isHost);
     }
     public void startGame()
     {
         Time.timeScale = 1;
         isStartGame = true;
         RigObject.SetActive(true);
+        startObject.SetActive(false);
     }
     public void SetLooseScreen()
     {
@@ -53,29 +76,30 @@ public class LevelManager : MonoBehaviour
     {
         if (!isStartGame) return;
 
-        for (int i = AI.Count - 1; i > -1; i--)
-        {
-            if (AI[i] == null)
-            {
-                AI.RemoveAt(i);
-            }
-        }
+        //for (int i = AI.Count - 1; i > -1; i--)
+        //{
+        //    if (AI[i] == null)
+        //    {
+        //        AI.RemoveAt(i);
+        //    }
+        //}
 
-        if (AI.Count<=0 )
-        {
-            if(winbool)
-            {
+        //if (AI.Count<=0 )
+        //{
+        //    if(winbool)
+        //    {
 
-            }else
-            {
-                Debug.Log("win");
+        //    }else
+        //    {
+        //        Debug.Log("win");
 
-                winbool = true;
-                winpanel.SetActive(true);
-                RigObject.SetActive(false);
-            }
+        //        winbool = true;
+        //        winpanel.SetActive(true);
+        //        RigObject.SetActive(false);
+        //    }
           
-        }
+        //}
+
 
         if (Input.touchCount > 0)
         {
@@ -131,6 +155,14 @@ public class LevelManager : MonoBehaviour
         }
     }
 
+    public void SetPlayerWin()
+    {
+        Debug.Log("win");
+
+        winbool = true;
+        winpanel.SetActive(true);
+        RigObject.SetActive(false);
+    }
     public void restart()
     {
         SocketClient.instance.OnCloseConnectSocket();
