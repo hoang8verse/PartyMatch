@@ -38,13 +38,15 @@ public class LevelManager : MonoBehaviour
     {
         RigObject.SetActive(false);
         JoystickControl.transform.position = new Vector3(-5000, -5000, 0);
-        StartCoroutine(CheckAlreadyPlay());
+
+        //SocketClient.instance.OnJoinLobbyRoom();
+        //StartCoroutine(CheckAlreadyPlay());
     }
-    IEnumerator CheckAlreadyPlay()
+    public IEnumerator CheckAlreadyPlay()
     {
-        yield return new WaitForSeconds(0.1f);
         
-        SocketClient.instance.OnJoinRoom();
+        yield return new WaitForSeconds(0.1f);
+
         if (SocketClient.instance.isHost)
         {
             startGame();
@@ -60,7 +62,8 @@ public class LevelManager : MonoBehaviour
     }
     public void startGame()
     {
-        Time.timeScale = 1;
+        SocketClient.instance.OnJoinRoom();
+        //Time.timeScale = 1;
         isStartGame = true;
         RigObject.SetActive(true);
         startObject.SetActive(false);
@@ -165,7 +168,7 @@ public class LevelManager : MonoBehaviour
     }
     public void restart()
     {
-        SocketClient.instance.OnCloseConnectSocket();
+        //SocketClient.instance.OnCloseConnectSocket();
         GameObject level = GameObject.Find("LevelManager");
 
         Destroy(level);

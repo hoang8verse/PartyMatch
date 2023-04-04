@@ -126,7 +126,6 @@ MonoBehaviour:
   slopeLimit: 80
   useLocalMomentum: 1
   cameraTransform: {fileID: 0}
-  cameraPlayer: {fileID: 0}
   moving_h: 0
   moving_v: 0
 --- !u!114 &732686650483875810
@@ -136,7 +135,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 845060874412290578}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e9819db9f56d8ad4c83e05807a209fc8, type: 3}
   m_Name: 
@@ -146,7 +145,6 @@ MonoBehaviour:
   jumpKey: 32
   useRawInput: 1
   isMoving: 0
-  cameraPlayer: {fileID: 0}
 --- !u!114 &732441521635985704
 MonoBehaviour:
   m_ObjectHideFlags: 0

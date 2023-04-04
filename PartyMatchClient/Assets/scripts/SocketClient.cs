@@ -125,8 +125,14 @@ public class SocketClient : MonoBehaviour
     {
 
         if (isEndGame || !player) yield return null ;
-        float _h =  player.GetComponent<CharacterInput>().GetHorizontalMovementInput();
-        float _v = player.GetComponent<CharacterInput>().GetVerticalMovementInput();
+        float _h = 0;
+        float _v = 0;
+        if (player)
+        {
+            _h = player.GetComponent<CharacterInput>().GetHorizontalMovementInput();
+            _v = player.GetComponent<CharacterInput>().GetVerticalMovementInput();
+        }
+
         //if(_h != 0 || _v != 0)
         {
             Debug.Log("CheckPlayerMoving ---------------------------------- _h = " + _h + " :  v = " + _v );
@@ -146,7 +152,7 @@ public class SocketClient : MonoBehaviour
     }
     void LoopCheckPlayerMoving()
     {
-        StartCoroutine(CheckPlayerMoving());
+        StartCoroutine("CheckPlayerMoving");
     }
 
     public void OnConnectWebsocket()
@@ -259,13 +265,14 @@ public class SocketClient : MonoBehaviour
                 clientId = data["clientId"].ToString();
                 isHost = data["host"].ToString() == "1" ? true : false;
                 //OnJoinRoom();
-                //OnJoinLobbyRoom();
+                OnJoinLobbyRoom();
 
                 break;
             case "roundAlready":
                 Debug.Log("roundAlready  ===============================  " + data );
                 if (LevelManager.instance.isStartGame == false)
                 {
+                    Debug.Log("roundAlready  ===============================  " + data);
                     LevelManager.instance.startGame();
                 }
                     
@@ -279,32 +286,38 @@ public class SocketClient : MonoBehaviour
                 currentPlayerJoined = players.Count;
                 Debug.Log(" playerName  join room  " + data["playerName"].ToString());
 
-                int countUserPlay = 0;
-                int countSpectator = 0;
-                // for new player
-                if (data["clientId"].ToString() == clientId && player == null)
+                if (isHost)
                 {
-                    
-                    for (int i = 0; i < players.Count; i++)
-                    {
-                        //MainMenu.instance.AddPlayerJoinRoom(players[i]["id"].ToString(),players[i]["playerName"].ToString(), i);
-                        if (players[i]["isSpectator"].ToString() == "0")
-                        {
-                            countUserPlay++;
-                            StartCoroutine(LoadAvatarImage(players[i]["avatar"].ToString(), players[i]["id"].ToString()));
-                        } else
-                        {
-                            countSpectator++;
-                        }
-                    }
-                } 
-                // for old player
-                else
-                {
-                    //MainMenu.instance.AddPlayerJoinRoom(data["clientId"].ToString(), data["playerName"].ToString(), players.Count - 1);
-                    if (data["isSpectator"].ToString() == "0")
-                        StartCoroutine(LoadAvatarImage(data["avatar"].ToString(), data["clientId"].ToString()));
+                    StartCoroutine(LevelManager.instance.CheckAlreadyPlay());
                 }
+                
+
+                //int countUserPlay = 0;
+                //int countSpectator = 0;
+                //// for new player
+                //if (data["clientId"].ToString() == clientId && player == null)
+                //{
+
+                //    for (int i = 0; i < players.Count; i++)
+                //    {
+                //        //MainMenu.instance.AddPlayerJoinRoom(players[i]["id"].ToString(),players[i]["playerName"].ToString(), i);
+                //        if (players[i]["isSpectator"].ToString() == "0")
+                //        {
+                //            countUserPlay++;
+                //            StartCoroutine(LoadAvatarImage(players[i]["avatar"].ToString(), players[i]["id"].ToString()));
+                //        } else
+                //        {
+                //            countSpectator++;
+                //        }
+                //    }
+                //} 
+                //// for old player
+                //else
+                //{
+                //    //MainMenu.instance.AddPlayerJoinRoom(data["clientId"].ToString(), data["playerName"].ToString(), players.Count - 1);
+                //    if (data["isSpectator"].ToString() == "0")
+                //        StartCoroutine(LoadAvatarImage(data["avatar"].ToString(), data["clientId"].ToString()));
+                //}
 
                 break;
             case "gotoGame":
@@ -358,6 +371,7 @@ public class SocketClient : MonoBehaviour
                                 //player = Instantiate(playerPrefab);
                             }
                             player.name = "Player-" + playerJoinName;
+                            player.transform.tag = "player";
                             player.SetActive(true);
 
                         }
@@ -382,16 +396,18 @@ public class SocketClient : MonoBehaviour
                                 otherPlayers[_clientId] = Instantiate(otherPlayerPrefab, pos, Quaternion.identity);
                             }
 
-                            otherPlayers[_clientId].name = "otherplayer-" + playerJoinName;
+                            otherPlayers[_clientId].name = "otherplayer-" + _clientId;
+                            otherPlayers[_clientId].transform.tag = "enemy";
+
                             otherPlayers[_clientId].SetActive(true);
                             int characterIndex = int.Parse(_player["characterIndex"].ToString());
                             otherPlayers[_clientId].GetComponent<characterSpawn>().SetActiveCharacter(characterIndex);
                         } 
-                        else
-                        {
-                            Debug.Log("  ===========  player is same client =================  " + _player["position"]);
-                           otherPlayers[_clientId].transform.position = pos;
-                        }
+                        //else
+                        //{
+                        //    Debug.Log("  ===========  player is same client =================  " + _player["position"]);
+                        //   otherPlayers[_clientId].transform.position = pos;
+                        //}
 
                     }
 
@@ -401,17 +417,24 @@ public class SocketClient : MonoBehaviour
                 }
                 
                 break;
-            case "startGame":
-                Debug.Log("  startGame =================  " + data);
-                if (isSpectator)
-                {
-                    // code spectator screen here
+            case "hitEnemy":
+                Debug.Log("  hitEnemy =================  " + data);
 
-                }
-                else
+                if(clientId == data["clientId"].ToString())
                 {
+                    Vector3 pos = Vector3.zero;
+                    JArray arrPos = JArray.Parse(data["hitPos"].ToString());
+                    if (arrPos.Count > 0)
+                    {
+                        pos = new Vector3(arrPos[0].Value<float>(),
+                                arrPos[1].Value<float>(),
+                                arrPos[2].Value<float>());
+                    }
 
+                    player.GetComponent<AnimationControl>().PlayerHitEnemy(pos);
                 }
+
+
                 break;
             case "countDown":
                 //Debug.Log("  countDown =================  " + data);
@@ -486,7 +509,16 @@ public class SocketClient : MonoBehaviour
 
                 if (clientId == data["clientId"].ToString())
                 {
+                    StopCoroutine("CheckPlayerMoving");
                     isEndGame = true;
+                    players.RemoveAll();
+                    foreach (var item in otherPlayers)
+                    {
+                        Destroy(otherPlayers[item.Key]);
+                       
+                    }
+
+                    OnCloseConnectSocket();
                 }
 
                 break;
@@ -495,8 +527,15 @@ public class SocketClient : MonoBehaviour
                 if (clientId == data["clientId"].ToString())
                 {
                     isEndGame = true;
+                    players.RemoveAll();
+                    foreach (var item in otherPlayers)
+                    {
+                        Destroy(otherPlayers[item.Key]);
+
+                    }
+                    OnCloseConnectSocket();
                 }
-                //OnCloseConnectSocket();
+
                 break;
             case "endGame":
                 Debug.Log("  endGame data ==========  " + data);
@@ -575,6 +614,8 @@ public class SocketClient : MonoBehaviour
                     else
                     {
                         Debug.Log(" client is new lobby host ---=====  ");
+
+                        StartCoroutine(LevelManager.instance.CheckAlreadyPlay());
                     }
                     
                 }
@@ -615,7 +656,6 @@ public class SocketClient : MonoBehaviour
         JObject jsData = new JObject();
         jsData.Add("meta", "joinLobby");
         jsData.Add("room", ROOM);
-        jsData.Add("isHost", "1");
         jsData.Add("gender","");
         jsData.Add("isSpectator","");
         jsData.Add("playerName", playerName);
@@ -625,6 +665,7 @@ public class SocketClient : MonoBehaviour
     }
     public void OnJoinRoom()
     {
+        Debug.Log(" OnJoinRoom ==================  " );
         string playerName = "";
 
         if (playerName.Length <= 1 )
@@ -647,12 +688,16 @@ public class SocketClient : MonoBehaviour
         jsData.Add("pos", clientPosStart.ToString());
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
     }
-    public void OnGotoGame()
+    public void OnHitEnemy(Vector3 hitPos, string enemyName)
     {
+        string enemyId = enemyName.Replace("otherplayer-","");
+        Debug.Log("enemyName ==================  " + enemyName + "    , sub  = " + enemyId);
+        if (isEndGame) return;
         JObject jsData = new JObject();
-        jsData.Add("meta", "gotoGame");
+        jsData.Add("meta", "hitEnemy");
         jsData.Add("room", ROOM);
-
+        jsData.Add("hitPos", hitPos.ToString());
+        jsData.Add("enemyId", enemyId);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData).ToString());
     }
     public void OnRoundAlready()
@@ -685,8 +730,9 @@ public class SocketClient : MonoBehaviour
     }
     public void OnMoving(float _h, float _v)
     {
-        if (isEndGame) return;
+        if (isEndGame || !player) return;
         clientPosStart = player.transform.position;
+        //Quaternion rot = player.transform.rotation;
         JObject jsData = new JObject();
         jsData.Add("meta", "moving");
         jsData.Add("clientId", clientId);
@@ -694,6 +740,7 @@ public class SocketClient : MonoBehaviour
         jsData.Add("h", _h);
         jsData.Add("v", _v);
         jsData.Add("pos", clientPosStart.ToString());
+        //jsData.Add("rot", rot.ToString());
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
     }
 

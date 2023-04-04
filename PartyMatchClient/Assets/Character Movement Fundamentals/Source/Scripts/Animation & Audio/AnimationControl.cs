@@ -6,7 +6,7 @@ namespace CMF
 {
 	//This script controls the character's animation by passing velocity values and other information ('isGrounded') to an animator component;
 	public class AnimationControl : MonoBehaviour {
-		public LevelManager levelmanager;
+		//public LevelManager levelmanager;
 		public AudioClip[] audioHitList;
 		Controller controller;
 		Animator animator;
@@ -30,11 +30,6 @@ namespace CMF
 		void OnCollisionEnter(Collision other)
 		{
 
-			//if (other.gameObject.name == "AI")
-			//{
-			  
-
-			//}
 
 			if (other.gameObject.name == "AI")
 			{
@@ -47,18 +42,51 @@ namespace CMF
 				
 				StartCoroutine(waitbeforeforce());
 			}
+
+			// check collision with other player
+			if (other.gameObject.transform.tag == "enemy")
+			{
+				//audioSource.clip = audioHitList[Random.Range(0, audioHitList.Length)];
+				//audioSource.Play();
+				//moveDirectionPush = transform.position - other.transform.position;
+				//transform.GetComponent<Rigidbody>().AddForce(moveDirectionPush.normalized * 100);
+				//animator.Play("hit");
+
+				SocketClient.instance.OnHitEnemy(other.transform.position, other.gameObject.name);
+			}
+		}
+		void OnCollisionStay(Collision other)
+		{
+
+			if (other.gameObject.transform.tag == "enemy")
+			{
+				//moveDirectionPush = transform.position - other.transform.position;
+				//transform.GetComponent<Rigidbody>().AddForce(moveDirectionPush.normalized * 100);
+				//animator.Play("hit");
+				SocketClient.instance.OnHitEnemy(other.transform.position, other.gameObject.name);
+
+			}
+
+
+
 		}
 		IEnumerator waitbeforeforce()
         {
 			yield return new WaitForSeconds(0.1f);
-
 			rb.AddForce(moveDirectionPush.normalized * 4000);
-
+		}
+		public void PlayerHitEnemy(Vector3 hitPos)
+        {
+			audioSource.clip = audioHitList[Random.Range(0, audioHitList.Length)];
+			audioSource.Play();
+			moveDirectionPush = transform.position - hitPos;
+			transform.GetComponent<Rigidbody>().AddForce(moveDirectionPush.normalized * 100);
+			animator.Play("hit");
 		}
 		//Setup;
 		void Awake () {
 			audioSource = gameObject.GetComponent<AudioSource>();
-			levelmanager.GetComponent<LevelManager>();
+			//levelmanager.GetComponent<LevelManager>();
 
 			rb = GetComponent<Rigidbody>();
 			mover = GetComponent<Mover>();
@@ -126,11 +154,11 @@ namespace CMF
 					//animator.SetFloat("StrafeSpeed", _localVelocity.x);
 
 				}
-				if (levelmanager.winbool)
-				{
-					animator.Play("dance");
-				}
-				else
+				//if (levelmanager && levelmanager.winbool)
+				//{
+				//	animator.Play("dance");
+				//}
+				//else
 				{
 					if (mover.IsGrounded() == true)
 					{

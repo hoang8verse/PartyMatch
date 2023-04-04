@@ -14,7 +14,6 @@ namespace CMF
 		//If this is enabled, Unity's internal input smoothing is bypassed;
 		public bool useRawInput = true;
 		public bool isMoving = false;
-		public Camera cameraPlayer;
 
 		public override float GetHorizontalMovementInput()
 		{

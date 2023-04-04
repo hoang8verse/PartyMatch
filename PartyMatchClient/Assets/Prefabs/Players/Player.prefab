@@ -282,7 +282,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 3744079568770263467}
-  levelmanager: {fileID: 104689758224665634, guid: 54f136297268db845abbd1549ecff5ae, type: 3}
   movementSpeed: 7
   airControlRate: 2
   jumpSpeed: 10
@@ -294,7 +293,6 @@ MonoBehaviour:
   slopeLimit: 80
   useLocalMomentum: 1
   cameraTransform: {fileID: 842811360701075232}
-  cameraPlayer: {fileID: 863518245497997078}
   moving_h: 0
   moving_v: 0
 --- !u!114 &732686650483875810
@@ -314,7 +312,6 @@ MonoBehaviour:
   jumpKey: 32
   useRawInput: 1
   isMoving: 0
-  cameraPlayer: {fileID: 863518245497997078}
 --- !u!114 &732441521635985704
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -327,7 +324,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4650acabe1d6aa6429e42554f1f0feb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelmanager: {fileID: 104689758224665634, guid: 54f136297268db845abbd1549ecff5ae, type: 3}
   audioHitList:
   - {fileID: 8300000, guid: cc807cc73869f3545a6952c9796c3330, type: 3}
   - {fileID: 8300000, guid: a99b5bfc955b81e4ba72861cac9fdade, type: 3}

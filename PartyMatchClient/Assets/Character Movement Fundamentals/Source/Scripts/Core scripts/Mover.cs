@@ -333,7 +333,7 @@ namespace CMF
 		{
 
 
-			if (other.gameObject.name == "dead")
+			if (other.gameObject.name == "dead" && gameObject.transform.tag == "player")
 			{
 
 				LevelManager.instance.SetLooseScreen();

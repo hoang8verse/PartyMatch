@@ -11,7 +11,7 @@ namespace CMF
 		[SerializeField]
 		 Animator animator;
 		Transform animatorTransform;
-		public LevelManager levelmanager;
+		//public LevelManager levelmanager;
 		
 		//References to attached components;
 		protected Transform tr;
@@ -77,7 +77,6 @@ namespace CMF
 
 		[Tooltip("Optional camera transform used for calculating movement direction. If assigned, character movement will take camera view into account.")]
 		public Transform cameraTransform;
-		public Camera cameraPlayer;
 
 		public float moving_h = 0f;
 		public float moving_v = 0f;
@@ -85,7 +84,7 @@ namespace CMF
 		//Get references to all necessary components;
 		void Awake () {
 			animationcontroller = GetComponent<AnimationControl>();
-			levelmanager.GetComponent<LevelManager>();
+			//levelmanager.GetComponent<LevelManager>();
 			animator = GetComponentInChildren<Animator>();
 			//animatorTransform = animator.transform;
 			mover = GetComponent<Mover>();
@@ -140,7 +139,7 @@ namespace CMF
 		//This function must be called every fixed update, in order for the controller to work correctly;
 		void ControllerUpdate()
 		{
-			if (!levelmanager.winbool)
+			//if (!levelmanager.winbool)
 			{
 				if (animationcontroller.stun)
 				{
@@ -216,8 +215,11 @@ namespace CMF
 			//If no camera transform has been assigned, use the character's transform axes to calculate the movement direction;
 			if(cameraTransform == null)
 			{
-				_velocity += tr.right * characterInput.GetHorizontalMovementInput();
-				_velocity += tr.forward * characterInput.GetVerticalMovementInput();
+				//_velocity += tr.right * characterInput.GetHorizontalMovementInput();
+				//_velocity += tr.forward * characterInput.GetVerticalMovementInput();
+
+				_velocity += tr.right * moving_h;
+				_velocity += tr.forward * moving_v;
 			}
 			else
 			{
