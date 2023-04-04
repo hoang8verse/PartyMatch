@@ -121,7 +121,7 @@ public class MainMenu : MonoBehaviour
             lobbyScreen.SetActive(false);
         }
 
-        bg_Music.Play(0);
+        //bg_Music.Play(0);
     }
     private void Update()
     {

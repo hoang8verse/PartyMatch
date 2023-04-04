@@ -62,6 +62,15 @@ public class LevelManager : MonoBehaviour
         }
         Debug.Log(" SocketClient.instance.isHost------------------------ " + SocketClient.instance.isHost);
     }
+    public void CheckHost()
+    {
+        if (!isStartGame)
+        {
+            buttonReadyPlay.SetActive(true);
+            textStartGame.text = "";
+        }
+
+    }
     public void RequestStartGame()
     {
         SocketClient.instance.OnStartGame();

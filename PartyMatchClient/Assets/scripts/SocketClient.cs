@@ -364,15 +364,15 @@ public class SocketClient : MonoBehaviour
                             Debug.Log("  characterIndex =================  " + characterIndex);
                             if (_player["gender"].ToString() == "0")
                             {
-                                player = Instantiate(playerPrefab, pos, Quaternion.identity);
+                                player = Instantiate(playerPrefab, clientPosStart, Quaternion.identity);
                             }
                             else
                             {
-                                player = Instantiate(playerPrefab, pos, Quaternion.identity);
+                                player = Instantiate(playerPrefab, clientPosStart, Quaternion.identity);
                                 //player = Instantiate(playerPrefab);
                             }
                             player.name = "Player-" + playerJoinName;
-                            player.transform.tag = "player";
+                            player.transform.tag = "Player";
                             player.SetActive(true);
 
                         }
@@ -403,12 +403,12 @@ public class SocketClient : MonoBehaviour
                             otherPlayers[_clientId].SetActive(true);
                             int characterIndex = int.Parse(_player["characterIndex"].ToString());
                             otherPlayers[_clientId].GetComponent<characterSpawn>().SetActiveCharacter(characterIndex);
-                        } 
-                        //else
-                        //{
-                        //    Debug.Log("  ===========  player is same client =================  " + _player["position"]);
-                        //   otherPlayers[_clientId].transform.position = pos;
-                        //}
+                        }
+                        else
+                        {
+                            Debug.Log("  ===========  player is same client =================  " + _player["position"]);
+                            otherPlayers[_clientId].transform.position = pos;
+                        }
 
                     }
 
@@ -519,6 +519,10 @@ public class SocketClient : MonoBehaviour
 
                     OnCloseConnectSocket();
                 }
+                if (otherPlayers.ContainsKey(data["clientId"].ToString()))
+                {
+                    Destroy(otherPlayers[data["clientId"].ToString()]);
+                }
 
                 break;
             case "playerWin":
@@ -589,14 +593,15 @@ public class SocketClient : MonoBehaviour
                             }
                             MainMenu.instance.ShowTotalPlayers(players.Count);
                         }
-                        //if (otherPlayers.ContainsKey(data["clientId"].ToString()))
-                        //{
-                        //    Destroy(otherPlayers[data["clientId"].ToString()]);
-                        //}
+
                         players.RemoveAt(i);
                         Debug.Log(" players playerLeaveRoom 222222222222222  " + playerLeaveId);
 
                     }
+                }
+                if (otherPlayers.ContainsKey(data["clientId"].ToString()))
+                {
+                    Destroy(otherPlayers[data["clientId"].ToString()]);
                 }
 
                 // check new host 
@@ -609,7 +614,7 @@ public class SocketClient : MonoBehaviour
                     if (player != null)
                     {
                         Debug.Log(" client is new host -----------    " );
-
+                        LevelManager.instance.CheckHost();
                     } 
                     else
                     {

@@ -6,11 +6,7 @@ using System.Collections;
 public class JavaScriptInjected : MonoBehaviour
 {
     public static JavaScriptInjected instance;
-    [DllImport("__Internal")]
-    private static extern void Hello();
 
-    [DllImport("__Internal")]
-    private static extern void HelloString(string str);
     [System.Obsolete]
     void Start()
     {
