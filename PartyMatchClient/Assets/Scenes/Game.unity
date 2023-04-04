@@ -11404,7 +11404,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1073265069
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11423,7 +11423,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -10.97, y: -139.0332}
+  m_AnchoredPosition: {x: -10.97, y: -506}
   m_SizeDelta: {x: 1058.1, y: 350.1451}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1073265070
@@ -11470,34 +11470,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 502044605}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 494411309}
         m_TargetAssemblyTypeName: LevelManager, Assembly-CSharp
-        m_MethodName: startGame
+        m_MethodName: RequestStartGame
         m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1364068236}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -24145,6 +24121,10 @@ PrefabInstance:
       propertyPath: JoystickControl
       value: 
       objectReference: {fileID: 303894599}
+    - target: {fileID: 104689758224665634, guid: 54f136297268db845abbd1549ecff5ae, type: 3}
+      propertyPath: buttonReadyPlay
+      value: 
+      objectReference: {fileID: 1073265068}
     - target: {fileID: 104689758224665634, guid: 54f136297268db845abbd1549ecff5ae, type: 3}
       propertyPath: AI.Array.data[0]
       value: 

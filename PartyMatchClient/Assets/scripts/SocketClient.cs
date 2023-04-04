@@ -263,10 +263,13 @@ public class SocketClient : MonoBehaviour
             case "roomDetected":
                 ROOM = data["room"].ToString();
                 clientId = data["clientId"].ToString();
-                isHost = data["host"].ToString() == "1" ? true : false;
                 //OnJoinRoom();
                 OnJoinLobbyRoom();
 
+                break;
+            case "failJoinRoom":
+
+                MainMenu.instance.ShowFailScreen(data["message"].ToString());
                 break;
             case "roundAlready":
                 Debug.Log("roundAlready  ===============================  " + data );
@@ -280,48 +283,45 @@ public class SocketClient : MonoBehaviour
             case "joinLobbyRoom":
 
                 IS_FIRST_JOIN = false;
-
+                MainMenu.instance.ShowLobby();
                 players = JArray.Parse(data["players"].ToString());
 
                 currentPlayerJoined = players.Count;
                 Debug.Log(" playerName  join room  " + data["playerName"].ToString());
 
-                if (isHost)
+                int countUserPlay = 0;
+                int countSpectator = 0;
+                // for new player
+                if (data["clientId"].ToString() == clientId && player == null)
                 {
-                    StartCoroutine(LevelManager.instance.CheckAlreadyPlay());
+
+                    for (int i = 0; i < players.Count; i++)
+                    {
+                        
+                        if (players[i]["isSpectator"].ToString() == "0")
+                        {
+                            countUserPlay++;
+                            StartCoroutine(LoadAvatarImage(players[i]["avatar"].ToString(), players[i]["id"].ToString()));
+                        }
+                        else
+                        {
+                            countSpectator++;
+                        }
+                    }
                 }
-                
+                // for old player
+                else
+                {
+                    
+                    if (data["isSpectator"].ToString() == "0")
+                        StartCoroutine(LoadAvatarImage(data["avatar"].ToString(), data["clientId"].ToString()));
+                }
 
-                //int countUserPlay = 0;
-                //int countSpectator = 0;
-                //// for new player
-                //if (data["clientId"].ToString() == clientId && player == null)
-                //{
-
-                //    for (int i = 0; i < players.Count; i++)
-                //    {
-                //        //MainMenu.instance.AddPlayerJoinRoom(players[i]["id"].ToString(),players[i]["playerName"].ToString(), i);
-                //        if (players[i]["isSpectator"].ToString() == "0")
-                //        {
-                //            countUserPlay++;
-                //            StartCoroutine(LoadAvatarImage(players[i]["avatar"].ToString(), players[i]["id"].ToString()));
-                //        } else
-                //        {
-                //            countSpectator++;
-                //        }
-                //    }
-                //} 
-                //// for old player
-                //else
-                //{
-                //    //MainMenu.instance.AddPlayerJoinRoom(data["clientId"].ToString(), data["playerName"].ToString(), players.Count - 1);
-                //    if (data["isSpectator"].ToString() == "0")
-                //        StartCoroutine(LoadAvatarImage(data["avatar"].ToString(), data["clientId"].ToString()));
-                //}
-
+                MainMenu.instance.ShowPlayerJoinRoom(data["playerName"].ToString());
+                MainMenu.instance.ShowTotalPlayers(players.Count);
                 break;
             case "gotoGame":
-
+                MainMenu.instance.GotoGame();
                 break;
             case "joinRoom":
 
@@ -358,6 +358,7 @@ public class SocketClient : MonoBehaviour
                         }
                         else
                         {
+                            isHost = _player["isHost"].ToString() == "1";
                             int characterIndex = int.Parse(_player["characterIndex"].ToString());
                             playerPrefab.GetComponent<characterSpawn>().SetActiveCharacter(characterIndex);
                             Debug.Log("  characterIndex =================  " + characterIndex);
@@ -411,11 +412,24 @@ public class SocketClient : MonoBehaviour
 
                     }
 
-                    // start moving
-                    LoopCheckPlayerMoving();
+
 
                 }
-                
+
+                break;
+            case "startGame":
+                Debug.Log("  startGame =================  " + data);
+                if (isSpectator)
+                {
+                    // code spectator screen here
+
+                }
+                else
+                {
+                    LevelManager.instance.startGame();
+                    // start moving
+                    LoopCheckPlayerMoving();
+                }
                 break;
             case "hitEnemy":
                 Debug.Log("  hitEnemy =================  " + data);
@@ -478,21 +492,6 @@ public class SocketClient : MonoBehaviour
 
                 CubeManager.instance.PerformCube(_target, _ran1, _ran2, _ran3);
 
-                //if (clientId == data["clientId"].ToString())
-                //{
-                //    player.GetComponent<CubeManager>().PerformCube(_target, _ran1, _ran2, _ran3);
-                //}
-                //else
-                //{
-                //    if (otherPlayers.Count > 0)
-                //    {
-                //        if (otherPlayers.ContainsKey(data["clientId"].ToString()))
-                //        {
-                //            otherPlayers[data["clientId"].ToString()].GetComponent<CubeManager>().PerformCube(_target, _ran1, _ran2, _ran3);
-                //        }
-
-                //    }
-                //}
 
                 break;
             case "cubeFall":
@@ -586,13 +585,14 @@ public class SocketClient : MonoBehaviour
                         {
                             if (players[i]["isSpectator"].ToString() == "0")
                             {
-
+                                MainMenu.instance.RemovePlayerJoinRoomByAvatar(playerLeaveId);
                             }
+                            MainMenu.instance.ShowTotalPlayers(players.Count);
                         }
-                        if (otherPlayers.ContainsKey(data["clientId"].ToString()))
-                        {
-                            Destroy(otherPlayers[data["clientId"].ToString()]);
-                        }
+                        //if (otherPlayers.ContainsKey(data["clientId"].ToString()))
+                        //{
+                        //    Destroy(otherPlayers[data["clientId"].ToString()]);
+                        //}
                         players.RemoveAt(i);
                         Debug.Log(" players playerLeaveRoom 222222222222222  " + playerLeaveId);
 
@@ -615,7 +615,8 @@ public class SocketClient : MonoBehaviour
                     {
                         Debug.Log(" client is new lobby host ---=====  ");
 
-                        StartCoroutine(LevelManager.instance.CheckAlreadyPlay());
+                        MainMenu.instance.isHost = "1";
+                        MainMenu.instance.CheckTheHost();
                     }
                     
                 }
@@ -633,20 +634,22 @@ public class SocketClient : MonoBehaviour
     }
     public void OnRequestRoom()
     {
-
-        string room = Generate();
+        Debug.Log("  MainMenu.instance.isSpectator OnRequestRoom =================  " + MainMenu.instance.isSpectator);
+        string room = MainMenu.instance.roomId;
         JObject jsData = new JObject();
         jsData.Add("meta", "requestRoom");
-        jsData.Add("playerLen", 30);
+        jsData.Add("playerLen", 8);
         jsData.Add("room", room);
-        jsData.Add("host", "1");
-        jsData.Add("isSpectator","0");
+        jsData.Add("host", MainMenu.instance.isHost);
+        jsData.Add("isSpectator", MainMenu.instance.isSpectator);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData).ToString());
     }
+
     public void OnJoinLobbyRoom()
     {
-
-        string playerName = "";
+        Debug.Log("  MainMenu.instance.isSpectator OnJoinLobbyRoom   " + MainMenu.instance.isSpectator);
+        Debug.Log("  MainMenu.instance.gender gender   " + MainMenu.instance.gender);
+        string playerName = MainMenu.instance.playerName;
 
         if (playerName.Length <= 1)
         {
@@ -656,17 +659,25 @@ public class SocketClient : MonoBehaviour
         JObject jsData = new JObject();
         jsData.Add("meta", "joinLobby");
         jsData.Add("room", ROOM);
-        jsData.Add("gender","");
-        jsData.Add("isSpectator","");
+        jsData.Add("isHost", MainMenu.instance.isHost);
+        jsData.Add("gender", MainMenu.instance.gender);
+        jsData.Add("isSpectator", MainMenu.instance.isSpectator);
         jsData.Add("playerName", playerName);
-        jsData.Add("userAppId", "");
-        jsData.Add("avatar", "");
+        jsData.Add("userAppId", MainMenu.instance.userAppId);
+        jsData.Add("avatar", MainMenu.instance.userAvatar);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
+    }
+    public void OnGotoGame()
+    {
+        JObject jsData = new JObject();
+        jsData.Add("meta", "gotoGame");
+        jsData.Add("room", ROOM);
+        Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData).ToString());
     }
     public void OnJoinRoom()
     {
         Debug.Log(" OnJoinRoom ==================  " );
-        string playerName = "";
+        string playerName = MainMenu.instance.playerName;
 
         if (playerName.Length <= 1 )
         {
@@ -678,15 +689,18 @@ public class SocketClient : MonoBehaviour
         JObject jsData = new JObject();
         jsData.Add("meta", "join");
         jsData.Add("room", ROOM);
-        jsData.Add("isHost", "1");
-        jsData.Add("gender", "");
-        jsData.Add("isSpectator", "0");
+        jsData.Add("isHost", MainMenu.instance.isHost);
         jsData.Add("playerName", playerName);
-        jsData.Add("userAppId", "");
-        jsData.Add("avatar", "");
         jsData.Add("characterIndex", MainMenu.instance.selectedCharacter);
         jsData.Add("pos", clientPosStart.ToString());
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
+    }
+    public void OnStartGame()
+    {
+        JObject jsData = new JObject();
+        jsData.Add("meta", "startGame");
+        jsData.Add("room", ROOM);
+        Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData).ToString());
     }
     public void OnHitEnemy(Vector3 hitPos, string enemyName)
     {
@@ -829,7 +843,7 @@ public class SocketClient : MonoBehaviour
         isEndGame = true;
         if (player)
         {
-            SceneManager.LoadScene("Menu");
+            SceneManager.LoadScene("MainMenu");
         }
     }
 
@@ -842,11 +856,13 @@ public class SocketClient : MonoBehaviour
         {
             Debug.Log(request.error);
             Texture2D textureImageUrl = null;
+            MainMenu.instance.AddPlayerJoinRoomByAvatar(textureImageUrl, playerID);
         }
         else
         {
             Texture2D textureImageUrl = ((DownloadHandlerTexture)request.downloadHandler).texture;
             // use the texture here
+            MainMenu.instance.AddPlayerJoinRoomByAvatar(textureImageUrl, playerID);
         }
     }
 

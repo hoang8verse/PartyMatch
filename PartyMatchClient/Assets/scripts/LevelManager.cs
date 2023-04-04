@@ -26,6 +26,7 @@ public class LevelManager : MonoBehaviour
     public bool winbool;
     public TMPro.TextMeshProUGUI textRound;
     public TMPro.TextMeshProUGUI textStartGame;
+    public GameObject buttonReadyPlay;
     public GameObject startObject;
     public GameObject winpanel;
     public GameObject Loosepanel;
@@ -40,33 +41,43 @@ public class LevelManager : MonoBehaviour
         JoystickControl.transform.position = new Vector3(-5000, -5000, 0);
 
         //SocketClient.instance.OnJoinLobbyRoom();
-        //StartCoroutine(CheckAlreadyPlay());
+        StartCoroutine(CheckAlreadyPlay());
     }
     public IEnumerator CheckAlreadyPlay()
     {
-        
+        SocketClient.instance.OnJoinRoom();
         yield return new WaitForSeconds(0.1f);
 
         if (SocketClient.instance.isHost)
         {
-            startGame();
-            textStartGame.text = "Ready!!!";
-            yield return new WaitForSeconds(3f);
-            CubeManager.instance.SendRequestRandomTarget();
+            
+            buttonReadyPlay.SetActive(true);
+            textStartGame.text = "";
+
         } 
         else
         {
-            textStartGame.text = "Wating new round to join !!!";
+            buttonReadyPlay.SetActive(false);
+            textStartGame.text = "Wating host start the game !!!";
         }
         Debug.Log(" SocketClient.instance.isHost------------------------ " + SocketClient.instance.isHost);
     }
+    public void RequestStartGame()
+    {
+        SocketClient.instance.OnStartGame();
+    }
     public void startGame()
     {
-        SocketClient.instance.OnJoinRoom();
         //Time.timeScale = 1;
         isStartGame = true;
         RigObject.SetActive(true);
         startObject.SetActive(false);
+        StartCoroutine(CountDownTarget());
+    }
+    IEnumerator CountDownTarget()
+    {
+        yield return new WaitForSeconds(3f);
+        CubeManager.instance.SendRequestRandomTarget();
     }
     public void SetLooseScreen()
     {
@@ -173,6 +184,6 @@ public class LevelManager : MonoBehaviour
 
         Destroy(level);
         //Advertisements.Instance.ShowInterstitial();
-        SceneManager.LoadScene("Menu");
+        SceneManager.LoadScene("MainMenu");
     }
 }
