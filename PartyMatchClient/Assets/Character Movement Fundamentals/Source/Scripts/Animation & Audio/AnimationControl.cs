@@ -27,6 +27,8 @@ namespace CMF
 
 		public Vector3 moveDirectionPush;
 		Mover mover;
+
+		bool isMoving = false;
 		void OnCollisionEnter(Collision other)
 		{
 
@@ -44,44 +46,59 @@ namespace CMF
 			}
 
 			// check collision with other player
-			if (other.gameObject.transform.tag == "enemy")
+			if ( other.gameObject.transform.tag == "enemy")
 			{
-				//audioSource.clip = audioHitList[Random.Range(0, audioHitList.Length)];
-				//audioSource.Play();
-				//moveDirectionPush = transform.position - other.transform.position;
-				//transform.GetComponent<Rigidbody>().AddForce(moveDirectionPush.normalized * 100);
-				//animator.Play("hit");
-
-				SocketClient.instance.OnHitEnemy(other.transform.position, other.gameObject.name);
+                //audioSource.clip = audioHitList[Random.Range(0, audioHitList.Length)];
+                //audioSource.Play();
+                //moveDirectionPush = transform.position - other.transform.position;
+                //transform.GetComponent<Rigidbody>().AddForce(moveDirectionPush.normalized * 100);
+                //animator.Play("hit");
+                if (isMoving)
+                {
+					SocketClient.instance.OnHitEnemy(other.transform.position, other.gameObject.name);
+				}
+				else
+                {
+					SocketClient.instance.OnStunnedByEnemy(other.transform.position, other.gameObject.name);
+				}
+				
 			}
 		}
 		void OnCollisionStay(Collision other)
 		{
 
-			if (other.gameObject.transform.tag == "enemy")
-			{
-				//moveDirectionPush = transform.position - other.transform.position;
-				//transform.GetComponent<Rigidbody>().AddForce(moveDirectionPush.normalized * 100);
-				//animator.Play("hit");
-				SocketClient.instance.OnHitEnemy(other.transform.position, other.gameObject.name);
+			//if (other.gameObject.transform.tag == "enemy")
+			//{
+			//	//moveDirectionPush = transform.position - other.transform.position;
+			//	//transform.GetComponent<Rigidbody>().AddForce(moveDirectionPush.normalized * 100);
+			//	//animator.Play("hit");
+			//	SocketClient.instance.OnHitEnemy(other.transform.position, other.gameObject.name);
 
-			}
-
-
+			//}
 
 		}
 		IEnumerator waitbeforeforce()
         {
 			yield return new WaitForSeconds(0.1f);
-			rb.AddForce(moveDirectionPush.normalized * 4000);
+			rb.AddForce(moveDirectionPush.normalized * 1000);
 		}
 		public void PlayerHitEnemy(Vector3 hitPos)
         {
 			audioSource.clip = audioHitList[Random.Range(0, audioHitList.Length)];
 			audioSource.Play();
 			moveDirectionPush = transform.position - hitPos;
-			transform.GetComponent<Rigidbody>().AddForce(moveDirectionPush.normalized * 100);
+			transform.GetComponent<Rigidbody>().AddForce(moveDirectionPush.normalized * 1000);
 			animator.Play("hit");
+		}
+		public void PlayerStunned(Vector3 hitPos)
+		{
+			audioSource.clip = audioHitList[Random.Range(0, audioHitList.Length)];
+			audioSource.Play();
+			moveDirectionPush = transform.position - hitPos;
+			//other.transform.GetComponent<Rigidbody>().AddForce(moveDirectionPush.normalized * 20);
+			stun = true;
+			animator.SetTrigger("stunned");
+			StartCoroutine(waitbeforeforce());
 		}
 		//Setup;
 		void Awake () {
@@ -165,12 +182,12 @@ namespace CMF
 						if (_velocity.magnitude > 0)
 						{
 							animator.SetBool("walk",true);
-
+							isMoving = true;
 						}
 						else
 						{
 							animator.SetBool("walk", false);
-
+							isMoving = false;
 						}
 					}
 					//else
