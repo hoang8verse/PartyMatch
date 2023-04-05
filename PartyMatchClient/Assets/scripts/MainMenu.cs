@@ -217,7 +217,7 @@ public class MainMenu : MonoBehaviour
     {
         OnClickVfx();
 
-        bg_Music.Stop();
+        //bg_Music.Stop();
         SceneManager.LoadScene("Game");
     }
     public void HostCreateNewRoom()

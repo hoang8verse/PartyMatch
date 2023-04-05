@@ -8,18 +8,10 @@ public class LevelManager : MonoBehaviour
     public static LevelManager instance;
     private void Awake()
     {
-        
-        //Time.timeScale = 0;
-        //Advertisements.Instance.ShowBanner(BannerPosition.TOP, BannerType.Adaptive);
-        if (instance != null)
-        {
-            Destroy(gameObject);
-        }
-        else
-        {
+        if (instance == null)
             instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
+        else if (instance != this)
+            Destroy(gameObject);
     }
 
     public List<GameObject>  AI;

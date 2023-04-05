@@ -50,10 +50,11 @@ public class CubeManager : MonoBehaviour
             spawnpointsR[i] = CubeMeshs[i].transform.localRotation;
 
         }
-       // counter.SetActive(true);
+        // counter.SetActive(true);
 
         //Invoke("selectCube", 3);
         //Invoke("SendRequestRandomTarget", 3);
+        
     }
 
     public void SendRequestRandomTarget()
@@ -246,7 +247,7 @@ public class CubeManager : MonoBehaviour
         }
 
         // check new round already to play
-        SocketClient.instance.OnRoundAlready();
+        //SocketClient.instance.OnRoundAlready();
     }
     private void FixedUpdate()
     {
