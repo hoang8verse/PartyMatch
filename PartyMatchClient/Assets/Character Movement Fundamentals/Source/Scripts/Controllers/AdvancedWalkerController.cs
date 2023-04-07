@@ -141,7 +141,7 @@ namespace CMF
 		void ControllerUpdate()
 		{
             //if (!levelmanager.winbool)
-            if (!SocketClient.instance.isEndGame)
+            //if (!SocketClient.instance.isEndGame)
             {
 				if (animationcontroller.stun)
 				{

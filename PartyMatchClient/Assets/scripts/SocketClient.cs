@@ -610,6 +610,7 @@ public class SocketClient : MonoBehaviour
                     LevelManager.instance.startGame();
                     // start moving
                     LoopCheckPlayerMoving();
+                    isEndGame = false;
                 }
                 break;
             case "hitEnemy":
@@ -1100,7 +1101,7 @@ public class SocketClient : MonoBehaviour
     {
         clientId = "";
         ROOM = "";
-        isEndGame = false;
+        isEndGame = true;
 
         await webSocket.Close();
     }
