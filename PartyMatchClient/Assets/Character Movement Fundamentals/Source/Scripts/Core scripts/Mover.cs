@@ -249,6 +249,7 @@ namespace CMF
 
 			//Set new ground adjustment velocity for the next frame;
 			currentGroundAdjustmentVelocity = tr.up * (_distanceToGo/Time.fixedDeltaTime);
+
 		}
 
 		//Check if mover is grounded;
@@ -262,11 +263,21 @@ namespace CMF
 			Check();
 		}
 
+		Vector3 velocity = Vector3.zero;
 		//Set mover velocity;
 		public void SetVelocity(Vector3 _velocity)
 		{
-			rig.velocity = _velocity + currentGroundAdjustmentVelocity;	
-		}	
+			rig.velocity = _velocity + currentGroundAdjustmentVelocity;
+			velocity = rig.velocity;
+		}
+		public Vector3 GetVelocity()
+		{
+			return velocity;
+		}
+		public void SetVelocityFromServer(Vector3 _velocity)
+		{
+			//rig.velocity = _velocity + currentGroundAdjustmentVelocity;
+		}
 
 		//Returns 'true' if mover is touching ground and the angle between hte 'up' vector and ground normal is not too steep (e.g., angle < slope_limit);
 		public bool IsGrounded()
@@ -332,7 +343,6 @@ namespace CMF
 		void OnTriggerEnter(Collider other)
 		{
 
-
 			if (other.gameObject.name == "dead" && gameObject.transform.tag == "Player")
 			{
 
@@ -342,6 +352,7 @@ namespace CMF
 			}
 
 		}
+		
 	}
 
 

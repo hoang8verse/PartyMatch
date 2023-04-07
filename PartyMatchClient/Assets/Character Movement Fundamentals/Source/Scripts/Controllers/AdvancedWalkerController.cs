@@ -81,6 +81,8 @@ namespace CMF
 		public float moving_h = 0f;
 		public float moving_v = 0f;
 
+		public Vector3 velocity = Vector3.zero;
+
 		//Get references to all necessary components;
 		void Awake () {
 			animationcontroller = GetComponent<AnimationControl>();
@@ -131,7 +133,6 @@ namespace CMF
 
         void FixedUpdate()
 		{
-
 			ControllerUpdate();
 		}
 
@@ -139,8 +140,9 @@ namespace CMF
 		//This function must be called every fixed update, in order for the controller to work correctly;
 		void ControllerUpdate()
 		{
-			//if (!levelmanager.winbool)
-			{
+            //if (!levelmanager.winbool)
+            if (!SocketClient.instance.isEndGame)
+            {
 				if (animationcontroller.stun)
 				{
 					Vector3 _velocity = Vector3.zero;
@@ -215,12 +217,12 @@ namespace CMF
 			//If no camera transform has been assigned, use the character's transform axes to calculate the movement direction;
 			if(cameraTransform == null)
 			{
-				//_velocity += tr.right * characterInput.GetHorizontalMovementInput();
-				//_velocity += tr.forward * characterInput.GetVerticalMovementInput();
+                //_velocity += tr.right * characterInput.GetHorizontalMovementInput();
+                //_velocity += tr.forward * characterInput.GetVerticalMovementInput();
 
-				_velocity += tr.right * moving_h;
-				_velocity += tr.forward * moving_v;
-			}
+                _velocity += tr.right * moving_h;
+                _velocity += tr.forward * moving_v;
+            }
 			else
 			{
 
@@ -229,11 +231,12 @@ namespace CMF
 
                 //_velocity += Vector3.ProjectOnPlane(cameraTransform.right, tr.up).normalized * characterInput.GetHorizontalMovementInput();
                 //_velocity += Vector3.ProjectOnPlane(cameraTransform.forward, tr.up).normalized * characterInput.GetVerticalMovementInput();
-				_velocity += Vector3.ProjectOnPlane(cameraTransform.right, tr.up).normalized * moving_h;
-				_velocity += Vector3.ProjectOnPlane(cameraTransform.forward, tr.up).normalized * moving_v;
+
+                _velocity += Vector3.ProjectOnPlane(cameraTransform.right, tr.up).normalized * moving_h;
+                _velocity += Vector3.ProjectOnPlane(cameraTransform.forward, tr.up).normalized * moving_v;
 
 
-			}
+            }
 
 			//If necessary, clamp movement vector to magnitude of 1f;
 			if(_velocity.magnitude > 1f)
@@ -242,15 +245,26 @@ namespace CMF
 			return _velocity;
 		}
 
-		//Calculate and return movement velocity based on player input, controller state, ground normal [...];
-		protected virtual Vector3 CalculateMovementVelocity()
-		{
-			//Calculate (normalized) movement direction;
+		public Vector3 GetInputMovementVelocity()
+        {
 			Vector3 _velocity = CalculateMovementDirection();
 
 			//Multiply (normalized) velocity with movement speed;
 			_velocity *= movementSpeed;
+			return _velocity;
+		}
+		public void SetInputMovementVelocity(Vector3 _velocity)
+		{
+			velocity = _velocity;
+		}
 
+		//Calculate and return movement velocity based on player input, controller state, ground normal [...];
+		protected virtual Vector3 CalculateMovementVelocity()
+		{
+			Vector3 _velocity = CalculateMovementDirection();
+
+			//Multiply (normalized) velocity with movement speed;
+			_velocity *= movementSpeed;
 			return _velocity;
 		}
 

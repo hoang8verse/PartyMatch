@@ -29,11 +29,26 @@ public class LevelManager : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
+        CheckDevice();
         RigObject.SetActive(false);
         JoystickControl.transform.position = new Vector3(-5000, -5000, 0);
 
         //SocketClient.instance.OnJoinLobbyRoom();
         StartCoroutine(CheckAlreadyPlay());
+    }
+    bool isRunOnMobile;
+    void CheckDevice()
+    {
+        if (Application.isMobilePlatform)
+        {
+            Debug.Log("Running on a mobile device.");
+            isRunOnMobile = true;
+        }
+        else
+        {
+            Debug.Log("Running on a non-mobile device.");
+            isRunOnMobile = false;
+        }
     }
     public IEnumerator CheckAlreadyPlay()
     {
@@ -112,52 +127,57 @@ public class LevelManager : MonoBehaviour
         //        winpanel.SetActive(true);
         //        RigObject.SetActive(false);
         //    }
-          
+
         //}
-
-
-        if (Input.touchCount > 0)
+        if (isRunOnMobile)
         {
-            Touch touch = Input.GetTouch(0);
-            if (touch.phase == TouchPhase.Began)
+
+            if (Input.touchCount > 0)
             {
-                // Touch began, do something
+                Touch touch = Input.GetTouch(0);
+                if (touch.phase == TouchPhase.Began)
+                {
+                    // Touch began, do something
+                    isMoving = true;
+                    JoystickControl.transform.position = new Vector3(touch.position.x, touch.position.y, 0);
+                }
+                else if (touch.phase == TouchPhase.Moved)
+                {
+                    // Touch moved, do something else
+                }
+                else if (touch.phase == TouchPhase.Ended)
+                {
+                    // Touch ended, do another thing
+                    isMoving = false;
+                }
+            }
+        }
+        else
+        {
+            if (Input.GetMouseButtonDown(0)) // 0 : left , 1 : right, 2 : wheel
+            {
+                Debug.Log(" ======================== GetMouseButtonDown ===========  ");
                 isMoving = true;
-                JoystickControl.transform.position = new Vector3(touch.position.x, touch.position.y, 0);
+                JoystickControl.transform.position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
+
             }
-            else if (touch.phase == TouchPhase.Moved)
+            else
+            if (Input.GetMouseButton(0)) // 0 : left , 1 : right, 2 : wheel
             {
-                // Touch moved, do something else
+                isMoving = true;
+
+                //anim.Play("Walk");            
+                //Debug.Log(" ======================== GetMouseButton movingggggggggggggggggggggggggg ===========  ");
             }
-            else if (touch.phase == TouchPhase.Ended)
+            else
+            if (Input.GetMouseButtonUp(0))
             {
-                // Touch ended, do another thing
+
                 isMoving = false;
+                Debug.Log(" ======================== GetMouseButtonUp dasdadadadad ===========  ");
             }
         }
-
-        if (Input.GetMouseButtonDown(0)) // 0 : left , 1 : right, 2 : wheel
-        {
-            Debug.Log(" ======================== GetMouseButtonDown ===========  ");
-            isMoving = true;
-            JoystickControl.transform.position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
-
-        }
-        else
-        if (Input.GetMouseButton(0)) // 0 : left , 1 : right, 2 : wheel
-        {
-            isMoving = true;
-            
-            //anim.Play("Walk");            
-            //Debug.Log(" ======================== GetMouseButton movingggggggggggggggggggggggggg ===========  ");
-        }
-        else
-        if (Input.GetMouseButtonUp(0))
-        {
-
-            isMoving = false;
-            Debug.Log(" ======================== GetMouseButtonUp dasdadadadad ===========  ");
-        }
+       
 
         if (isMoving)
         {

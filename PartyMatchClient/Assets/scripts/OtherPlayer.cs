@@ -53,7 +53,7 @@ public class OtherPlayer : MonoBehaviour
         if (velocity.magnitude > 0)
         {
             playerAnim.SetBool("walk", true);
-            Debug.Log(" velocity ===================  " + velocity);
+            
             rigidbody.velocity = velocity;
 
             //Normalize velocity direction;
@@ -102,6 +102,7 @@ public class OtherPlayer : MonoBehaviour
     public void SetVelocity(Vector3 _velocity)
     {
         velocity = _velocity;
+
     }
 
     //void FixedUpdate()
