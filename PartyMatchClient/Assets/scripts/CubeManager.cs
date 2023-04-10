@@ -175,16 +175,20 @@ public class CubeManager : MonoBehaviour
         }
     }
 
+    public void SetPlayerWin()
+    {
+        //if (round >= 5)
+        {
+            levelmanager.SetPlayerWin();
+            SocketClient.instance.OnPlayerWin();
+        }
+    }
    IEnumerator resetCube()
     {
         round++;
         LevelManager.instance.textRound.text = round.ToString();
         SocketClient.instance.OnRoundPass(round);
-        if(round >= 5)
-        {
-            levelmanager.SetPlayerWin();
-            SocketClient.instance.OnPlayerWin();
-        }
+
         yield return new WaitForSeconds(3);
 
         SocketClient.instance.OnCubeReset();
