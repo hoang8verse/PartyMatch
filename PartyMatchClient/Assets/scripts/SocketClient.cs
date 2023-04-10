@@ -90,66 +90,65 @@ public class SocketClient : MonoBehaviour
 
     void Update()
     {
-        //if (!isEndGame)
-        //{
-        //    if (isRunOnMobile)
-        //    {
-        //        if (Input.touchCount > 0)
-        //        {
-        //            Touch touch = Input.GetTouch(0); // trying to get the second touch input
+        if (!isEndGame)
+        {
+            if (isRunOnMobile)
+            {
+                if (Input.touchCount > 0)
+                {
+                    Touch touch = Input.GetTouch(0); // trying to get the second touch input
 
-        //            if (touch.phase == TouchPhase.Began)
-        //            {
+                    if (touch.phase == TouchPhase.Began)
+                    {
 
-        //                isMoving = true;
-        //            }
-        //            else if (touch.phase == TouchPhase.Moved)
-        //            {
+                        
+                        if (player != null)
+                        {
+                            isMoving = true;
+                            StartCoroutine(StartPlayerMoving());
+                        }
 
-        //                isMoving = true;
+                    }
+                    else if (touch.phase == TouchPhase.Moved)
+                    {
 
-        //                if (player)
-        //                {
+                    }
+                    else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+                    {
 
-        //                    Vector3 _velocity = player.GetComponent<Mover>().GetVelocity();
-        //                    Debug.Log(" ======================== GetMouseButtonUp _velocity ===========  " + _velocity);
-        //                    OnMoving(_velocity);
-        //                    //_v = player.GetComponent<CharacterInput>().GetVerticalMovementInput();
-        //                }
-        //            }
-        //            else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
-        //            {
-        //                OnMoving(Vector3.zero);
-        //                isMoving = false;
+                        isMoving = false;
 
-        //            }
-        //        }
-        //    }
-        //    else
-        //    {
-        //        if (Input.GetMouseButton(0)) // 0 : left , 1 : right, 2 : wheel
-        //        {
+                    }
+                }
+            }
+            else
+            {
+                if (Input.GetMouseButtonDown(0)) // 0 : left , 1 : right, 2 : wheel
+                {
 
-        //            isMoving = true;
-        //            if (player)
-        //            {
-        //                Vector3 _velocity = player.GetComponent<Mover>().GetVelocity();
-        //                OnMoving(_velocity);
-        //                //_v = player.GetComponent<CharacterInput>().GetVerticalMovementInput();
-        //            }
-
-        //        }
-        //        else
-        //        if (Input.GetMouseButtonUp(0))
-        //        {
-
-        //            isMoving = false;
-        //            OnMoving(Vector3.zero);
                     
-        //        }
-        //    }
-        //}
-        
+                    if (player != null)
+                    {
+                        isMoving = true;
+                        StartCoroutine(StartPlayerMoving());
+                    }
+
+                }
+                else
+                if (Input.GetMouseButton(0)) // 0 : left , 1 : right, 2 : wheel
+                {
+
+                }
+                else
+                if (Input.GetMouseButtonUp(0))
+                {
+
+                    isMoving = false;
+
+                }
+            }
+        }
+
 
 #if !UNITY_WEBGL || UNITY_EDITOR
         if (webSocket!=null)
@@ -202,6 +201,36 @@ public class SocketClient : MonoBehaviour
         }
     }
 
+    IEnumerator StartPlayerMoving()
+    {
+        if (!isMoving || !player) yield return null;
+        float _h = 0;
+        float _v = 0;
+        Vector3 _velocity = Vector3.zero;
+        if (player)
+        {
+            _velocity = player.GetComponent<Mover>().GetVelocity();
+            _h = player.GetComponent<CharacterInput>().GetHorizontalMovementInput();
+            _v = player.GetComponent<CharacterInput>().GetVerticalMovementInput();
+
+            OnMoving(_velocity, _h, _v);
+        }
+
+        
+
+        yield return new WaitForSeconds(Time.fixedDeltaTime);
+
+        if (isMoving)
+        {
+            StartCoroutine(StartPlayerMoving());
+        }
+        else
+        {
+            OnMoving(Vector3.zero, 0, 0);
+        }
+
+    }
+
     IEnumerator CheckPlayerMoving()
     {
 
@@ -230,8 +259,10 @@ public class SocketClient : MonoBehaviour
         {
             LoopCheckPlayerMoving();
         }
-
-        
+    }
+    void LoopCheckPlayerMoving()
+    {
+        StartCoroutine("CheckPlayerMoving");
     }
     IEnumerator UpdatePositionOtherPlayers()
     {
@@ -252,10 +283,6 @@ public class SocketClient : MonoBehaviour
                 Debug.Log(" otherPlayers pos :  " + pos);
             }
         }
-    }
-    void LoopCheckPlayerMoving()
-    {
-        StartCoroutine("CheckPlayerMoving");
     }
 
     public void OnConnectWebsocket()
@@ -609,7 +636,7 @@ public class SocketClient : MonoBehaviour
                     StartCoroutine(UpdatePositionOtherPlayers());
                     LevelManager.instance.startGame();
                     // start moving
-                    LoopCheckPlayerMoving();
+                    //LoopCheckPlayerMoving();
                     isEndGame = false;
                 }
                 break;
