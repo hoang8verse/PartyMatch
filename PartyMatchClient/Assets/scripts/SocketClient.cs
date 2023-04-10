@@ -216,9 +216,7 @@ public class SocketClient : MonoBehaviour
             OnMoving(_velocity, _h, _v);
         }
 
-        
-
-        yield return new WaitForSeconds(Time.fixedDeltaTime);
+        yield return new WaitForSeconds(Time.deltaTime);
 
         if (isMoving)
         {
