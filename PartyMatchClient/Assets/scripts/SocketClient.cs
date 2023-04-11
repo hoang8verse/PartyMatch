@@ -178,6 +178,14 @@ public class SocketClient : MonoBehaviour
         }
         return result;
     }
+    private Vector3 PositionByIndex(int ranIndex)
+    {
+        return cubeObjectPrefab.GetComponent<CubeManager>().CubeMeshs[ranIndex].transform.position;
+    }
+    private int GetRandomLength()
+    {
+        return cubeObjectPrefab.GetComponent<CubeManager>().CubeMeshs.Length;
+    }
     private Vector3 RandomPosition()
     {
         System.Random rand = new System.Random();
@@ -451,9 +459,18 @@ public class SocketClient : MonoBehaviour
 
                 clientPosStart = RandomPosition();
                 break;
+
             case "gotoGame":
                 MainMenu.instance.GotoGame();
-                clientPosStart = RandomPosition();
+                OnCheckPosition();
+                break;
+            case "positionPlayer":
+                if (data["clientId"].ToString() == clientId)
+                {
+                    int _indexRan = int.Parse(data["ranIndex"].ToString());
+                    clientPosStart = PositionByIndex(_indexRan);
+                }
+                
                 break;
             case "joinRoom":
 
@@ -1017,6 +1034,15 @@ public class SocketClient : MonoBehaviour
         jsData.Add("room", ROOM);
         jsData.Add("hitPos", hitPos.ToString());
         jsData.Add("enemyId", enemyName);
+        Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData).ToString());
+    }
+    public void OnCheckPosition()
+    {
+
+        JObject jsData = new JObject();
+        jsData.Add("meta", "checkPosition");
+        jsData.Add("room", ROOM);
+        jsData.Add("ranLength", GetRandomLength());
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData).ToString());
     }
     public void OnRoundAlready()
