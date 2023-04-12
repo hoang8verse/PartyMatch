@@ -328,6 +328,9 @@ MonoBehaviour:
   playerAnim: {fileID: 0}
   audioSource: {fileID: 0}
   spawnhiteffectposition: {fileID: 0}
+  characters:
+  - {fileID: 2438402333092697608}
+  - {fileID: 3099468167942726342}
   velocity: {x: 0, y: 0, z: 0}
   pos: {x: 0, y: 0, z: 0}
   rot: {x: 0, y: 0, z: 0, w: 1}
@@ -390,9 +393,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Men_Player
       objectReference: {fileID: 0}
+    - target: {fileID: 3010167759499825282, guid: 914ed1c19fba5bb4d990fd4985c5220f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: 914ed1c19fba5bb4d990fd4985c5220f, type: 3}
+--- !u!1 &2438402333092697608 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3010167759499825282, guid: 914ed1c19fba5bb4d990fd4985c5220f, type: 3}
+  m_PrefabInstance: {fileID: 581159653760255626}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3070648643767307442 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2489807850531080760, guid: 914ed1c19fba5bb4d990fd4985c5220f, type: 3}
@@ -464,5 +476,10 @@ PrefabInstance:
 --- !u!4 &2326202992919525500 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9086354991836084065, guid: b97b2f5ca58b26d42825e603f020bbc2, type: 3}
+  m_PrefabInstance: {fileID: 6796322117808262941}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3099468167942726342 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8454073530824060379, guid: b97b2f5ca58b26d42825e603f020bbc2, type: 3}
   m_PrefabInstance: {fileID: 6796322117808262941}
   m_PrefabAsset: {fileID: 0}

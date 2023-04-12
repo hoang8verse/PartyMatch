@@ -511,13 +511,17 @@ public class SocketClient : MonoBehaviour
                             //Debug.Log("  characterIndex =================  " + characterIndex);
                             if (playerObj["gender"].ToString() == "0")
                             {
+                                playerPrefab.GetComponent<characterSpawn>().SetActiveCharacter(0);
                                 player = Instantiate(playerPrefab, clientPosStart, Quaternion.identity);
+
                             }
                             else
                             {
+                                playerPrefab.GetComponent<characterSpawn>().SetActiveCharacter(1);
                                 player = Instantiate(playerPrefab, clientPosStart, Quaternion.identity);
-                                //player = Instantiate(playerPrefab);
                             }
+                            
+
                             player.name = "Player-" + playerObj["playerName"];
                             player.transform.tag = "Player";
                             player.SetActive(true);
@@ -606,10 +610,12 @@ public class SocketClient : MonoBehaviour
                             // other player
                             if (_player["gender"].ToString() == "0")
                             {
+                                otherPlayerPrefab.GetComponent<OtherPlayer>().SetActiveCharacter(0);
                                 otherPlayers[_clientId] = Instantiate(otherPlayerPrefab, pos, Quaternion.identity);
                             }
                             else
                             {
+                                otherPlayerPrefab.GetComponent<OtherPlayer>().SetActiveCharacter(1);
                                 otherPlayers[_clientId] = Instantiate(otherPlayerPrefab, pos, Quaternion.identity);
                             }
 

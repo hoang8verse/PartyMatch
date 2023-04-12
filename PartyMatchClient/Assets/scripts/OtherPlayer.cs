@@ -13,6 +13,7 @@ public class OtherPlayer : MonoBehaviour
 
     public Transform spawnhiteffectposition;
 
+    public GameObject[] characters;
     // Start is called before the first frame update
 
     void Start()
@@ -105,6 +106,23 @@ public class OtherPlayer : MonoBehaviour
 
     }
 
+    public void SetActiveCharacter(int index)
+    {
+        for (int i = 0; i < characters.Length; i++)
+        {
+            if (i == index)
+            {
+                characters[index].SetActive(true);
+            }
+            else
+            {
+                characters[i].SetActive(false);
+            }
+
+        }
+
+    }
+
     //void FixedUpdate()
     //{
     //    if (Vector3.Distance(transform.position, pos) > 1f)
@@ -123,7 +141,7 @@ public class OtherPlayer : MonoBehaviour
     //    }
 
     //}
-     
+
     //void OnCollisionEnter(Collision other)
     //{
     //    if (other.gameObject.name.Contains("1") || other.gameObject.name.Contains("2") || other.gameObject.name.Contains("3") || other.gameObject.name.Contains("4") || other.gameObject.name.Contains("5") || other.gameObject.name.Contains("6") || other.gameObject.name.Contains("7") || other.gameObject.name.Contains("8") || other.gameObject.name.Contains("9") || other.gameObject.name.Contains("10") || other.gameObject.name.Contains("11") || other.gameObject.name.Contains("12") || other.gameObject.name.Contains("13") || other.gameObject.name.Contains("14") || other.gameObject.name.Contains("15") || other.gameObject.name.Contains("16"))
@@ -174,12 +192,12 @@ public class OtherPlayer : MonoBehaviour
     //        rigidbody.AddForce(moveDirectionPush.normalized * 100);
     //        playerAnim.Play("hit");
     //    }
-      
+
 
 
     //}
 
-   
+
 
     //void OnCollisionExit(Collision other)
     //{
@@ -190,7 +208,7 @@ public class OtherPlayer : MonoBehaviour
 
     //    }
     //}
-  
+
 
 
 
