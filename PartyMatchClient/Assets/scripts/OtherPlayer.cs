@@ -19,7 +19,7 @@ public class OtherPlayer : MonoBehaviour
     {
         audioSource = gameObject.GetComponent<AudioSource>();
 
-        //playerAnim = GetComponent<Animator>();
+        playerAnim = GetComponentInChildren<Animator>();
         rigidbody = GetComponent<Rigidbody>();
     }
     public Vector3 velocity = Vector3.zero;

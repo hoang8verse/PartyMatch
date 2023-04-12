@@ -9,7 +9,7 @@ namespace CMF
 		//public LevelManager levelmanager;
 		public AudioClip[] audioHitList;
 		Controller controller;
-		Animator animator;
+		public Animator animator;
 		Transform animatorTransform;
 		Transform tr;
 		public AudioSource audioSource;

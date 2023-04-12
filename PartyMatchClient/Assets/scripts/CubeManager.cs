@@ -75,6 +75,17 @@ public class CubeManager : MonoBehaviour
         selectCube();
     }
 
+    int GetRandomMaterialCube()
+    {
+        int rand = 0;
+        do
+        {
+            rand = Random.Range(0, nogomateriel.Length);
+        } while (rand == target);
+ 
+
+        return rand;
+    }
     void selectCube()
     {
         if (!levelmanager.winbool)
@@ -93,9 +104,13 @@ public class CubeManager : MonoBehaviour
                 cubemesh2.Add(CubeMeshs[i]);
             }
 
-            CubeMeshs[ran1].GetComponent<MeshRenderer>().material = targetmateriel;
-            CubeMeshs[ran2].GetComponent<MeshRenderer>().material = targetmateriel;
-            CubeMeshs[ran3].GetComponent<MeshRenderer>().material = targetmateriel;
+            //CubeMeshs[ran1].GetComponent<MeshRenderer>().material = targetmateriel;
+            //CubeMeshs[ran2].GetComponent<MeshRenderer>().material = targetmateriel;
+            //CubeMeshs[ran3].GetComponent<MeshRenderer>().material = targetmateriel;
+
+            CubeMeshs[ran1].GetComponent<Cube>().SetMaterial(targetmateriel);
+            CubeMeshs[ran2].GetComponent<Cube>().SetMaterial(targetmateriel);
+            CubeMeshs[ran3].GetComponent<Cube>().SetMaterial(targetmateriel);
 
             cubemesh2.Remove(CubeMeshs[ran1]);
             cubemesh2.Remove(CubeMeshs[ran2]);
@@ -103,7 +118,8 @@ public class CubeManager : MonoBehaviour
 
             for (int i = 0; i < cubemesh2.Count; i++)
             {
-                cubemesh2[i].GetComponent<MeshRenderer>().material = nogomateriel[Random.Range(0, nogomateriel.Length)];
+                //cubemesh2[i].GetComponent<MeshRenderer>().material = nogomateriel[Random.Range(0, nogomateriel.Length)];
+                cubemesh2[i].GetComponent<Cube>().SetMaterial(nogomateriel[GetRandomMaterialCube()]);
             }
 
             CubeMeshs[ran1].transform.tag = "go";
@@ -217,7 +233,8 @@ public class CubeManager : MonoBehaviour
     {
         foreach (GameObject item in CubeMeshs)
         {
-            item.GetComponent<MeshRenderer>().material = blue;
+            //item.GetComponent<MeshRenderer>().material = blue;
+            item.GetComponent<Cube>().SetMaterial(blue);
 
             print("materiel is " + blue);
             item.GetComponent<Rigidbody>().isKinematic = true;
