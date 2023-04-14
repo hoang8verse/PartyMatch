@@ -59,7 +59,11 @@ namespace CMF
 				}
 				else
                 {
-					SocketClient.instance.OnStunnedByEnemy(other.transform.position, other.gameObject.name);
+                    if (other.gameObject.GetComponent<OtherPlayer>().isMoving)
+                    {
+						SocketClient.instance.OnStunnedByEnemy(other.transform.position, other.gameObject.name);
+					}
+					
 				}
 				
 			}
@@ -81,6 +85,7 @@ namespace CMF
         {
 			yield return new WaitForSeconds(0.1f);
 			rb.AddForce(moveDirectionPush.normalized * 1000);
+			StartCoroutine(waitbeforstun());
 		}
 		public void PlayerHitEnemy(Vector3 hitPos)
         {
@@ -88,7 +93,7 @@ namespace CMF
 			audioSource.Play();
 			moveDirectionPush = transform.position - hitPos;
 			transform.GetComponent<Rigidbody>().AddForce(moveDirectionPush.normalized * 1000);
-			animator.Play("hit");
+			animator.SetTrigger("hit");
 		}
 		public void PlayerStunned(Vector3 hitPos)
 		{
@@ -133,19 +138,19 @@ namespace CMF
         {
 			yield return new WaitForSeconds(0.5f);
 			stun = false;
+			SocketClient.instance.OnUpdatePosPlayer();
 			print(stun);
 		}
 		//Update;
 		void Update () {
 
 			
-				if (stun)
+			if (stun)
             {
-
-				if (animator.GetCurrentAnimatorStateInfo(0).IsTag("getup"))
-				{
-					StartCoroutine(waitbeforstun());
-				}
+				//if (animator.GetCurrentAnimatorStateInfo(0).IsTag("getup"))
+				//{
+				//	StartCoroutine(waitbeforstun());
+				//}
 			}
 			else
             {

@@ -14,7 +14,7 @@ public class OtherPlayer : MonoBehaviour
     public Transform spawnhiteffectposition;
 
     public GameObject[] characters;
-    // Start is called before the first frame update
+    public bool isMoving = false;
 
     void Start()
     {
@@ -53,6 +53,7 @@ public class OtherPlayer : MonoBehaviour
 
         if (velocity.magnitude > 0)
         {
+            isMoving = true;
             playerAnim.SetBool("walk", true);
             
             rigidbody.velocity = velocity;
@@ -92,6 +93,7 @@ public class OtherPlayer : MonoBehaviour
         }
         else
         {
+            isMoving = false;
             rigidbody.velocity = Vector3.zero;
             rigidbody.angularVelocity = Vector3.zero;
             playerAnim.SetBool("walk", false);
@@ -104,6 +106,14 @@ public class OtherPlayer : MonoBehaviour
     {
         velocity = _velocity;
 
+    }
+    public void SetAnimHit()
+    {
+        playerAnim.SetTrigger("hit");
+    }
+    public void SetAnimStunned()
+    {
+        playerAnim.SetTrigger("stunned");
     }
 
     public void SetActiveCharacter(int index)

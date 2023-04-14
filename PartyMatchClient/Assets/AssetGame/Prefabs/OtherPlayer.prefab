@@ -331,6 +331,7 @@ MonoBehaviour:
   characters:
   - {fileID: 2438402333092697608}
   - {fileID: 3099468167942726342}
+  isMoving: 0
   velocity: {x: 0, y: 0, z: 0}
   pos: {x: 0, y: 0, z: 0}
   rot: {x: 0, y: 0, z: 0, w: 1}
@@ -395,7 +396,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3010167759499825282, guid: 914ed1c19fba5bb4d990fd4985c5220f, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_AddedGameObjects: []

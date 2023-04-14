@@ -462,7 +462,7 @@ public class SocketClient : MonoBehaviour
 
             case "gotoGame":
                 MainMenu.instance.GotoGame();
-                OnCheckPosition();
+                //OnCheckPosition();
                 break;
             case "positionPlayer":
                 if (data["clientId"].ToString() == clientId)
@@ -676,22 +676,27 @@ public class SocketClient : MonoBehaviour
                                 arrPos[2].Value<float>());
                     }
 
-                    //player.GetComponent<AnimationControl>().PlayerHitEnemy(pos);
+                    player.GetComponent<AnimationControl>().PlayerHitEnemy(pos);
                 }
-                if (clientId == data["hitEnemyId"].ToString())
+                if (otherPlayers.ContainsKey(data["clientId"].ToString()))
                 {
-                    Vector3 pos = Vector3.zero;
-                    arrPos = JArray.Parse(data["hitPos"].ToString());
-                    if (arrPos.Count > 0)
-                    {
-                        pos = new Vector3(arrPos[0].Value<float>(),
-                                arrPos[1].Value<float>(),
-                                arrPos[2].Value<float>());
-                    }
-                    StartCoroutine(CheckPlayerStunned(pos, data["clientId"].ToString()));
-
-                    //player.GetComponent<AnimationControl>().PlayerHitEnemy(pos);
+                    otherPlayers[data["clientId"].ToString()].GetComponent<OtherPlayer>().SetAnimHit();
                 }
+
+                //if (clientId == data["hitEnemyId"].ToString())
+                //{
+                //    Vector3 pos = Vector3.zero;
+                //    arrPos = JArray.Parse(data["hitPos"].ToString());
+                //    if (arrPos.Count > 0)
+                //    {
+                //        pos = new Vector3(arrPos[0].Value<float>(),
+                //                arrPos[1].Value<float>(),
+                //                arrPos[2].Value<float>());
+                //    }
+                //    //StartCoroutine(CheckPlayerStunned(pos, data["clientId"].ToString()));
+
+                //    //player.GetComponent<AnimationControl>().PlayerHitEnemy(pos);
+                //}
 
                 break;
             case "stunned":
@@ -709,9 +714,30 @@ public class SocketClient : MonoBehaviour
                                 arrPos[2].Value<float>());
                     }
 
-                    //player.GetComponent<AnimationControl>().PlayerStunned(pos);
+                    player.GetComponent<AnimationControl>().PlayerStunned(pos);
+                }
+                if (otherPlayers.ContainsKey(data["clientId"].ToString()))
+                {
+                    otherPlayers[data["clientId"].ToString()].GetComponent<OtherPlayer>().SetAnimStunned();
                 }
 
+
+                break;
+            case "updatePos":
+                Debug.Log("  updatePos =================  " + data);
+                if (otherPlayers.ContainsKey(data["clientId"].ToString()))
+                {
+                    Vector3 pos = Vector3.zero;
+                    arrPos = JArray.Parse(data["pos"].ToString());
+                    if (arrPos.Count > 0)
+                    {
+                        pos = new Vector3(arrPos[0].Value<float>(),
+                                arrPos[1].Value<float>(),
+                                arrPos[2].Value<float>());
+                    }
+                    otherPlayers[data["clientId"].ToString()].GetComponent<OtherPlayer>().transform.position = pos;
+                }
+                    
 
                 break;
             case "countDown":
@@ -1041,6 +1067,19 @@ public class SocketClient : MonoBehaviour
         jsData.Add("hitPos", hitPos.ToString());
         jsData.Add("enemyId", enemyName);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData).ToString());
+    }
+    public void OnUpdatePosPlayer()
+    {
+        if (isEndGame || !player) return;
+        Vector3 pos = player.transform.position;
+        //Quaternion rot = player.transform.rotation;
+        JObject jsData = new JObject();
+        jsData.Add("meta", "updatePos");
+        jsData.Add("clientId", clientId);
+        jsData.Add("room", ROOM);
+        jsData.Add("pos", pos.ToString());
+        //jsData.Add("rot", rot.ToString());
+        Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
     }
     public void OnCheckPosition()
     {
