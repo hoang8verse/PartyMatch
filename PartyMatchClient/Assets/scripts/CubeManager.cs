@@ -148,7 +148,7 @@ public class CubeManager : MonoBehaviour
 
     IEnumerator cubefall()
     {
-        yield return new WaitForSeconds(1);
+        //yield return new WaitForSeconds(1);
 
         counter.SetActive(false);
 

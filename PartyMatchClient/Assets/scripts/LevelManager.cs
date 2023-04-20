@@ -65,7 +65,7 @@ public class LevelManager : MonoBehaviour
         else
         {
             buttonReadyPlay.SetActive(false);
-            textStartGame.text = "Chờ chủ phòng bắt đầu";
+            textStartGame.text = "Chờ chủ phòng bắt đầu !!!";
         }
         Debug.Log(" SocketClient.instance.isHost------------------------ " + SocketClient.instance.isHost);
     }
