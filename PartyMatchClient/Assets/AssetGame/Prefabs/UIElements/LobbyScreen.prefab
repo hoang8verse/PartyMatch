@@ -512,13 +512,13 @@ RectTransform:
   m_Children:
   - {fileID: 1193695485556055746}
   - {fileID: 1193695486408015150}
-  m_Father: {fileID: 4089863373236454108}
+  m_Father: {fileID: 4134265618798684352}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 200}
-  m_SizeDelta: {x: 500, y: 100}
+  m_SizeDelta: {x: -300, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1193695485395542090
 CanvasRenderer:
@@ -1110,7 +1110,7 @@ GameObject:
   - component: {fileID: 1193695486457796525}
   - component: {fileID: 1193695486457796524}
   m_Layer: 5
-  m_Name: GuidingText (2)
+  m_Name: QRCode
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1125,16 +1125,17 @@ RectTransform:
   m_GameObject: {fileID: 1193695486457796526}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.3333334, y: 1.3333334, z: 1.3333334}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1193695486501135349}
+  m_Children:
+  - {fileID: 1193695486501135349}
+  m_Father: {fileID: 4134265618798684352}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 360}
-  m_SizeDelta: {x: 700, y: 50}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1193695486457796525
 CanvasRenderer:
@@ -1263,14 +1264,13 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.75, y: 0.75, z: 0.75}
   m_ConstrainProportionsScale: 1
-  m_Children:
-  - {fileID: 1193695486457796527}
-  m_Father: {fileID: 4089863373236454108}
+  m_Children: []
+  m_Father: {fileID: 1193695486457796527}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -256}
+  m_AnchoredPosition: {x: 0, y: -300}
   m_SizeDelta: {x: 512, y: 512}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1193695486501135336
@@ -1523,13 +1523,13 @@ RectTransform:
   - {fileID: 656764763925073443}
   - {fileID: 7584783641663606941}
   - {fileID: 1193695484729205237}
-  m_Father: {fileID: 4089863373236454108}
+  m_Father: {fileID: 4134265618798684352}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 200}
-  m_SizeDelta: {x: -200, y: 155}
+  m_AnchoredPosition: {x: 0, y: 124.99996}
+  m_SizeDelta: {x: -50, y: 155}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &7390724741433901557
 MonoBehaviour:
@@ -1834,7 +1834,11 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 6586057296896474144}
+  - {fileID: 1193695485395542100}
+  - {fileID: 1193695486457796527}
+  - {fileID: 5346088388345067740}
   m_Father: {fileID: 4089863373236454108}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1912,13 +1916,13 @@ RectTransform:
   - {fileID: 7880169244136251545}
   - {fileID: 761690429269580139}
   - {fileID: 7947161747344953756}
-  m_Father: {fileID: 4089863373236454108}
+  m_Father: {fileID: 4134265618798684352}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 500}
-  m_SizeDelta: {x: 800, y: 250}
+  m_SizeDelta: {x: 0, y: 250}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &7074572708285888390
 GameObject:
@@ -2072,10 +2076,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4134265618798684352}
-  - {fileID: 6586057296896474144}
-  - {fileID: 1193695485395542100}
-  - {fileID: 1193695486501135349}
-  - {fileID: 5346088388345067740}
   m_Father: {fileID: 1193695485118913397}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
