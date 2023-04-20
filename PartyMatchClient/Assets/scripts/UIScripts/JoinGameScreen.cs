@@ -7,11 +7,11 @@ namespace UIElements
     public class JoinGameScreen : Screen
     {
         [Header("ChoosePlayMode")]
-        [SerializeField] Button m_menPlayerButton;
-        [SerializeField] Button m_womenPlayerButton;
-        [SerializeField] Button m_spectatorButton;
-        [SerializeField] Image m_chooseRingButton;
+        [SerializeField] Sprite[] m_playeModeSprites;
+        [SerializeField] Image m_playerModeSelection;
+        [SerializeField] Toggle m_toggleForSpectator;
 
+        [Header("EnterRoomID")]
         [SerializeField] TMP_InputField m_inputField;
         [SerializeField] TextMeshProUGUI m_notificationText;        
 
@@ -79,38 +79,41 @@ namespace UIElements
         }
         public void OnJoinRoom()
         {
+            if (m_toggleForSpectator.isOn)
+            {
+                MainMenu.instance.isSpectator = "1";
+            }
+            else
+            {
+                MainMenu.instance.isSpectator = "0";
+                if (m_playerModeSelection.sprite == m_playeModeSprites[0])
+                {
+                    MainMenu.instance.gender = "0";
+                }
+                else if (m_playerModeSelection.sprite == m_playeModeSprites[1])
+                {
+                    MainMenu.instance.gender = "1";
+                }
+            }
             MainMenu.instance.JoinRoom();
         }
         public void OnUseQRScan()
         {
             
         }
-
-        public void OnChoosePlayerMode(string mode)
+        public void OnSelectModeButtonPressed()
         {
-            switch (mode)
+            if (m_playerModeSelection.sprite == m_playeModeSprites[0])
             {
-                case "0":
-                    MainMenu.instance.isSpectator = "0";
-                    MainMenu.instance.gender = "0";
-                    m_chooseRingButton.gameObject.SetActive(true);
-                    m_chooseRingButton.transform.position = m_menPlayerButton.transform.position;
-                    break;
-
-                case "1":
-                    MainMenu.instance.isSpectator = "0";
-                    MainMenu.instance.gender = "1";
-                    m_chooseRingButton.gameObject.SetActive(true);
-                    m_chooseRingButton.transform.position = m_womenPlayerButton.transform.position;
-                    break;
-
-                case "2":
-                    MainMenu.instance.isSpectator = "1";
-                    m_chooseRingButton.gameObject.SetActive(true);
-                    m_chooseRingButton.transform.position = m_spectatorButton.transform.position;
-                    break;
+                m_playerModeSelection.sprite = m_playeModeSprites[1];
             }
+            else
+            {
+                m_playerModeSelection.sprite = m_playeModeSprites[0];
+            }
+            MainMenu.instance.OnClickVfx();
         }
+
         public void OnExitScreen()
         {
             MainMenu.instance.FailToJoinRoom();

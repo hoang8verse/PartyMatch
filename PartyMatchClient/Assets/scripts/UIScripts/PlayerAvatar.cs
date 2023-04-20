@@ -5,8 +5,7 @@ using UnityEngine.UI;
 
 public class PlayerAvatar : MonoBehaviour
 {
-    [SerializeField] RawImage m_avatarImage;
-    [SerializeField] string m_playerID;
+    [SerializeField] RawImage m_avatarImage;    
 
     public void SetAvatarImage(Texture2D avatar)
     {

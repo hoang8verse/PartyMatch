@@ -8,9 +8,9 @@ namespace UIElements
     public class CreateGameScreen : Screen
     {
         [Header("ChoosePlayMode")]
-        [SerializeField] Button m_menPlayerButton;
-        [SerializeField] Button m_womenPlayerButton;
-        [SerializeField] Image m_chooseRingButton;
+        [SerializeField] Sprite[] m_playeModeSprites;
+        [SerializeField] Image m_playerModeSelection;
+        [SerializeField] Toggle m_toggleForSpectator;
 
         [Header("AdjustPlayerNumber")]
         [SerializeField] TMP_InputField m_inputField;
@@ -34,6 +34,22 @@ namespace UIElements
         #region MainEventButton
         public void OnCreateRoom()
         {
+            if (m_toggleForSpectator.isOn)
+            {
+                MainMenu.instance.isSpectator = "1";
+            }
+            else
+            {
+                MainMenu.instance.isSpectator = "0";
+                if (m_playerModeSelection.sprite == m_playeModeSprites[0])
+                {
+                    MainMenu.instance.gender = "0";
+                }
+                else if (m_playerModeSelection.sprite == m_playeModeSprites[1])
+                {
+                    MainMenu.instance.gender = "1";
+                }
+            }    
             MainMenu.instance.JoinRoom();
         }
         public void OnExitScreen()
@@ -42,21 +58,18 @@ namespace UIElements
         }
         #endregion
 
-        #region ChoosePlayMode
-        public void OnChoosePlayerMode(bool isMen)
+        #region SelectPlayMode
+        public void OnSelectModeButtonPressed()
         {
-            if (isMen)
+            if (m_playerModeSelection.sprite == m_playeModeSprites[0])
             {
-                MainMenu.instance.gender = "0";
-                m_chooseRingButton.gameObject.SetActive(true);
-                m_chooseRingButton.transform.position = m_menPlayerButton.transform.position;
+                m_playerModeSelection.sprite = m_playeModeSprites[1];
             }
             else
             {
-                MainMenu.instance.gender = "1";
-                m_chooseRingButton.gameObject.SetActive(true);
-                m_chooseRingButton.transform.position = m_womenPlayerButton.transform.position;
+                m_playerModeSelection.sprite = m_playeModeSprites[0];
             }
+            MainMenu.instance.OnClickVfx();
         }
         #endregion
 

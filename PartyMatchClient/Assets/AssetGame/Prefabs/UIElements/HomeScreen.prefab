@@ -37,8 +37,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -446}
-  m_SizeDelta: {x: 450, y: 150}
+  m_AnchoredPosition: {x: 0, y: -550}
+  m_SizeDelta: {x: 418, y: 155}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3247073562383542817
 CanvasRenderer:
@@ -68,7 +68,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 54b1ff2d33891944891e5882fd4ead23, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c25c5afef178e6741acfa144acd5954f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -118,7 +118,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
+  m_TargetGraphic: {fileID: 819461904088114640}
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
@@ -171,8 +171,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -691}
-  m_SizeDelta: {x: 450, y: 150}
+  m_AnchoredPosition: {x: 0, y: -750}
+  m_SizeDelta: {x: 418, y: 155}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3247073562468762120
 CanvasRenderer:
@@ -202,7 +202,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 8003bce7254f1824d970699eef546b32, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f58ab3af043a43e4f9129934a045d28b, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -320,7 +320,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 638a958ff1900b34c913e4d94b396f7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ruleContent: {fileID: 0}
 --- !u!1 &3247073563491427973
 GameObject:
   m_ObjectHideFlags: 0
@@ -388,7 +387,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: b30b146ad4e5fd84e83cc7466a41cb97, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d18ab6ad6844268419355263f30181c3, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -434,7 +433,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: -526}
-  m_SizeDelta: {x: 900, y: 300}
+  m_SizeDelta: {x: 905, y: 555}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3247073563775915868
 CanvasRenderer:
@@ -464,7 +463,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 1a699d89d545bdc4ca1b9577908e7655, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c52bf9d3883ca7f459278a77f94f6e1d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -542,9 +541,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "T\u1EA0O PH\xD2NG"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 04ab10188d69c21479f252f4b34924c3, type: 2}
-  m_sharedMaterial: {fileID: -8789072116830482339, guid: 04ab10188d69c21479f252f4b34924c3,
-    type: 2}
+  m_fontAsset: {fileID: 11400000, guid: b56419202b17a884e99b2295c1298560, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: bba1e5bf769c0394fba63a4c1f46a029, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -568,8 +566,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 50
-  m_fontSizeBase: 50
+  m_fontSize: 45
+  m_fontSizeBase: 45
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -678,9 +676,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "V\xC0O PH\xD2NG"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 04ab10188d69c21479f252f4b34924c3, type: 2}
-  m_sharedMaterial: {fileID: -8789072116830482339, guid: 04ab10188d69c21479f252f4b34924c3,
-    type: 2}
+  m_fontAsset: {fileID: 11400000, guid: b56419202b17a884e99b2295c1298560, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 4f0fd312ee9a0614da3995535f260976, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -704,8 +701,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 50
-  m_fontSizeBase: 50
+  m_fontSize: 45
+  m_fontSizeBase: 45
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
