@@ -14,7 +14,7 @@ public class LevelManager : MonoBehaviour
             Destroy(gameObject);
     }
 
-    public List<GameObject>  AI;
+    //public List<GameObject>  AI;
     public bool winbool;
     public TMPro.TextMeshProUGUI textRound;
     public TMPro.TextMeshProUGUI textStartGame;
