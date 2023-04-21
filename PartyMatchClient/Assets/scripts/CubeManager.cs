@@ -17,7 +17,6 @@ public class CubeManager : MonoBehaviour
     public Material blue;
     public Vector3[] spawnpoints;
     public Quaternion[] spawnpointsR;
-    public GameObject cam1;
     public GameObject cam2;
 
 
@@ -284,7 +283,6 @@ public class CubeManager : MonoBehaviour
         }
         if(LevelManager.instance.winbool)
         {
-            cam1.SetActive(false);
             cam2.SetActive(true);
             return;
         }
