@@ -346,8 +346,8 @@ MonoBehaviour:
   audioClipVolume: 0.2
   relativeRandomizedVolumeRange: 0.2
   footStepClips:
-  - {fileID: 8300000, guid: 7341ba07f02fa6941b16a463ddd73f99, type: 3}
-  - {fileID: 8300000, guid: 3efdd4c11a4bdc54a9087ab115c1de9e, type: 3}
+  - {fileID: 8300000, guid: 29dc8ff6eeec6694990537609c444977, type: 3}
+  - {fileID: 8300000, guid: d8eae3be06b27a34398f8f2f476a5d0a, type: 3}
   jumpClip: {fileID: 8300000, guid: 99ab8a4503de1f448ad764a5c4cdf9cc, type: 3}
   landClip: {fileID: 8300000, guid: c212aa2d646dfe248b7c96b4f0e4cb27, type: 3}
 --- !u!136 &845612416794070629
