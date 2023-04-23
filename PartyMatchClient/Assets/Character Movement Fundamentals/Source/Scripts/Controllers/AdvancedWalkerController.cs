@@ -9,8 +9,8 @@ namespace CMF
 	//Custom movement input can be implemented by creating a new script that inherits 'AdvancedWalkerController' and overriding the 'CalculateMovementDirection' function;
 	public class AdvancedWalkerController : Controller {
 		[SerializeField]
-		 Animator animator;
-		Transform animatorTransform;
+		Animator animator;
+		public Transform modelTransform;
 		//public LevelManager levelmanager;
 		
 		//References to attached components;

@@ -273,6 +273,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 0}
+  modelTransform: {fileID: 842916270662103746}
   movementSpeed: 7
   airControlRate: 2
   jumpSpeed: 10
