@@ -991,7 +991,7 @@ MonoBehaviour:
   sourceControl: {fileID: 303894601}
   spriteNeutral:
     enabled: 1
-    sprite: {fileID: 21300000, guid: fcdcf0258794fb44298ee36183440e49, type: 3}
+    sprite: {fileID: 21300000, guid: ad241ca577d77cb41bb158c503cde405, type: 3}
     color: {r: 1, g: 1, b: 1, a: 0.33}
     scale: 1
     rotation: 0
@@ -1176,7 +1176,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: fcdcf0258794fb44298ee36183440e49, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ad241ca577d77cb41bb158c503cde405, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -2306,7 +2306,7 @@ MonoBehaviour:
   sourceControl: {fileID: 303894601}
   spriteNeutral:
     enabled: 1
-    sprite: {fileID: 21300000, guid: 51ce1a70ac4238c48aaddd05f6604e75, type: 3}
+    sprite: {fileID: 21300000, guid: 00084a3907e4c684f9b3750951d1f7a9, type: 3}
     color: {r: 1, g: 1, b: 1, a: 0.33}
     scale: 1
     rotation: 0
@@ -2491,7 +2491,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 51ce1a70ac4238c48aaddd05f6604e75, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 00084a3907e4c684f9b3750951d1f7a9, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -5326,7 +5326,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.9622642, g: 0.84949905, b: 0.32226774, a: 0}
+  m_BackGroundColor: {r: 0.24705882, g: 0.79607844, b: 0.9254902, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
