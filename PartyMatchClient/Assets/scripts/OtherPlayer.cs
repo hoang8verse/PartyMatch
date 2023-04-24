@@ -39,6 +39,7 @@ public class OtherPlayer : MonoBehaviour
     float fallOffAngle = 90f;
     void Update()
     {
+        if (!LevelManager.instance.isStartGame) return;
         //if (Vector3.Distance(transform.position, pos) > 1f)
         //{
         //    float step = speed * Time.deltaTime;

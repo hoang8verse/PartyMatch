@@ -33,6 +33,7 @@ public class LevelManager : MonoBehaviour
         RigObject.SetActive(false);
         JoystickControl.transform.position = new Vector3(-5000, -5000, 0);
 
+        SocketClient.instance.OnJoinRoom();
         //SocketClient.instance.OnJoinLobbyRoom();
         StartCoroutine(CheckAlreadyPlay());
     }
@@ -52,7 +53,7 @@ public class LevelManager : MonoBehaviour
     }
     public IEnumerator CheckAlreadyPlay()
     {
-        SocketClient.instance.OnJoinRoom();
+        //SocketClient.instance.OnJoinRoom();
         yield return new WaitForSeconds(0.1f);
 
         if (SocketClient.instance.isHost)

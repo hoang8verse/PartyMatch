@@ -77,6 +77,7 @@ namespace CMF
 
 		void SmoothUpdate()
 		{
+			if (!LevelManager.instance.isStartGame) return;
 			//Smooth current position;
 			currentPosition = Smooth (currentPosition, target.position, lerpSpeed);
 

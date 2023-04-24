@@ -482,9 +482,9 @@ public class SocketClient : MonoBehaviour
                 Debug.Log(" arrRanPos ------------------------ " + arrRanPos[0]);
 
                 JArray arrPos;
-                JObject playerObj = players.FirstOrDefault(o => (string)o["id"] == clientId) as JObject;
+                //JObject playerObj = players.FirstOrDefault(o => (string)o["id"] == clientId) as JObject;
 
-                // created player 
+                //// created player 
 
                 //arrPos = JArray.Parse(playerObj["position"].ToString());
                 //Vector3 playerPos = Vector3.zero;
@@ -494,52 +494,54 @@ public class SocketClient : MonoBehaviour
                 //            arrPos[1].Value<float>(),
                 //            arrPos[2].Value<float>());
                 //}
-                //if (playerObj["id"].ToString() == clientId && player == null)
-                //{
-                //    if (player == null)
-                //    {
-                //        Debug.Log("  ===========  player =================  ");
-                //        //  player
-                //        //isSpectator = _player["isSpectator"].ToString() == "1" ? true : false;
-                //        //isHost = _player["isHost"].ToString() == "1" ? true : false;
+                if (data["clientId"].ToString() == clientId )
+                {
+                    if (player == null)
+                    {
+                        int rand = data["indexPlayer"].Value<int>();
+                        clientPosStart = PositionByIndex(rand);
+                        Debug.Log("  ===========  player =================  ");
+                        //  player
+                        //isSpectator = _player["isSpectator"].ToString() == "1" ? true : false;
+                        //isHost = _player["isHost"].ToString() == "1" ? true : false;
 
-                //        //if (_player["isSpectator"].ToString() == "1")
-                //        //{
-                //        //    player = Instantiate(spectatorPrefab);
-                //        //}
-                //        //else
-                //        {
-                //            isHost = playerObj["isHost"].ToString() == "1";
-                //            //int characterIndex = int.Parse(_player["characterIndex"].ToString());
-                //            //playerPrefab.GetComponent<characterSpawn>().SetActiveCharacter(characterIndex);
-                //            //Debug.Log("  characterIndex =================  " + characterIndex);
-                //            if (playerObj["gender"].ToString() == "0")
-                //            {
-                //                playerPrefab.GetComponent<characterSpawn>().SetActiveCharacter(0);
-                //                player = Instantiate(playerPrefab, clientPosStart, Quaternion.identity);
+                        //if (_player["isSpectator"].ToString() == "1")
+                        //{
+                        //    player = Instantiate(spectatorPrefab);
+                        //}
+                        //else
+                        {
+                            isHost = data["isHost"].ToString() == "1";
+                            //int characterIndex = int.Parse(_player["characterIndex"].ToString());
+                            //playerPrefab.GetComponent<characterSpawn>().SetActiveCharacter(characterIndex);
+                            //Debug.Log("  characterIndex =================  " + characterIndex);
+                            if (data["gender"].ToString() == "0")
+                            {
+                                playerPrefab.GetComponent<characterSpawn>().SetActiveCharacter(0);
+                                player = Instantiate(playerPrefab, clientPosStart, Quaternion.identity);
 
-                //            }
-                //            else
-                //            {
-                //                playerPrefab.GetComponent<characterSpawn>().SetActiveCharacter(1);
-                //                player = Instantiate(playerPrefab, clientPosStart, Quaternion.identity);
-                //            }
-                            
-
-                //            player.name = "Player-" + playerObj["playerName"];
-                //            player.transform.tag = "Player";
-                //            player.SetActive(true);
-                //            Debug.Log(" Instantiate  player =================  " + player);
-                //        }
-                //    }
-                //    else
-                //    {
-                //        Debug.Log("  =========== player is same client =================  " + playerPos);
-                //        //player.transform.position = playerPos;
-                //    }
+                            }
+                            else
+                            {
+                                playerPrefab.GetComponent<characterSpawn>().SetActiveCharacter(1);
+                                player = Instantiate(playerPrefab, clientPosStart, Quaternion.identity);
+                            }
 
 
-                //}
+                            player.name = "Player-" + data["playerName"].ToString();
+                            player.transform.tag = "Player";
+                            player.SetActive(true);
+                            Debug.Log(" Instantiate  player =================  " + player);
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log("  =========== player is same client =================  " + clientPosStart);
+                        //player.transform.position = playerPos;
+                    }
+
+
+                }
 
                 currentPlayerJoined = players.Count;
                 Debug.Log(" joinRoom players  " + players);
@@ -559,52 +561,55 @@ public class SocketClient : MonoBehaviour
                     //            arrPos[1].Value<float>(),
                     //            arrPos[2].Value<float>());
                     //}
-                    pos = PositionByIndex(arrRanPos[indexPlayer].Value<int>());
+                    int rand = _player["indexPlayer"].Value<int>();
+                    pos = PositionByIndex(rand);
 
-                    if (_clientId == clientId && player == null)
-                    {
-                        if (player == null)
-                        {
+                    //if (_clientId == clientId)
+                    //{
+                    //    if (player == null)
+                    //    {
                             
-                            Debug.Log("  ===========  player =================  ");
-                            //  player
-                            //isSpectator = _player["isSpectator"].ToString() == "1" ? true : false;
-                            //isHost = _player["isHost"].ToString() == "1" ? true : false;
+                    //        Debug.Log("  ===========  player =================  ");
+                    //        //  player
+                    //        //isSpectator = _player["isSpectator"].ToString() == "1" ? true : false;
+                    //        //isHost = _player["isHost"].ToString() == "1" ? true : false;
 
-                            //if (_player["isSpectator"].ToString() == "1")
-                            //{
-                            //    player = Instantiate(spectatorPrefab);
-                            //}
-                            //else
-                            {
-                                isHost = _player["isHost"].ToString() == "1";
-                                //int characterIndex = int.Parse(_player["characterIndex"].ToString());
-                                //playerPrefab.GetComponent<characterSpawn>().SetActiveCharacter(characterIndex);
-                                //Debug.Log("  characterIndex =================  " + characterIndex);
-                                if (_player["gender"].ToString() == "0")
-                                {
-                                    player = Instantiate(playerPrefab, pos, Quaternion.identity);
-                                }
-                                else
-                                {
-                                    player = Instantiate(playerPrefab, pos, Quaternion.identity);
-                                    //player = Instantiate(playerPrefab);
-                                }
-                                player.name = "Player-" + playerJoinName;
-                                player.transform.tag = "Player";
-                                player.SetActive(true);
-                                Debug.Log(" Instantiate  player =================  " + player);
-                            }
-                        }
-                        else
-                        {
-                            Debug.Log("  =========== player is same client =================  " + pos);
-                            player.transform.position = pos;
-                        }
+                    //        //if (_player["isSpectator"].ToString() == "1")
+                    //        //{
+                    //        //    player = Instantiate(spectatorPrefab);
+                    //        //}
+                    //        //else
+                    //        {
+                    //            isHost = _player["isHost"].ToString() == "1";
+                    //            //int characterIndex = int.Parse(_player["characterIndex"].ToString());
+                    //            //playerPrefab.GetComponent<characterSpawn>().SetActiveCharacter(characterIndex);
+                    //            //Debug.Log("  characterIndex =================  " + characterIndex);
+                    //            if (_player["gender"].ToString() == "0")
+                    //            {
+                    //                playerPrefab.GetComponent<characterSpawn>().SetActiveCharacter(0);
+                    //                player = Instantiate(playerPrefab, pos, Quaternion.identity);
+                    //            }
+                    //            else
+                    //            {
+                    //                playerPrefab.GetComponent<characterSpawn>().SetActiveCharacter(1);
+                    //                player = Instantiate(playerPrefab, pos, Quaternion.identity);
+                    //                //player = Instantiate(playerPrefab);
+                    //            }
+                    //            player.name = "Player-" + playerJoinName;
+                    //            player.transform.tag = "Player";
+                    //            player.SetActive(true);
+                    //            Debug.Log(" Instantiate  player =================  " + player);
+                    //        }
+                    //    }
+                    //    //else
+                    //    //{
+                    //    //    Debug.Log("  =========== player is same client =================  " + pos);
+                    //    //    player.transform.position = pos;
+                    //    //}
 
 
-                    }
-                    else
+                    //}
+                    //else 
                     if (_clientId != clientId && _player["isSpectator"].ToString() == "0")
                     {
                         Debug.Log("  ===========  other player =================  ");
@@ -660,7 +665,7 @@ public class SocketClient : MonoBehaviour
                 }
                 else
                 {
-                    StartCoroutine(UpdatePositionOtherPlayers());
+                    //StartCoroutine(UpdatePositionOtherPlayers());
                     LevelManager.instance.startGame();
                     // start moving
                     //LoopCheckPlayerMoving();
@@ -854,10 +859,11 @@ public class SocketClient : MonoBehaviour
                     //foreach (var item in otherPlayers)
                     //{
                     //    Destroy(otherPlayers[item.Key]);
-                       
-                    //}
 
+                    //}
+                    
                     OnCloseConnectSocket();
+                    Destroy(player);
                 }
                 //if (otherPlayers.ContainsKey(data["clientId"].ToString()))
                 //{
@@ -1227,7 +1233,17 @@ public class SocketClient : MonoBehaviour
         clientId = "";
         ROOM = "";
         isEndGame = true;
+        if (player)
+        {
+            Destroy(player);
+            player = null;
+        }
+        players.RemoveAll();
+        foreach (var item in otherPlayers)
+        {
+            Destroy(otherPlayers[item.Key]);
 
+        }
         await webSocket.Close();
     }
     public void OnDisconnect()
@@ -1235,8 +1251,16 @@ public class SocketClient : MonoBehaviour
         clientId = "";
         ROOM = "";
         isEndGame = true;
+        players.RemoveAll();
+        foreach (var item in otherPlayers)
+        {
+            Destroy(otherPlayers[item.Key]);
+
+        }
         if (player)
         {
+            Destroy(player);
+            player = null;
             SceneManager.LoadScene("MainMenu");
         }
     }
