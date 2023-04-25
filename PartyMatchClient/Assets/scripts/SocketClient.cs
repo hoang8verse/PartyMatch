@@ -52,13 +52,13 @@ public class SocketClient : MonoBehaviour
 
     [SerializeField]
     private GameObject playerPrefab;
-    public GameObject player = null;
+    public GameObject m_player = null;
     [SerializeField]
     private GameObject otherPlayerPrefab;
-    public JArray players;
+    public JArray m_players;
     List<string> otherIds = new List<string>();
 
-    private Dictionary<string,GameObject> otherPlayers;
+    private Dictionary<string,GameObject> m_otherPlayers;
 
     [SerializeField]
     private GameObject spectatorPrefab;
@@ -86,9 +86,27 @@ public class SocketClient : MonoBehaviour
     {
         //OnConnectWebsocket();
 
-        otherPlayers = new Dictionary<string, GameObject>();
+        m_otherPlayers = new Dictionary<string, GameObject>();
     }
 
+    int GetPlayerIndex(int createdIndex)
+    {
+        int index = 0;
+        int counter = 0;
+
+        foreach(var player in m_players)
+        {
+            if(player["indexPlayer"].Value<int>() == createdIndex)
+            {
+                index = counter;
+                break;
+            }               
+            counter++;
+        }
+
+        Debug.Log($"[SocketClient] GetPlayerIndex createdIndex = {createdIndex} => index = {index}");
+        return index;
+    }    
     void Update()
     {
         if (!isEndGame)
@@ -103,7 +121,7 @@ public class SocketClient : MonoBehaviour
                     {
 
                         
-                        if (player != null)
+                        if (m_player != null)
                         {
                             isMoving = true;
                             StartCoroutine(StartPlayerMoving());
@@ -129,7 +147,7 @@ public class SocketClient : MonoBehaviour
                 {
 
                     
-                    if (player != null)
+                    if (m_player != null)
                     {
                         isMoving = true;
                         StartCoroutine(StartPlayerMoving());
@@ -214,15 +232,15 @@ public class SocketClient : MonoBehaviour
 
     IEnumerator StartPlayerMoving()
     {
-        if (!isMoving || !player) yield return null;
+        if (!isMoving || !m_player) yield return null;
         float _h = 0;
         float _v = 0;
         Vector3 _velocity = Vector3.zero;
-        if (player)
+        if (m_player)
         {
-            _velocity = player.GetComponent<Mover>().GetVelocity();
-            _h = player.GetComponent<CharacterInput>().GetHorizontalMovementInput();
-            _v = player.GetComponent<CharacterInput>().GetVerticalMovementInput();
+            _velocity = m_player.GetComponent<Mover>().GetVelocity();
+            _h = m_player.GetComponent<CharacterInput>().GetHorizontalMovementInput();
+            _v = m_player.GetComponent<CharacterInput>().GetVerticalMovementInput();
 
             OnMoving(_velocity, _h, _v);
         }
@@ -243,15 +261,15 @@ public class SocketClient : MonoBehaviour
     IEnumerator CheckPlayerMoving()
     {
 
-        if (isEndGame || !player) yield return null ;
+        if (isEndGame || !m_player) yield return null ;
         float _h = 0;
         float _v = 0;
         Vector3 _velocity = Vector3.zero;
-        if (player)
+        if (m_player)
         {
-            _velocity = player.GetComponent<Mover>().GetVelocity();
-            _h = player.GetComponent<CharacterInput>().GetHorizontalMovementInput();
-            _v = player.GetComponent<CharacterInput>().GetVerticalMovementInput();
+            _velocity = m_player.GetComponent<Mover>().GetVelocity();
+            _h = m_player.GetComponent<CharacterInput>().GetHorizontalMovementInput();
+            _v = m_player.GetComponent<CharacterInput>().GetVerticalMovementInput();
         }
 
         //if(_h != 0 || _v != 0)
@@ -276,9 +294,9 @@ public class SocketClient : MonoBehaviour
     IEnumerator UpdatePositionOtherPlayers()
     {
         yield return new WaitForSeconds(Time.fixedDeltaTime);
-        foreach (var item in players)
+        foreach (var item in m_players)
         {
-            if (otherPlayers.ContainsKey(item["id"].ToString()))
+            if (m_otherPlayers.ContainsKey(item["id"].ToString()))
             {
                 Vector3 pos = Vector3.zero;
                 JArray arrPos = JArray.Parse(item["position"].ToString());
@@ -288,7 +306,7 @@ public class SocketClient : MonoBehaviour
                             arrPos[1].Value<float>(),
                             arrPos[2].Value<float>());
                 }
-                otherPlayers[item["id"].ToString()].transform.position = pos;
+                m_otherPlayers[item["id"].ToString()].transform.position = pos;
                 Debug.Log(" otherPlayers pos :  " + pos);
             }
         }
@@ -423,25 +441,25 @@ public class SocketClient : MonoBehaviour
 
                 IS_FIRST_JOIN = false;
                 MainMenu.instance.ShowLobby();
-                players = JArray.Parse(data["players"].ToString());
+                m_players = JArray.Parse(data["players"].ToString());
 
-                currentPlayerJoined = players.Count;
+                currentPlayerJoined = m_players.Count;
                 Debug.Log(" playerName  join room  " + data["playerName"].ToString());
 
                 int countUserPlay = 0;
                 int countSpectator = 0;
                 // for new player
-                if (data["clientId"].ToString() == clientId && player == null)
+                if (data["clientId"].ToString() == clientId && m_player == null)
                 {
 
-                    for (int i = 0; i < players.Count; i++)
+                    for (int i = 0; i < m_players.Count; i++)
                     {
                         isHost = data["isHost"].ToString() == "1";
 
-                        if (players[i]["isSpectator"].ToString() == "0")
+                        if (m_players[i]["isSpectator"].ToString() == "0")
                         {
                             countUserPlay++;
-                            StartCoroutine(LoadAvatarImage(players[i]["avatar"].ToString(), players[i]["id"].ToString()));
+                            StartCoroutine(LoadAvatarImage(m_players[i]["avatar"].ToString(), m_players[i]["id"].ToString()));
                         }
                         else
                         {
@@ -458,7 +476,7 @@ public class SocketClient : MonoBehaviour
                 }
 
                 MainMenu.instance.ShowPlayerJoinRoom(data["playerName"].ToString());
-                MainMenu.instance.ShowTotalPlayers(players.Count);
+                MainMenu.instance.ShowTotalPlayers(m_players.Count);
 
                 clientPosStart = RandomPosition();
                 break;
@@ -474,55 +492,7 @@ public class SocketClient : MonoBehaviour
                     clientPosStart = PositionByIndex(_indexRan);
                 }
                 
-                break;
-            case "otherJoinRoom":
-                JArray OtherPlayers = JArray.Parse(data["players"].ToString());
-                Debug.Log("  =========== otherJoinRoom  player =================  " + OtherPlayers);
-
-                foreach (var _player in OtherPlayers)
-                {
-
-                    int rand = _player["indexPlayer"].Value<int>();
-                    Vector3 posOther = PositionByIndex(rand);
- 
-                    Debug.Log("  =========== otherJoinRoom  11111111  =================  ");
-                    string _client = _player["id"].ToString();
-                    
-                    if (_player["id"].ToString() != clientId && _player["isSpectator"].ToString() == "0")
-                    {
-                    
-                        Debug.Log("  =========== otherJoinRoom  other player =================  ");
-                        //if (otherPlayers.ContainsKey(_client))
-                        if(otherIds.IndexOf(_client) == -1)
-                        {
-                            Debug.Log("  =========== otherJoinRoom posOther  player =================  " + posOther);
-
-                            // other player
-                            if (_player["gender"].ToString() == "0")
-                            {
-                                otherPlayerPrefab.GetComponent<OtherPlayer>().SetActiveCharacter(0);
-                                otherPlayers[_player["id"].ToString()] = Instantiate(otherPlayerPrefab, posOther, Quaternion.identity);
-                                
-                            }
-                            else
-                            {
-                                otherPlayerPrefab.GetComponent<OtherPlayer>().SetActiveCharacter(1);
-                                otherPlayers[_player["id"].ToString()] = Instantiate(otherPlayerPrefab, posOther, Quaternion.identity);
-                            }
-
-                            otherPlayers[_player["id"].ToString()].name = _player["id"].ToString();
-                            otherPlayers[_player["id"].ToString()].transform.tag = "enemy";
-
-                            otherPlayers[_player["id"].ToString()].SetActive(true);
-                            Debug.Log(" Instantiate  other player  =================  " + otherPlayers[_player["id"].ToString()]);
-
-                            otherIds.Add(_client);
-                        }
-                        
-
-                    }
-                }
-                break;
+                break;            
             case "joinRoom":
 
                 //players = JArray.Parse(data["players"].ToString());
@@ -534,9 +504,9 @@ public class SocketClient : MonoBehaviour
                 string _clientId = data["clientId"].ToString();
                 if (data["clientId"].ToString() == clientId )
                 {
-                    if (player == null)
+                    if (m_player == null)
                     {
-                        int rand = data["indexPlayer"].Value<int>();
+                        int rand = GetPlayerIndex(data["indexPlayer"].Value<int>());
                         clientPosStart = PositionByIndex(rand);
                         Debug.Log("  ===========  player =================  ");
                         //  player
@@ -556,20 +526,20 @@ public class SocketClient : MonoBehaviour
                             if (data["gender"].ToString() == "0")
                             {
                                 playerPrefab.GetComponent<characterSpawn>().SetActiveCharacter(0);
-                                player = Instantiate(playerPrefab, clientPosStart, Quaternion.identity);
+                                m_player = Instantiate(playerPrefab, clientPosStart, Quaternion.identity);
 
                             }
                             else
                             {
                                 playerPrefab.GetComponent<characterSpawn>().SetActiveCharacter(1);
-                                player = Instantiate(playerPrefab, clientPosStart, Quaternion.identity);
+                                m_player = Instantiate(playerPrefab, clientPosStart, Quaternion.identity);
                             }
 
 
-                            player.name = "Player-" + data["playerName"].ToString();
-                            player.transform.tag = "Player";
-                            player.SetActive(true);
-                            Debug.Log(" Instantiate  player =================  " + player);
+                            m_player.name = "Player-" + data["playerName"].ToString();
+                            m_player.transform.tag = "Player";
+                            m_player.SetActive(true);
+                            Debug.Log(" Instantiate  player =================  " + m_player);
                         }
                     }
                     else
@@ -588,26 +558,26 @@ public class SocketClient : MonoBehaviour
                     if (otherIds.IndexOf(_clientId) == -1)
                     {
    
-                        int rand = data["indexPlayer"].Value<int>();
+                        int rand = GetPlayerIndex(data["indexPlayer"].Value<int>());
                         Vector3 pos   = PositionByIndex(rand);
-                        Debug.Log("  ===========  player =================  " + pos);
+                        Debug.Log("  ===========  other player =================  " + pos);
                         // other player
                         if (data["gender"].ToString() == "0")
                         {
                             otherPlayerPrefab.GetComponent<OtherPlayer>().SetActiveCharacter(0);
-                            otherPlayers[_clientId] = Instantiate(otherPlayerPrefab, pos, Quaternion.identity);
+                            m_otherPlayers[_clientId] = Instantiate(otherPlayerPrefab, pos, Quaternion.identity);
                         }
                         else
                         {
                             otherPlayerPrefab.GetComponent<OtherPlayer>().SetActiveCharacter(1);
-                            otherPlayers[_clientId] = Instantiate(otherPlayerPrefab, pos, Quaternion.identity);
+                            m_otherPlayers[_clientId] = Instantiate(otherPlayerPrefab, pos, Quaternion.identity);
                         }
 
-                        otherPlayers[_clientId].name = _clientId;
-                        otherPlayers[_clientId].transform.tag = "enemy";
+                        m_otherPlayers[_clientId].name = _clientId;
+                        m_otherPlayers[_clientId].transform.tag = "enemy";
 
-                        otherPlayers[_clientId].SetActive(true);
-                        Debug.Log(" Instantiate  other player  =================  " + otherPlayers[_clientId]);
+                        m_otherPlayers[_clientId].SetActive(true);
+                        Debug.Log(" Instantiate  other player  =================  " + m_otherPlayers[_clientId]);
                         otherIds.Add(_clientId);
                     }
                     
@@ -649,11 +619,11 @@ public class SocketClient : MonoBehaviour
                                 arrPos[2].Value<float>());
                     }
 
-                    player.GetComponent<AnimationControl>().PlayerHitEnemy(pos);
+                    m_player.GetComponent<AnimationControl>().PlayerHitEnemy(pos);
                 }
-                if (otherPlayers.ContainsKey(data["clientId"].ToString()))
+                if (m_otherPlayers.ContainsKey(data["clientId"].ToString()))
                 {
-                    otherPlayers[data["clientId"].ToString()].GetComponent<OtherPlayer>().SetAnimHit();
+                    m_otherPlayers[data["clientId"].ToString()].GetComponent<OtherPlayer>().SetAnimHit();
                 }
 
                 //if (clientId == data["hitEnemyId"].ToString())
@@ -687,18 +657,18 @@ public class SocketClient : MonoBehaviour
                                 arrPos[2].Value<float>());
                     }
 
-                    player.GetComponent<AnimationControl>().PlayerStunned(pos);
+                    m_player.GetComponent<AnimationControl>().PlayerStunned(pos);
                 }
-                if (otherPlayers.ContainsKey(data["clientId"].ToString()))
+                if (m_otherPlayers.ContainsKey(data["clientId"].ToString()))
                 {
-                    otherPlayers[data["clientId"].ToString()].GetComponent<OtherPlayer>().SetAnimStunned();
+                    m_otherPlayers[data["clientId"].ToString()].GetComponent<OtherPlayer>().SetAnimStunned();
                 }
 
 
                 break;
             case "updatePos":
                 Debug.Log("  updatePos =================  " + data);
-                if (otherPlayers.ContainsKey(data["clientId"].ToString()))
+                if (m_otherPlayers.ContainsKey(data["clientId"].ToString()))
                 {
                     Vector3 pos = Vector3.zero;
                     arrPos = JArray.Parse(data["pos"].ToString());
@@ -718,8 +688,8 @@ public class SocketClient : MonoBehaviour
                                 arrRot[3].Value<float>());
                     }
 
-                    otherPlayers[data["clientId"].ToString()].GetComponent<OtherPlayer>().transform.position = pos;
-                    otherPlayers[data["clientId"].ToString()].GetComponent<OtherPlayer>().transform.rotation = rot;
+                    m_otherPlayers[data["clientId"].ToString()].GetComponent<OtherPlayer>().transform.position = pos;
+                    m_otherPlayers[data["clientId"].ToString()].GetComponent<OtherPlayer>().transform.rotation = rot;
                 }
                     
 
@@ -752,20 +722,20 @@ public class SocketClient : MonoBehaviour
                 {
                     //Debug.Log("  moving position data   ==========  " + player.transform.position);
                     //player.GetComponent<Mover>().SetVelocityFromServer(posVeclocity);
-                    player.GetComponent<AdvancedWalkerController>().moving_h = h;
-                    player.GetComponent<AdvancedWalkerController>().moving_v = v;
+                    m_player.GetComponent<AdvancedWalkerController>().moving_h = h;
+                    m_player.GetComponent<AdvancedWalkerController>().moving_v = v;
                 }
                 else
                 {
-                    if(otherPlayers.Count > 0)
+                    if(m_otherPlayers.Count > 0)
                     {
-                        if (otherPlayers.ContainsKey(data["clientId"].ToString()))
+                        if (m_otherPlayers.ContainsKey(data["clientId"].ToString()))
                         {
                             //Debug.Log("  moving position data other hhhhhhhhhhh =================  " + h);
                             //Debug.Log("  moving position data other vvvvvvvvvvvvvvv =================  " + v);
                             //Debug.Log("  moving position data other   ==========  " + otherPlayers[data["clientId"].ToString()].transform.position);
                             //otherPlayers[data["clientId"].ToString()].GetComponent<AdvancedWalkerController>().SetInputMovementVelocity(posVeclocity);
-                            otherPlayers[data["clientId"].ToString()].GetComponent<OtherPlayer>().SetVelocity(posVeclocity);
+                            m_otherPlayers[data["clientId"].ToString()].GetComponent<OtherPlayer>().SetVelocity(posVeclocity);
                             //otherPlayers[data["clientId"].ToString()].GetComponent<AdvancedWalkerController>().moving_h = h;
                             //otherPlayers[data["clientId"].ToString()].GetComponent<AdvancedWalkerController>().moving_v = v;
                         }
@@ -825,7 +795,7 @@ public class SocketClient : MonoBehaviour
                     //}
                     
                     OnCloseConnectSocket();
-                    Destroy(player);
+                    Destroy(m_player);
                 }
                 //if (otherPlayers.ContainsKey(data["clientId"].ToString()))
                 //{
@@ -851,8 +821,8 @@ public class SocketClient : MonoBehaviour
                 break;
             case "endGame":
                 Debug.Log("  endGame data ==========  " + data);
-                players = JArray.Parse(data["players"].ToString());
-                JArray sortedJArray = new JArray(players.OrderByDescending(j => j["timeWin"]));
+                m_players = JArray.Parse(data["players"].ToString());
+                JArray sortedJArray = new JArray(m_players.OrderByDescending(j => j["timeWin"]));
                 Debug.Log("  sortedJArray data ==========  " + sortedJArray);
                 int indexPlayerEnd = 0;
                 if (isSpectator)
@@ -889,28 +859,28 @@ public class SocketClient : MonoBehaviour
                 string playerLeaveId = data["clientId"].ToString();
 
 
-                for (int i = 0; i < players.Count; i++)
+                for (int i = 0; i < m_players.Count; i++)
                 {
                     //Debug.Log(" players player leave ==   " + players[i].ToString());
-                    if (playerLeaveId == players[i]["id"].ToString())
+                    if (playerLeaveId == m_players[i]["id"].ToString())
                     {
-                        if (player == null)
+                        if (m_player == null)
                         {
-                            if (players[i]["isSpectator"].ToString() == "0")
+                            if (m_players[i]["isSpectator"].ToString() == "0")
                             {
                                 MainMenu.instance.RemovePlayerJoinRoomByAvatar(playerLeaveId);
                             }
-                            MainMenu.instance.ShowTotalPlayers(players.Count);
+                            MainMenu.instance.ShowTotalPlayers(m_players.Count);
                         }
 
-                        players.RemoveAt(i);
+                        m_players.RemoveAt(i);
                         Debug.Log(" players playerLeaveRoom 222222222222222  " + playerLeaveId);
 
                     }
                 }
-                if (otherPlayers.ContainsKey(data["clientId"].ToString()))
+                if (m_otherPlayers.ContainsKey(data["clientId"].ToString()))
                 {
-                        otherPlayers.Remove(data["clientId"].ToString());
+                        m_otherPlayers.Remove(data["clientId"].ToString());
                 }
 
                 // check new host 
@@ -920,7 +890,7 @@ public class SocketClient : MonoBehaviour
                 {
                     isHost = true;
 
-                    if (player != null)
+                    if (m_player != null)
                     {
                         Debug.Log(" client is new host -----------    " );
                         LevelManager.instance.CheckHost();
@@ -946,7 +916,7 @@ public class SocketClient : MonoBehaviour
         yield return new WaitForSeconds(0.3f);
         if (stunnedByEnemyId != "" && stunnedByEnemyId == enemyId)
         {
-            player.GetComponent<AnimationControl>().PlayerStunned(pos);
+            m_player.GetComponent<AnimationControl>().PlayerStunned(pos);
             stunnedByEnemyId = "";
         }
     }
@@ -1055,9 +1025,9 @@ public class SocketClient : MonoBehaviour
     }
     public void OnUpdatePosPlayer()
     {
-        if (isEndGame || !player) return;
-        Vector3 pos = player.transform.position;
-        Quaternion rot = player.GetComponent< AdvancedWalkerController>().modelTransform.localRotation;
+        if (isEndGame || !m_player) return;
+        Vector3 pos = m_player.transform.position;
+        Quaternion rot = m_player.GetComponent< AdvancedWalkerController>().modelTransform.localRotation;
         JObject jsData = new JObject();
         jsData.Add("meta", "updatePos");
         jsData.Add("clientId", clientId);
@@ -1105,8 +1075,8 @@ public class SocketClient : MonoBehaviour
     }
     public void OnMoving(Vector3 _velocity, float _h, float _v)
     {
-        if (isEndGame || !player) return;
-        clientPosStart = player.transform.position;
+        if (isEndGame || !m_player) return;
+        clientPosStart = m_player.transform.position;
         //Quaternion rot = player.transform.rotation;
         JObject jsData = new JObject();
         jsData.Add("meta", "moving");
@@ -1195,13 +1165,13 @@ public class SocketClient : MonoBehaviour
         clientId = "";
         ROOM = "";
         isEndGame = true;
-        if (player)
+        if (m_player)
         {
-            Destroy(player);
-            player = null;
+            Destroy(m_player);
+            m_player = null;
         }
-        players.RemoveAll();
-        otherPlayers.Clear();
+        m_players.RemoveAll();
+        m_otherPlayers.Clear();
         otherIds.Clear();
         await webSocket.Close();
     }
@@ -1210,13 +1180,13 @@ public class SocketClient : MonoBehaviour
         clientId = "";
         ROOM = "";
         isEndGame = true;
-        players.RemoveAll();
-        otherPlayers.Clear();
+        m_players.RemoveAll();
+        m_otherPlayers.Clear();
         otherIds.Clear();
-        if (player)
+        if (m_player)
         {
-            Destroy(player);
-            player = null;
+            Destroy(m_player);
+            m_player = null;
             SceneManager.LoadScene("MainMenu");
         }
     }
