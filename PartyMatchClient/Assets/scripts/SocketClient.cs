@@ -59,6 +59,7 @@ public class SocketClient : MonoBehaviour
     List<string> otherIds = new List<string>();
 
     private Dictionary<string,GameObject> m_otherPlayers;
+    private List<int> m_aliveIndexPlayers = new List<int>();
 
     [SerializeField]
     private GameObject spectatorPrefab;
@@ -497,6 +498,12 @@ public class SocketClient : MonoBehaviour
 
                 //players = JArray.Parse(data["players"].ToString());
                 JArray arrRanPos = JArray.Parse(data["roomPos"].ToString());
+                var aliveIndexPlayers = JArray.Parse(data["alivePlayers"].ToString());
+
+                foreach (var item in aliveIndexPlayers)
+                    m_aliveIndexPlayers.Add(item.Value<int>());
+
+                Debug.Log($"[SocketClient] joinRoom player m_aliveIndexPlayers = {m_aliveIndexPlayers}");
                 Debug.Log(" arrRanPos ------------------------ " + arrRanPos[0]);
 
                 JArray arrPos;
@@ -858,7 +865,6 @@ public class SocketClient : MonoBehaviour
             case "playerLeaveRoom":
                 string playerLeaveId = data["clientId"].ToString();
 
-
                 for (int i = 0; i < m_players.Count; i++)
                 {
                     //Debug.Log(" players player leave ==   " + players[i].ToString());
@@ -873,16 +879,23 @@ public class SocketClient : MonoBehaviour
                             MainMenu.instance.ShowTotalPlayers(m_players.Count);
                         }
 
+                        int leaveIndex = m_players[i]["indexPlayer"].Value<int>();
+
+                        if (m_aliveIndexPlayers.Count > 0)
+                        {
+                            m_aliveIndexPlayers.Remove(leaveIndex);
+                            Debug.Log($"[SocketClient] leave room player m_aliveIndexPlayers = {m_aliveIndexPlayers}");
+                        }
                         m_players.RemoveAt(i);
                         Debug.Log(" players playerLeaveRoom 222222222222222  " + playerLeaveId);
-
-                    }
+                    }                    
                 }
+
                 if (m_otherPlayers.ContainsKey(data["clientId"].ToString()))
                 {
                         m_otherPlayers.Remove(data["clientId"].ToString());
                 }
-
+                
                 // check new host 
                 string checkNewHost = data["newHost"].ToString();
                 
@@ -1173,6 +1186,7 @@ public class SocketClient : MonoBehaviour
         m_players.RemoveAll();
         m_otherPlayers.Clear();
         otherIds.Clear();
+        m_aliveIndexPlayers.Clear();
         await webSocket.Close();
     }
     public void OnDisconnect()
