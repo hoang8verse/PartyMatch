@@ -60,6 +60,7 @@ public class SocketClient : MonoBehaviour
 
     private Dictionary<string,GameObject> m_otherPlayers;
     private List<int> m_aliveIndexPlayers = new List<int>();
+    private List<int> m_aliveLobbyPlayer = new List<int>();
 
     [SerializeField]
     private GameObject spectatorPrefab;
@@ -443,6 +444,12 @@ public class SocketClient : MonoBehaviour
                 IS_FIRST_JOIN = false;
                 MainMenu.instance.ShowLobby();
                 m_players = JArray.Parse(data["players"].ToString());
+                var aliveLobbyPlayer = JArray.Parse(data["aliveLobbyPlayer"].ToString());
+
+                foreach (var item in aliveLobbyPlayer)
+                    m_aliveLobbyPlayer.Add(item.Value<int>());
+
+                Debug.Log($"[SocketClient] joinRoom player m_aliveLobbyPlayer = {m_aliveLobbyPlayer}");
 
                 currentPlayerJoined = m_players.Count;
                 Debug.Log(" playerName  join room  " + data["playerName"].ToString());
@@ -886,6 +893,12 @@ public class SocketClient : MonoBehaviour
                             m_aliveIndexPlayers.Remove(leaveIndex);
                             Debug.Log($"[SocketClient] leave room player m_aliveIndexPlayers = {m_aliveIndexPlayers}");
                         }
+                        
+                        if (m_aliveLobbyPlayer.Count > 0)
+                        {
+                            m_aliveLobbyPlayer.Remove(leaveIndex);
+                            Debug.Log($"[SocketClient] leave room player m_aliveLobbyPlayer = {m_aliveLobbyPlayer}");
+                        }
                         m_players.RemoveAt(i);
                         Debug.Log(" players playerLeaveRoom 222222222222222  " + playerLeaveId);
                     }                    
@@ -1187,6 +1200,7 @@ public class SocketClient : MonoBehaviour
         m_otherPlayers.Clear();
         otherIds.Clear();
         m_aliveIndexPlayers.Clear();
+        m_aliveLobbyPlayer.Clear();
         await webSocket.Close();
     }
     public void OnDisconnect()

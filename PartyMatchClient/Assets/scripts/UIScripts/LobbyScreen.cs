@@ -106,10 +106,14 @@ namespace UIElements
         public void RemoveAvatarForPlayer(string playerId)
         {
             int index = m_playerAvatarsDict[playerId];
-            Destroy(avatarsLists[index]);
 
-            m_playerAvatarsDict.Remove(playerId);
-            avatarsLists.RemoveAt(index);
+            if (index < avatarsLists.Count)
+            {
+                Destroy(avatarsLists[index]);
+
+                m_playerAvatarsDict.Remove(playerId);
+                avatarsLists.RemoveAt(index);
+            }        
         }
 
         public void ResetAvatarList()
