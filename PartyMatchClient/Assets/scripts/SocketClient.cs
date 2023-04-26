@@ -33,7 +33,7 @@ public class SocketClient : MonoBehaviour
 
     [SerializeField]
     private string url = "";
-    static string baseUrl = "ws://192.168.1.12";
+    static string baseUrl = "ws://192.168.0.107";
     static string HOST = "8082";
 
     //static string baseUrl = "wss://rlgl2-api.brandgames.vn";
@@ -875,7 +875,7 @@ public class SocketClient : MonoBehaviour
                 Debug.Log("  roundPass data ==========  " + data);
                 if (m_localClientId == data["clientId"].ToString())
                 {
-                    if((m_isSinglePlayer && int.Parse(data["roundPass"].ToString()) >= 5) || int.Parse(data["countPlayer"].ToString()) == 1)
+                    if((m_isSinglePlayer && int.Parse(data["roundPass"].ToString()) >= 5) ||(!m_isSinglePlayer && int.Parse(data["countPlayer"].ToString()) == 1))
                     {
                         CubeManager.Instance.SetPlayerWin();
                     }
