@@ -279,13 +279,13 @@ public class MainMenu : MonoBehaviour
     {
         if (avatar != null)
         {
-            listPlayerAvatars.Add(playerID, avatar);
+            listPlayerAvatars[playerID]  =  avatar;
             lobbyScreen.GetComponent<LobbyScreen>().SetAvatarForPlayer(avatar, playerID);
         }
     }
     public void ResetAvatarList()
     {
-        listPlayerAvatars = new Dictionary<string, Texture2D>();
+        listPlayerAvatars.Clear();
 
     }
     public void RemovePlayerJoinRoomByAvatar(string playerID)

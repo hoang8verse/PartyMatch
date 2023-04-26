@@ -15,6 +15,7 @@ public class OtherPlayer : MonoBehaviour
 
     public GameObject[] characters;
     public bool isMoving = false;
+    public int IndexPlayer { set; get; } = -1;
 
     void Start()
     {

@@ -33,7 +33,7 @@ public class SocketClient : MonoBehaviour
 
     [SerializeField]
     private string url = "";
-    static string baseUrl = "ws://192.168.1.39";
+    static string baseUrl = "ws://192.168.1.12";
     static string HOST = "8082";
 
     //static string baseUrl = "wss://rlgl2-api.brandgames.vn";
@@ -55,7 +55,7 @@ public class SocketClient : MonoBehaviour
     public GameObject m_player = null;
     [SerializeField]
     private GameObject otherPlayerPrefab;
-    public JArray m_players;
+    private List<JToken> m_players = new List<JToken>();
     List<string> otherIds = new List<string>();
 
     private Dictionary<string,GameObject> m_otherPlayers;
@@ -73,6 +73,7 @@ public class SocketClient : MonoBehaviour
     string stunnedByEnemyId = "";
     public bool isEndGame = false;
     bool isEndMovePlayer = false;
+    private int m_localPlayerIndex = 0;
     void Awake()
     {
         CheckDevice();
@@ -412,7 +413,67 @@ public class SocketClient : MonoBehaviour
 
         }
     }
+    void OnAddPlayer(JToken player)
+    {
+        bool isFound = false;
 
+        for(int i = 0; i < m_players.Count; i++)
+            if(m_players[i]["indexPlayer"].Value<int>() ==  player["indexPlayer"].Value<int>())
+            {
+                m_players[i] = player;
+                isFound = true;
+                break;
+            }
+
+        if (!isFound)
+            m_players.Add(player);
+    }
+
+    void OnCreateOtherPlayer(JObject data)
+    {
+        Debug.Log("[SocketClient] OnCreateOtherPlayer  other player data:" + data);
+        string _clientId = data["clientId"].ToString();
+
+        if (otherIds.IndexOf(_clientId) == -1)
+        {
+            int rand = GetPlayerIndex(data["indexPlayer"].Value<int>());
+            Vector3 pos = PositionByIndex(rand);
+            Debug.Log("[SocketClient] OnCreateOtherPlayer  other player =================  " + pos);
+            // other player
+            if (data["gender"].ToString() == "0")
+            {
+                otherPlayerPrefab.GetComponent<OtherPlayer>().SetActiveCharacter(0);
+                m_otherPlayers[_clientId] = Instantiate(otherPlayerPrefab, pos, Quaternion.identity);
+            }
+            else
+            {
+                otherPlayerPrefab.GetComponent<OtherPlayer>().SetActiveCharacter(1);
+                m_otherPlayers[_clientId] = Instantiate(otherPlayerPrefab, pos, Quaternion.identity);
+            }
+
+            m_otherPlayers[_clientId].name = _clientId;
+            m_otherPlayers[_clientId].transform.tag = "enemy";
+            OtherPlayer otherPlayer = m_otherPlayers[_clientId].GetComponent<OtherPlayer>();
+            otherPlayer.IndexPlayer = data["indexPlayer"].Value<int>();
+
+            m_otherPlayers[_clientId].SetActive(true);
+            Debug.Log($"===>[SocketClient] created instantiate  other player = {m_otherPlayers[_clientId]} otherPlayer.IndexPlayer = {otherPlayer.IndexPlayer} _clientId = {_clientId}");
+            otherIds.Add(_clientId);
+        }
+    }
+
+    JObject GetPlayerData(int index)
+    {
+        foreach(var player in m_players)
+        {
+            if(player["indexPlayer"].Value<int>() == index)
+            {
+                return player.Value<JObject>();
+            }    
+        }
+
+        return null;
+    }    
     void ReceiveSocket(string message)
     {
         JObject data = JObject.Parse(message);
@@ -443,11 +504,27 @@ public class SocketClient : MonoBehaviour
 
                 IS_FIRST_JOIN = false;
                 MainMenu.instance.ShowLobby();
-                m_players = JArray.Parse(data["players"].ToString());
+
+                if(data.ContainsKey("players"))
+                {
+                    var players = JArray.Parse(data["players"].ToString());
+
+                    foreach(var player in players)
+                    {
+                        OnAddPlayer(player);
+                    }    
+                }
+                else if (data.ContainsKey("newPlayer"))
+                {
+                    var newPlayer = data["newPlayer"];
+                    OnAddPlayer(newPlayer);
+                }
+                               
                 var aliveLobbyPlayer = JArray.Parse(data["aliveLobbyPlayer"].ToString());
 
                 foreach (var item in aliveLobbyPlayer)
-                    m_aliveLobbyPlayer.Add(item.Value<int>());
+                    if (!m_aliveLobbyPlayer.Contains(item.Value<int>()))
+                        m_aliveLobbyPlayer.Add(item.Value<int>());
 
                 Debug.Log($"[SocketClient] joinRoom player m_aliveLobbyPlayer = {m_aliveLobbyPlayer}");
 
@@ -508,7 +585,10 @@ public class SocketClient : MonoBehaviour
                 var aliveIndexPlayers = JArray.Parse(data["alivePlayers"].ToString());
 
                 foreach (var item in aliveIndexPlayers)
-                    m_aliveIndexPlayers.Add(item.Value<int>());
+                {
+                    if(!m_aliveIndexPlayers.Contains(item.Value<int>()))
+                        m_aliveIndexPlayers.Add(item.Value<int>());
+                }
 
                 Debug.Log($"[SocketClient] joinRoom player m_aliveIndexPlayers = {m_aliveIndexPlayers}");
                 Debug.Log(" arrRanPos ------------------------ " + arrRanPos[0]);
@@ -520,9 +600,11 @@ public class SocketClient : MonoBehaviour
                 {
                     if (m_player == null)
                     {
-                        int rand = GetPlayerIndex(data["indexPlayer"].Value<int>());
+                        m_localPlayerIndex = data["indexPlayer"].Value<int>();
+                        int rand = GetPlayerIndex(m_localPlayerIndex);
                         clientPosStart = PositionByIndex(rand);
-                        Debug.Log("  ===========  player =================  ");
+                        
+                        Debug.Log("[SocketClient]  ===========  player ================= m_localPlayerIndex = " + m_localPlayerIndex);
                         //  player
                         //isSpectator = _player["isSpectator"].ToString() == "1" ? true : false;
                         //isHost = _player["isHost"].ToString() == "1" ? true : false;
@@ -567,35 +649,9 @@ public class SocketClient : MonoBehaviour
                 else if (_clientId != clientId && data["isSpectator"].ToString() == "0")
                 {
                     Debug.Log("  ===========  other player =================  ");
-                    
+
                     //if (!otherPlayers.ContainsKey(_clientId))
-                    if (otherIds.IndexOf(_clientId) == -1)
-                    {
-   
-                        int rand = GetPlayerIndex(data["indexPlayer"].Value<int>());
-                        Vector3 pos   = PositionByIndex(rand);
-                        Debug.Log("  ===========  other player =================  " + pos);
-                        // other player
-                        if (data["gender"].ToString() == "0")
-                        {
-                            otherPlayerPrefab.GetComponent<OtherPlayer>().SetActiveCharacter(0);
-                            m_otherPlayers[_clientId] = Instantiate(otherPlayerPrefab, pos, Quaternion.identity);
-                        }
-                        else
-                        {
-                            otherPlayerPrefab.GetComponent<OtherPlayer>().SetActiveCharacter(1);
-                            m_otherPlayers[_clientId] = Instantiate(otherPlayerPrefab, pos, Quaternion.identity);
-                        }
-
-                        m_otherPlayers[_clientId].name = _clientId;
-                        m_otherPlayers[_clientId].transform.tag = "enemy";
-
-                        m_otherPlayers[_clientId].SetActive(true);
-                        Debug.Log(" Instantiate  other player  =================  " + m_otherPlayers[_clientId]);
-                        otherIds.Add(_clientId);
-                    }
-                    
-
+                    OnCreateOtherPlayer(data);
                 }
 
 
@@ -603,7 +659,40 @@ public class SocketClient : MonoBehaviour
 
                 break;
             case "startGame":
-                Debug.Log("  startGame =================  " + data);
+                Debug.Log(" [SocketClient] startGame =================  " + data);
+
+                if(m_aliveIndexPlayers.Count == m_otherPlayers.Count + 1)
+                {
+                    Debug.Log($"[SocketClient] OK startGame with count other players = {m_otherPlayers.Count}");
+                }
+                else
+                {
+                    Debug.Log($"[SocketClient] !!!startGame with count other players = {m_otherPlayers.Count}");
+                  
+                    foreach(var indexPlayer in m_aliveIndexPlayers)
+                    {
+                        bool isFound = false;
+
+                        foreach(var otherPlayer in m_otherPlayers.Values)
+                        {
+                            OtherPlayer cotherPlayer = otherPlayer.GetComponent<OtherPlayer>();
+
+                            if(cotherPlayer.IndexPlayer == indexPlayer)
+                            {
+                                isFound = true;
+                                break;
+                            }
+                        }
+
+                        if (!isFound && m_localPlayerIndex != indexPlayer)
+                        {
+                            Debug.Log($"===> [SocketClient] !!! create missing otherPlayer index = {indexPlayer}");
+                            var dataPlayer = GetPlayerData(indexPlayer);
+                            OnCreateOtherPlayer(dataPlayer);
+                        }
+                    }
+                }
+
                 if (isSpectator)
                 {
                     // code spectator screen here
@@ -835,7 +924,16 @@ public class SocketClient : MonoBehaviour
                 break;
             case "endGame":
                 Debug.Log("  endGame data ==========  " + data);
-                m_players = JArray.Parse(data["players"].ToString());
+                if (data.ContainsKey("players"))
+                {
+                    var players = JArray.Parse(data["players"].ToString());
+
+                    foreach (var player in players)
+                    {
+                        OnAddPlayer(player);
+                    }
+                }
+               
                 JArray sortedJArray = new JArray(m_players.OrderByDescending(j => j["timeWin"]));
                 Debug.Log("  sortedJArray data ==========  " + sortedJArray);
                 int indexPlayerEnd = 0;
@@ -899,14 +997,18 @@ public class SocketClient : MonoBehaviour
                             m_aliveLobbyPlayer.Remove(leaveIndex);
                             Debug.Log($"[SocketClient] leave room player m_aliveLobbyPlayer = {m_aliveLobbyPlayer}");
                         }
+                        m_players[i] = null;
                         m_players.RemoveAt(i);
                         Debug.Log(" players playerLeaveRoom 222222222222222  " + playerLeaveId);
                     }                    
                 }
 
-                if (m_otherPlayers.ContainsKey(data["clientId"].ToString()))
+                if (m_otherPlayers.ContainsKey(playerLeaveId))
                 {
-                        m_otherPlayers.Remove(data["clientId"].ToString());
+                    m_otherPlayers[playerLeaveId].SetActive(false);
+                    Destroy(m_otherPlayers[playerLeaveId]);
+                    m_otherPlayers.Remove(playerLeaveId);
+                    otherIds.Remove(playerLeaveId);
                 }
                 
                 // check new host 
@@ -1196,7 +1298,7 @@ public class SocketClient : MonoBehaviour
             Destroy(m_player);
             m_player = null;
         }
-        m_players.RemoveAll();
+        m_players.Clear();
         m_otherPlayers.Clear();
         otherIds.Clear();
         m_aliveIndexPlayers.Clear();
@@ -1208,7 +1310,7 @@ public class SocketClient : MonoBehaviour
         clientId = "";
         ROOM = "";
         isEndGame = true;
-        m_players.RemoveAll();
+        m_players.Clear();
         m_otherPlayers.Clear();
         otherIds.Clear();
         if (m_player)
