@@ -25,17 +25,15 @@ namespace UIElements
 
         float fadeTime = 1f; // Set the time it takes to fade in and out                
         float defaultHolderSize = 800f;
-        private List<GameObject> avatarsLists;
-        private Dictionary<string, int> m_playerAvatarsDict;
+        private List<GameObject> avatarsLists = new List<GameObject>();
+        private Dictionary<string, int> m_playerAvatarsDict = new Dictionary<string, int>();
 
         public string RoomID => m_roomID.text;
         public RawImage QRImage => m_qrImage;
         
         // Start is called before the first frame update
         void Start()
-        {
-            m_playerAvatarsDict = new Dictionary<string, int>();
-            avatarsLists = new List<GameObject>();
+        {   
             m_roomID.text = MainMenu.instance.roomId;
 
             string qrCoreGen = MainMenu.deepLinkZaloApp + "?roomId="+ MainMenu.instance.roomId;

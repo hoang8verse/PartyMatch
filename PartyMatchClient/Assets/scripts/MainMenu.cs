@@ -76,7 +76,10 @@ public class MainMenu : MonoBehaviour
 		//SocketClient.instance.OnConnectWebsocket();
 		listPlayerAvatars = new Dictionary<string, Texture2D>();
 		StartCoroutine(WaitingReceiver());
-	}
+        lobbyScreen.SetActive(false);
+        createRoomScreen.SetActive(false);
+        joinRoomScreen.SetActive(false);
+    }
 
     public string Generate()
     {
