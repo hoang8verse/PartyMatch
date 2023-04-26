@@ -453,7 +453,7 @@ public class SocketClient : MonoBehaviour
             otherPlayer.IndexPlayer = data["indexPlayer"].Value<int>();
 
             m_otherPlayers[_clientId].SetActive(true);
-            GameManager.Instance.ShowDebugInfo($"\n create player  = {_clientId}");
+            //GameManager.Instance.ShowDebugInfo($"\n create player  = {_clientId}");
             Debug.Log($"===>[SocketClient] created instantiate  other player = {m_otherPlayers[_clientId]} otherPlayer.IndexPlayer = {otherPlayer.IndexPlayer} _clientId = {_clientId}");         
         }
     }
@@ -654,8 +654,8 @@ public class SocketClient : MonoBehaviour
                 break;
             case "startGame":
                 Debug.Log(" [SocketClient] startGame =================  " + data);
-                GameManager.Instance.ShowDebugInfo($"\n m_otherPlayers.Count = {m_otherPlayers.Count}");
-                GameManager.Instance.ShowDebugInfo($"\n m_aliveIndexPlayers.Count = {m_aliveIndexPlayers.Count}");
+                //GameManager.Instance.ShowDebugInfo($"\n m_otherPlayers.Count = {m_otherPlayers.Count}");
+                
                 if (m_aliveIndexPlayers.Count == m_otherPlayers.Count + 1)
                 {
                     Debug.Log($"[SocketClient] OK startGame with count other players = {m_otherPlayers.Count}");
