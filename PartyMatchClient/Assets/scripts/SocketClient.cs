@@ -59,7 +59,7 @@ public class SocketClient : MonoBehaviour
     private Dictionary<string,GameObject> m_otherPlayers;
     private List<int> m_aliveIndexPlayers = new List<int>();
     private List<int> m_aliveLobbyPlayer = new List<int>();
-
+    private bool m_isSinglePlayer = true;
     [SerializeField]
     private GameObject spectatorPrefab;
      
@@ -520,7 +520,7 @@ public class SocketClient : MonoBehaviour
 
                 foreach (var item in aliveLobbyPlayer)
                     if (!m_aliveLobbyPlayer.Contains(item.Value<int>()))
-                        m_aliveLobbyPlayer.Add(item.Value<int>());
+                        m_aliveLobbyPlayer.Add(item.Value<int>());         
 
                 Debug.Log($"[SocketClient] joinRoom player m_aliveLobbyPlayer.Count = {m_aliveLobbyPlayer.Count}");
 
@@ -656,6 +656,11 @@ public class SocketClient : MonoBehaviour
                 Debug.Log(" [SocketClient] startGame =================  " + data);
                 //GameManager.Instance.ShowDebugInfo($"\n m_otherPlayers.Count = {m_otherPlayers.Count}");
                 
+                if(m_aliveLobbyPlayer.Count > 1)
+                    m_isSinglePlayer = false;
+                else
+                    m_isSinglePlayer = true;
+
                 if (m_aliveIndexPlayers.Count == m_otherPlayers.Count + 1)
                 {
                     Debug.Log($"[SocketClient] OK startGame with count other players = {m_otherPlayers.Count}");
@@ -870,7 +875,7 @@ public class SocketClient : MonoBehaviour
                 Debug.Log("  roundPass data ==========  " + data);
                 if (m_localClientId == data["clientId"].ToString())
                 {
-                    if(int.Parse(data["roundPass"].ToString()) >= 5 && int.Parse(data["countPlayer"].ToString()) == 1)
+                    if((m_isSinglePlayer && int.Parse(data["roundPass"].ToString()) >= 5) || int.Parse(data["countPlayer"].ToString()) == 1)
                     {
                         CubeManager.Instance.SetPlayerWin();
                     }
@@ -1263,6 +1268,7 @@ public class SocketClient : MonoBehaviour
         
         m_aliveIndexPlayers.Clear();
         m_aliveLobbyPlayer.Clear();
+        m_isSinglePlayer = true;
         await webSocket.Close();
     }
     public void OnDisconnect()
@@ -1278,7 +1284,8 @@ public class SocketClient : MonoBehaviour
             Destroy(otherPlayer);
         }
         m_otherPlayers.Clear();
-      
+        m_isSinglePlayer = true;
+
         if (m_player)
         {
             Destroy(m_player);
