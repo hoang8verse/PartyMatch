@@ -40,6 +40,7 @@ public class CubeManager : Singleton<CubeManager>
 
         }
         IsInitialized = true;
+        boardMateriel.SetActive(false);
     }
 
     public void SendRequestRandomTarget()
@@ -75,6 +76,7 @@ public class CubeManager : Singleton<CubeManager>
     {
         if (!LevelManager.Instance.winbool)
         {
+            boardMateriel.SetActive(true);
             //targetmateriel = materiellist[Random.Range(0, materiellist.Length)];
             targetmateriel = materiellist[target];
             boardMateriel.GetComponent<MeshRenderer>().material = targetmateriel;
@@ -188,11 +190,12 @@ public class CubeManager : Singleton<CubeManager>
     {
         round++;
         LevelManager.Instance.textRound.text = round.ToString();
-        SocketClient.instance.OnRoundPass(round);
+        SocketClient.instance.OnRoundPass(round);      
 
         yield return new WaitForSeconds(3);
 
         SocketClient.instance.OnCubeReset();
+        boardMateriel.SetActive(false);
 
         yield return new WaitForSeconds(3.5f);
        
