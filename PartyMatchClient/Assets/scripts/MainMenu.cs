@@ -17,9 +17,7 @@ public class MainMenu : MonoBehaviour
 	[SerializeField]
 	private GameObject createRoomScreen;
 	[SerializeField]
-	private GameObject joinRoomScreen;
-	[SerializeField]
-	private GameObject lobbyScreen;
+	private GameObject joinRoomScreen;	
 	[SerializeField]
 	private GameObject hostButtonJoinGame;
 	[SerializeField]
@@ -76,7 +74,7 @@ public class MainMenu : MonoBehaviour
 		//SocketClient.instance.OnConnectWebsocket();
 		listPlayerAvatars = new Dictionary<string, Texture2D>();
 		StartCoroutine(WaitingReceiver());
-        lobbyScreen.SetActive(false);
+        LobbyScreen.Instance.OnHide();
         createRoomScreen.SetActive(false);
         joinRoomScreen.SetActive(false);
     }
@@ -109,7 +107,7 @@ public class MainMenu : MonoBehaviour
             homeScreen.SetActive(false);
             createRoomScreen.SetActive(false);
             joinRoomScreen.SetActive(true);
-            lobbyScreen.SetActive(false);
+            LobbyScreen.Instance.OnHide();
 
             inputRoomId.text = roomId;
             //JoinRoom();
@@ -121,7 +119,7 @@ public class MainMenu : MonoBehaviour
             homeScreen.SetActive(true);
             createRoomScreen.SetActive(false);
             joinRoomScreen.SetActive(false);
-            lobbyScreen.SetActive(false);
+            LobbyScreen.Instance.OnHide();
         }
 
         //bg_Music.Play(0);
@@ -197,19 +195,20 @@ public class MainMenu : MonoBehaviour
     }
     public void ShowPlayerJoinRoom(string playerName)
     {
-        lobbyScreen.GetComponent<LobbyScreen>().ShowPlayerJoinRoom(playerName);
+        LobbyScreen.Instance.ShowPlayerJoinRoom(playerName);
     }
     public void ShowTotalPlayers(int player)
     {
-        lobbyScreen.GetComponent<LobbyScreen>().SetTotalPlayer(player.ToString());
+        LobbyScreen.Instance.SetTotalPlayer(player.ToString());
     }
     public void ShowLobby()
     {
         createRoomScreen.SetActive(false);
         homeScreen.SetActive(false);
-        joinRoomScreen.SetActive(false);
-        lobbyScreen.SetActive(true);
+        joinRoomScreen.SetActive(false);        
+        LobbyScreen.Instance.OnShow(roomId);
         CheckTheHost();
+        
     }
     public void JoinTheGame()
     {
@@ -274,7 +273,7 @@ public class MainMenu : MonoBehaviour
         homeScreen.SetActive(true);
         joinRoomScreen.SetActive(false);
         createRoomScreen.SetActive(false);
-        lobbyScreen.SetActive(false);
+        LobbyScreen.Instance.OnHide();
     }
 
 
@@ -283,7 +282,7 @@ public class MainMenu : MonoBehaviour
         if (avatar != null)
         {
             listPlayerAvatars[playerID]  =  avatar;
-            lobbyScreen.GetComponent<LobbyScreen>().SetAvatarForPlayer(avatar, playerID);
+            LobbyScreen.Instance.SetAvatarForPlayer(avatar, playerID);
         }
     }
     public void ResetAvatarList()
@@ -293,7 +292,7 @@ public class MainMenu : MonoBehaviour
     }
     public void RemovePlayerJoinRoomByAvatar(string playerID)
     {
-        lobbyScreen.GetComponent<LobbyScreen>().RemoveAvatarForPlayer(playerID);
+        LobbyScreen.Instance.RemoveAvatarForPlayer(playerID);
     }
 
     public void CopyToClipboard()
@@ -305,8 +304,9 @@ public class MainMenu : MonoBehaviour
         homeScreen.SetActive(true);
         joinRoomScreen.SetActive(false);
         createRoomScreen.SetActive(false);
-        lobbyScreen.SetActive(false);
-        lobbyScreen.GetComponent<LobbyScreen>().ResetAvatarList();
+       
+        LobbyScreen.Instance.ResetAvatarList();
+        LobbyScreen.Instance.OnHide();
         SocketClient.instance.OnCloseConnectSocket();
     }
 

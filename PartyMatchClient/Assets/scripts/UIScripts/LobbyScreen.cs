@@ -5,10 +5,11 @@ using System.Collections.Generic;
 using ZXing;
 using ZXing.QrCode;
 using System.Collections;
+using Utility;
 
 namespace UIElements
 {
-    public class LobbyScreen : MonoBehaviour
+    public class LobbyScreen : Singleton<LobbyScreen>
     {
         [Header("Player List")]
         [SerializeField] TextMeshProUGUI m_totalPlayerAmountText;
@@ -32,12 +33,15 @@ namespace UIElements
         public RawImage QRImage => m_qrImage;
         
         // Start is called before the first frame update
-        void Start()
-        {   
-            m_roomID.text = MainMenu.instance.roomId;
-
-            string qrCoreGen = MainMenu.deepLinkZaloApp + "?roomId="+ MainMenu.instance.roomId;
-            m_qrImage.texture = GetQRCodeTexture(qrCoreGen, 256, 256);
+        public void OnHide()
+        {
+            gameObject.SetActive(false);
+        }    
+        public void OnShow(string roomId)
+        {
+            gameObject.SetActive(true);
+            m_roomID.text = roomId;            
+            GenerateQRCode.Instance.OnCreateQRCode(roomId);
             SetTotalPlayer("");
             SetPlayerJoin("");
         }

@@ -2,17 +2,17 @@
 using System.Collections;
 using ZXing;
 using ZXing.QrCode;
-
-public class GenerateQRCode : MonoBehaviour
+using Utility;
+public class GenerateQRCode : Singleton<GenerateQRCode>
 {
-
-    void Start()
+ 
+    public void OnCreateQRCode(string roomId)
     {
-        string qrCode = MainMenu.instance.roomId;
-        Texture2D qrCodeTexture = GenerateQRCodeTexture(qrCode, 256, 256);
+        string qrCoreGen = MainMenu.deepLinkZaloApp + "?roomId=" + roomId;
+        Texture2D qrCodeTexture = GenerateQRCodeTexture(qrCoreGen, 256, 256);
         //GetComponent<Renderer>().material.mainTexture = qrCodeTexture;
         GetComponent<UnityEngine.UI.RawImage>().texture = qrCodeTexture;
-    }
+    }    
 
     private Texture2D GenerateQRCodeTexture(string text, int width, int height)
     {

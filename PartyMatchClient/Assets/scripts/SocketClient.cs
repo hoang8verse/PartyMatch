@@ -594,51 +594,31 @@ public class SocketClient : MonoBehaviour
                 string _clientId = data["clientId"].ToString();
                 if (_clientId == m_localClientId )
                 {
-                    if (m_player == null)
-                    {
+                    if (m_player == null && data["isSpectator"].ToString() == "0")
+                    {                     
                         m_localPlayerIndex = data["indexPlayer"].Value<int>();
                         int rand = GetPlayerIndex(m_localPlayerIndex);
                         clientPosStart = PositionByIndex(rand);
                         
-                        Debug.Log("[SocketClient]  ===========  player ================= m_localPlayerIndex = " + m_localPlayerIndex);
-                        //  player
-                        //isSpectator = _player["isSpectator"].ToString() == "1" ? true : false;
-                        //isHost = _player["isHost"].ToString() == "1" ? true : false;
-
-                        //if (_player["isSpectator"].ToString() == "1")
-                        //{
-                        //    player = Instantiate(spectatorPrefab);
-                        //}
-                        //else
+                        Debug.Log("[SocketClient]  ===========  player ================= m_localPlayerIndex = " + m_localPlayerIndex);           
+                        
+                        isHost = data["isHost"].ToString() == "1";   
+                        if (data["gender"].ToString() == "0")
                         {
-                            isHost = data["isHost"].ToString() == "1";
-                            //int characterIndex = int.Parse(_player["characterIndex"].ToString());
-                            //playerPrefab.GetComponent<characterSpawn>().SetActiveCharacter(characterIndex);
-                            //Debug.Log("  characterIndex =================  " + characterIndex);
-                            if (data["gender"].ToString() == "0")
-                            {
-                                playerPrefab.GetComponent<characterSpawn>().SetActiveCharacter(0);
-                                m_player = Instantiate(playerPrefab, clientPosStart, Quaternion.identity);
-
-                            }
-                            else
-                            {
-                                playerPrefab.GetComponent<characterSpawn>().SetActiveCharacter(1);
-                                m_player = Instantiate(playerPrefab, clientPosStart, Quaternion.identity);
-                            }
-
-
-                            m_player.name = "Player-" + data["playerName"].ToString();
-                            m_player.transform.tag = "Player";
-                            m_player.SetActive(true);
-                            Debug.Log(" Instantiate  player =================  " + m_player);
+                            playerPrefab.GetComponent<characterSpawn>().SetActiveCharacter(0);
+                            m_player = Instantiate(playerPrefab, clientPosStart, Quaternion.identity);
                         }
-                    }
-                    else
-                    {
-                        Debug.Log("  =========== player is same client =================  " + clientPosStart);
-                        //player.transform.position = playerPos;
-                    }
+                        else
+                        {
+                            playerPrefab.GetComponent<characterSpawn>().SetActiveCharacter(1);
+                            m_player = Instantiate(playerPrefab, clientPosStart, Quaternion.identity);
+                        }
+
+                        m_player.name = "Player-" + data["playerName"].ToString();
+                        m_player.transform.tag = "Player";
+                        m_player.SetActive(true);
+                        Debug.Log(" Instantiate  player =================  " + m_player);                        
+                    }                
                 }
                 else if (_clientId != m_localClientId && data["isSpectator"].ToString() == "0")
                 {
