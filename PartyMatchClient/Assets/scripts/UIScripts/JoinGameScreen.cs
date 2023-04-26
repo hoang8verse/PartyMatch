@@ -60,6 +60,10 @@ namespace UIElements
         //    if (Application.isMobilePlatform)
         //        m_inputField.text = inputRoomId.text;
         //}
+        public void OnTextChange(TextMeshProUGUI input)
+        {
+            m_inputField.caretPosition = input.text.Length;
+        }
         public void OnInputFieldSelected(TextMeshProUGUI _currentInput)
         {
 
@@ -67,8 +71,7 @@ namespace UIElements
             {
                 if (m_touchScreenKeyboard == null)
                 {
-
-                    m_touchScreenKeyboard = TouchScreenKeyboard.Open("", TouchScreenKeyboardType.Default);
+                    m_touchScreenKeyboard = TouchScreenKeyboard.Open("", TouchScreenKeyboardType.NumberPad);
                 }
             }
 
