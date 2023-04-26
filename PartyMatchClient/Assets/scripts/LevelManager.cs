@@ -50,7 +50,7 @@ public class LevelManager : Singleton<LevelManager>
         //SocketClient.instance.OnJoinRoom();
         yield return new WaitForSeconds(0.1f);
 
-        if (SocketClient.instance.isHost)
+        if (SocketClient.instance.m_isHost)
         {
             
             buttonReadyPlay.SetActive(true);
@@ -62,7 +62,7 @@ public class LevelManager : Singleton<LevelManager>
             buttonReadyPlay.SetActive(false);
             textStartGame.text = "Chờ chủ phòng bắt đầu !!!";
         }
-        Debug.Log(" SocketClient.instance.isHost------------------------ " + SocketClient.instance.isHost);
+        Debug.Log(" SocketClient.instance.isHost------------------------ " + SocketClient.instance.m_isHost);
     }
     public void CheckHost()
     {

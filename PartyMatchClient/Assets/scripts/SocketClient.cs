@@ -45,8 +45,8 @@ public class SocketClient : MonoBehaviour
     public string playerJoinName = "";
     public int currentPlayerJoined = 0;
 
-    public bool isHost = false;
-    public bool isSpectator = false;
+    public bool m_isHost = false;
+    public bool m_isSpectator = false;
 
     public static bool IS_FIRST_JOIN = true;
 
@@ -425,6 +425,23 @@ public class SocketClient : MonoBehaviour
             m_players.Add(player);
     }
 
+    bool IsSpectator(string playerId)
+    {
+        bool isSpectator = false;
+
+        foreach(var player in m_players)
+        {
+            if(player["id"].ToString() == playerId)
+            {
+                if (player["isSpectator"].ToString() == "1")
+                    isSpectator = true;
+
+                break;
+            }    
+        }    
+
+        return isSpectator;
+    }    
     void OnCreateOtherPlayer(JObject data)
     {
         Debug.Log("[SocketClient] OnCreateOtherPlayer  other player data:" + data);
@@ -535,7 +552,7 @@ public class SocketClient : MonoBehaviour
 
                     for (int i = 0; i < m_players.Count; i++)
                     {
-                        isHost = data["isHost"].ToString() == "1";
+                        m_isHost = data["isHost"].ToString() == "1";
 
                         if (m_players[i]["isSpectator"].ToString() == "0")
                         {
@@ -588,21 +605,21 @@ public class SocketClient : MonoBehaviour
 
                 Debug.Log($"[SocketClient] joinRoom player m_aliveIndexPlayers.Count = {m_aliveIndexPlayers.Count}");
                 Debug.Log(" arrRanPos ------------------------ " + arrRanPos[0]);
-
                 JArray arrPos;
 
                 string _clientId = data["clientId"].ToString();
                 if (_clientId == m_localClientId )
                 {
+                    m_localPlayerIndex = data["indexPlayer"].Value<int>();
+
                     if (m_player == null && data["isSpectator"].ToString() == "0")
-                    {                     
-                        m_localPlayerIndex = data["indexPlayer"].Value<int>();
+                    {   
                         int rand = GetPlayerIndex(m_localPlayerIndex);
                         clientPosStart = PositionByIndex(rand);
                         
                         Debug.Log("[SocketClient]  ===========  player ================= m_localPlayerIndex = " + m_localPlayerIndex);           
                         
-                        isHost = data["isHost"].ToString() == "1";   
+                        m_isHost = data["isHost"].ToString() == "1";   
                         if (data["gender"].ToString() == "0")
                         {
                             playerPrefab.GetComponent<characterSpawn>().SetActiveCharacter(0);
@@ -673,7 +690,7 @@ public class SocketClient : MonoBehaviour
                     }
                 }
 
-                if (isSpectator)
+                if (m_isSpectator)
                 {
                     // code spectator screen here
 
@@ -853,15 +870,15 @@ public class SocketClient : MonoBehaviour
                 break;
             case "roundPass":
                 Debug.Log("  roundPass data ==========  " + data);
-                if (m_localClientId == data["clientId"].ToString())
+                string playerID = data["clientId"].ToString();
+
+                if (!IsSpectator(playerID) && m_localClientId == playerID)
                 {
                     if((m_isSinglePlayer && int.Parse(data["roundPass"].ToString()) >= 5) ||(!m_isSinglePlayer && int.Parse(data["countPlayer"].ToString()) == 1))
                     {
                         CubeManager.Instance.SetPlayerWin();
-                    }
-                    
-                }
-               
+                    }                    
+                }               
                 break;
             case "playerDie":
                 Debug.Log("  playerDie data ==========  " + data);
@@ -955,7 +972,7 @@ public class SocketClient : MonoBehaviour
                 
                 if (checkNewHost != "" && checkNewHost == m_localClientId)
                 {
-                    isHost = true;
+                    m_isHost = true;
 
                     if (m_player != null)
                     {
@@ -1114,7 +1131,7 @@ public class SocketClient : MonoBehaviour
     }
     public void OnRoundAlready()
     {
-        if (!isHost || isEndGame) return;
+        if (!m_isHost || isEndGame) return;
         Debug.Log(" OnCountDown =================  ");
         JObject jsData = new JObject();
         jsData.Add("meta", "roundAlready");
@@ -1132,7 +1149,7 @@ public class SocketClient : MonoBehaviour
     }
     public void OnCountDown()
     {
-        if (!isHost || isEndGame) return;
+        if (!m_isHost || isEndGame) return;
         Debug.Log(" OnCountDown =================  ");
         JObject jsData = new JObject();
         jsData.Add("meta", "countDown");
@@ -1159,7 +1176,7 @@ public class SocketClient : MonoBehaviour
 
     public void OnRequestRandomTarget(int _target, int _ran1, int _ran2, int _ran3)
     {
-        if (!isHost || isEndGame) return;
+        if (!m_isHost || isEndGame) return;
         JObject jsData = new JObject();
         jsData.Add("meta", "requestTarget");
         jsData.Add("clientId", m_localClientId);
@@ -1173,7 +1190,7 @@ public class SocketClient : MonoBehaviour
     
     public void OnCubeFall()
     {
-        if (!isHost || isEndGame) return;
+        if (!m_isHost || isEndGame) return;
         JObject jsData = new JObject();
         jsData.Add("meta", "cubeFall");
         jsData.Add("clientId", m_localClientId);
@@ -1182,7 +1199,7 @@ public class SocketClient : MonoBehaviour
     }
     public void OnCubeReset()
     {
-        if (!isHost || isEndGame) return;
+        if (!m_isHost || isEndGame) return;
         JObject jsData = new JObject();
         jsData.Add("meta", "cubeReset");
         jsData.Add("clientId", m_localClientId);
@@ -1210,7 +1227,7 @@ public class SocketClient : MonoBehaviour
 
     public void OnEndGame()
     {
-        if (!isHost) return;
+        if (!m_isHost) return;
         JObject jsData = new JObject();
         jsData.Add("meta", "endGame");
         jsData.Add("clientId", m_localClientId);
