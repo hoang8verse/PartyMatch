@@ -346,7 +346,7 @@ namespace CMF
 			if (other.gameObject.name == "dead" && gameObject.transform.tag == "Player")
 			{
 
-				LevelManager.instance.SetLooseScreen();
+				LevelManager.Instance.SetLooseScreen();
 				//Destroy(this.gameObject);
 
 			}

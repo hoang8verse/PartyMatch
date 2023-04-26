@@ -1,11 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Utility;
 
-public class CubeManager : MonoBehaviour
+public class CubeManager : Singleton<CubeManager>
 {
-    public static CubeManager instance;
-
     public GameObject[] CubeMeshs;
     public List<GameObject> cubemesh2 = new List<GameObject>();
 
@@ -25,35 +24,22 @@ public class CubeManager : MonoBehaviour
     int ran2;
     int ran3;
 
-    public bool backPosition;
-    public LevelManager levelmanager;
+    public bool backPosition;  
 
     public GameObject counter;
 
     public int round = 0;
-    private void Awake()
-    {
-        if (instance == null)
-            instance = this;
-        else if (instance != this)
-            Destroy(gameObject);
-    }
+    public bool IsInitialized { set; get; } = false;
     // Start is called before the first frame update
     void Start()
     {
-        levelmanager.GetComponent<LevelManager>();
-
         for (int i = 0; i < CubeMeshs.Length; i++)
         {
             spawnpoints[i] = CubeMeshs[i].transform.position;
             spawnpointsR[i] = CubeMeshs[i].transform.localRotation;
 
         }
-        // counter.SetActive(true);
-
-        //Invoke("selectCube", 3);
-        //Invoke("SendRequestRandomTarget", 3);
-        
+        IsInitialized = true;
     }
 
     public void SendRequestRandomTarget()
@@ -87,7 +73,7 @@ public class CubeManager : MonoBehaviour
     }
     void selectCube()
     {
-        if (!levelmanager.winbool)
+        if (!LevelManager.Instance.winbool)
         {
             //targetmateriel = materiellist[Random.Range(0, materiellist.Length)];
             targetmateriel = materiellist[target];
@@ -129,7 +115,7 @@ public class CubeManager : MonoBehaviour
             print("selected number is " + ran2);
             print("selected number is " + ran3);
 
-            if (LevelManager.instance.winbool)
+            if (LevelManager.Instance.winbool)
             {
                 counter.SetActive(false);
 
@@ -194,14 +180,14 @@ public class CubeManager : MonoBehaviour
     {
         //if (round >= 5)
         {
-            levelmanager.SetPlayerWin();
+            LevelManager.Instance.SetPlayerWin();
             SocketClient.instance.OnPlayerWin();
         }
     }
    IEnumerator resetCube()
     {
         round++;
-        LevelManager.instance.textRound.text = round.ToString();
+        LevelManager.Instance.textRound.text = round.ToString();
         SocketClient.instance.OnRoundPass(round);
 
         yield return new WaitForSeconds(3);
@@ -210,7 +196,7 @@ public class CubeManager : MonoBehaviour
 
         yield return new WaitForSeconds(3.5f);
        
-        if (LevelManager.instance.winbool)
+        if (LevelManager.Instance.winbool)
         {
             counter.SetActive(false);
 
@@ -281,7 +267,7 @@ public class CubeManager : MonoBehaviour
 
             }
         }
-        if(LevelManager.instance.winbool)
+        if(LevelManager.Instance.winbool)
         {
             cam2.SetActive(true);
             return;

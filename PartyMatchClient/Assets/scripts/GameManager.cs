@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -13,6 +14,7 @@ public class GameManager : Singleton<GameManager>
     {
        // SocketClient.instance.OnJoinRoom();
     }
+    [Conditional("DEVELOPMENT_BUILD"), Conditional("UNITY_EDITOR"), Conditional("USE_GAMELOG")]
     public void ShowDebugInfo(string info)
     {
         m_debugInfo.text += info;

@@ -62,9 +62,7 @@ public class SocketClient : MonoBehaviour
 
     [SerializeField]
     private GameObject spectatorPrefab;
-
-    [SerializeField]
-    private GameObject cubeObjectPrefab;
+     
 
     Vector3 clientPosStart;
     string hitEnemyId = "";
@@ -202,17 +200,17 @@ public class SocketClient : MonoBehaviour
     }
     private Vector3 PositionByIndex(int ranIndex)
     {
-        return cubeObjectPrefab.GetComponent<CubeManager>().CubeMeshs[ranIndex].transform.position;
+        return CubeManager.Instance.CubeMeshs[ranIndex].transform.position;
     }
     private int GetRandomLength()
     {
-        return cubeObjectPrefab.GetComponent<CubeManager>().CubeMeshs.Length;
+        return CubeManager.Instance.CubeMeshs.Length;
     }
     private Vector3 RandomPosition()
     {
         System.Random rand = new System.Random();
-        int ranIndex = rand.Next(0, cubeObjectPrefab.GetComponent<CubeManager>().CubeMeshs.Length);
-        Vector3 randomPoint = cubeObjectPrefab.GetComponent<CubeManager>().CubeMeshs[ranIndex].transform.position;
+        int ranIndex = rand.Next(0, GetRandomLength());
+        Vector3 randomPoint = PositionByIndex(ranIndex);
         return randomPoint;
     }
     bool isRunOnMobile;
@@ -491,10 +489,10 @@ public class SocketClient : MonoBehaviour
                 break;
             case "roundAlready":
                 Debug.Log("roundAlready  ===============================  " + data );
-                if (LevelManager.instance.isStartGame == false)
+                if (LevelManager.Instance.isStartGame == false)
                 {
                     Debug.Log("roundAlready  ===============================  " + data);
-                    LevelManager.instance.startGame();
+                    LevelManager.Instance.startGame();
                 }
                     
                 break;
@@ -524,7 +522,7 @@ public class SocketClient : MonoBehaviour
                     if (!m_aliveLobbyPlayer.Contains(item.Value<int>()))
                         m_aliveLobbyPlayer.Add(item.Value<int>());
 
-                Debug.Log($"[SocketClient] joinRoom player m_aliveLobbyPlayer = {m_aliveLobbyPlayer}");
+                Debug.Log($"[SocketClient] joinRoom player m_aliveLobbyPlayer.Count = {m_aliveLobbyPlayer.Count}");
 
                 currentPlayerJoined = m_players.Count;
                 Debug.Log(" playerName  join room  " + data["playerName"].ToString());
@@ -561,7 +559,7 @@ public class SocketClient : MonoBehaviour
                 MainMenu.instance.ShowPlayerJoinRoom(data["playerName"].ToString());
                 MainMenu.instance.ShowTotalPlayers(m_players.Count);
 
-                clientPosStart = RandomPosition();
+                //clientPosStart = RandomPosition();
                 break;
 
             case "gotoGame":
@@ -588,7 +586,7 @@ public class SocketClient : MonoBehaviour
                         m_aliveIndexPlayers.Add(item.Value<int>());
                 }
 
-                Debug.Log($"[SocketClient] joinRoom player m_aliveIndexPlayers = {m_aliveIndexPlayers}");
+                Debug.Log($"[SocketClient] joinRoom player m_aliveIndexPlayers.Count = {m_aliveIndexPlayers.Count}");
                 Debug.Log(" arrRanPos ------------------------ " + arrRanPos[0]);
 
                 JArray arrPos;
@@ -698,7 +696,7 @@ public class SocketClient : MonoBehaviour
                 else
                 {
                     //StartCoroutine(UpdatePositionOtherPlayers());
-                    LevelManager.instance.startGame();
+                    LevelManager.Instance.startGame();
                     // start moving
                     //LoopCheckPlayerMoving();
                     isEndGame = false;
@@ -855,18 +853,18 @@ public class SocketClient : MonoBehaviour
                 int _ran2 = int.Parse(data["ran2"].ToString());
                 int _ran3 = int.Parse(data["ran3"].ToString());
 
-                CubeManager.instance.PerformCube(_target, _ran1, _ran2, _ran3);
+                CubeManager.Instance.PerformCube(_target, _ran1, _ran2, _ran3);
 
 
                 break;
             case "cubeFall":
                 Debug.Log("  cubeFall data ==========  " + data);
-                CubeManager.instance.PerformCubeFall();
+                CubeManager.Instance.PerformCubeFall();
                 break;
 
             case "cubeReset":
                 Debug.Log("  cubeReset data ==========  " + data);
-                CubeManager.instance.PerformCubeReset();
+                CubeManager.Instance.PerformCubeReset();
                 break;
             case "roundPass":
                 Debug.Log("  roundPass data ==========  " + data);
@@ -874,7 +872,7 @@ public class SocketClient : MonoBehaviour
                 {
                     if(int.Parse(data["roundPass"].ToString()) >= 5 && int.Parse(data["countPlayer"].ToString()) == 1)
                     {
-                        CubeManager.instance.SetPlayerWin();
+                        CubeManager.Instance.SetPlayerWin();
                     }
                     
                 }
@@ -977,7 +975,7 @@ public class SocketClient : MonoBehaviour
                     if (m_player != null)
                     {
                         Debug.Log(" client is new host -----------    " );
-                        LevelManager.instance.CheckHost();
+                        LevelManager.Instance.CheckHost();
                     } 
                     else
                     {
@@ -1081,7 +1079,7 @@ public class SocketClient : MonoBehaviour
     }
     public void OnHitEnemy(Vector3 hitPos, string enemyName)
     {
-        if (!LevelManager.instance.isStartGame) return;
+        if (!LevelManager.Instance.isStartGame) return;
 
         //string enemyId = enemyName.Replace("otherplayer-","");
         //Debug.Log("enemyName ==================  " + enemyName + "    , sub  = " + enemyId);
@@ -1095,7 +1093,7 @@ public class SocketClient : MonoBehaviour
     }
     public void OnStunnedByEnemy(Vector3 hitPos, string enemyName)
     {
-        if (!LevelManager.instance.isStartGame) return;
+        if (!LevelManager.Instance.isStartGame) return;
 
         //string enemyId = enemyName.Replace("otherplayer-", "");
         //Debug.Log("enemyName ==================  " + enemyName + "    , sub  = " + enemyId);

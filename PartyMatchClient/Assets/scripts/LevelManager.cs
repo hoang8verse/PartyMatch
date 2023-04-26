@@ -2,18 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Utility;
 
-public class LevelManager : MonoBehaviour
+public class LevelManager : Singleton<LevelManager>
 {
-    public static LevelManager instance;
-    private void Awake()
-    {
-        if (instance == null)
-            instance = this;
-        else if (instance != this)
-            Destroy(gameObject);
-    }
-
     //public List<GameObject>  AI;
     public bool winbool;
     public TMPro.TextMeshProUGUI textRound;
@@ -27,8 +19,10 @@ public class LevelManager : MonoBehaviour
     bool isMoving = false;
     public bool isStartGame = false;
     // Start is called before the first frame update
-    private void Start()
+    IEnumerator Start()
     {
+        yield return new WaitUntil(() => (CubeManager.Instance != null && CubeManager.Instance.IsInitialized));
+
         CheckDevice();
         RigObject.SetActive(false);
         JoystickControl.transform.position = new Vector3(-5000, -5000, 0);
@@ -94,7 +88,7 @@ public class LevelManager : MonoBehaviour
     IEnumerator CountDownTarget()
     {
         yield return new WaitForSeconds(3f);
-        CubeManager.instance.SendRequestRandomTarget();
+        CubeManager.Instance.SendRequestRandomTarget();
     }
     public void SetLooseScreen()
     {
@@ -203,8 +197,8 @@ public class LevelManager : MonoBehaviour
     {
         //SocketClient.instance.OnCloseConnectSocket();
         GameObject level = GameObject.Find("LevelManager");
-
-        Destroy(level);
+        level.SetActive(false);
+        //Destroy(level);
         //Advertisements.Instance.ShowInterstitial();
         SceneManager.LoadScene("MainMenu");
     }
