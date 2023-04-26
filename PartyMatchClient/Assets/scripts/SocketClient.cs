@@ -55,9 +55,7 @@ public class SocketClient : MonoBehaviour
     public GameObject m_player = null;
     [SerializeField]
     private GameObject otherPlayerPrefab;
-    private List<JToken> m_players = new List<JToken>();
-    List<string> otherIds = new List<string>();
-
+    private List<JToken> m_players = new List<JToken>();    
     private Dictionary<string,GameObject> m_otherPlayers;
     private List<int> m_aliveIndexPlayers = new List<int>();
     private List<int> m_aliveLobbyPlayer = new List<int>();
@@ -434,7 +432,7 @@ public class SocketClient : MonoBehaviour
         Debug.Log("[SocketClient] OnCreateOtherPlayer  other player data:" + data);
         string _clientId = data["clientId"].ToString();
 
-        if (otherIds.IndexOf(_clientId) == -1)
+        if (!m_otherPlayers.ContainsKey(_clientId))
         {
             int rand = GetPlayerIndex(data["indexPlayer"].Value<int>());
             Vector3 pos = PositionByIndex(rand);
@@ -457,8 +455,8 @@ public class SocketClient : MonoBehaviour
             otherPlayer.IndexPlayer = data["indexPlayer"].Value<int>();
 
             m_otherPlayers[_clientId].SetActive(true);
-            Debug.Log($"===>[SocketClient] created instantiate  other player = {m_otherPlayers[_clientId]} otherPlayer.IndexPlayer = {otherPlayer.IndexPlayer} _clientId = {_clientId}");
-            otherIds.Add(_clientId);
+            GameManager.Instance.ShowDebugInfo($"\n create player  = {_clientId}");
+            Debug.Log($"===>[SocketClient] created instantiate  other player = {m_otherPlayers[_clientId]} otherPlayer.IndexPlayer = {otherPlayer.IndexPlayer} _clientId = {_clientId}");         
         }
     }
 
@@ -596,7 +594,7 @@ public class SocketClient : MonoBehaviour
                 JArray arrPos;
 
                 string _clientId = data["clientId"].ToString();
-                if (data["clientId"].ToString() == m_localClientId )
+                if (_clientId == m_localClientId )
                 {
                     if (m_player == null)
                     {
@@ -643,8 +641,6 @@ public class SocketClient : MonoBehaviour
                         Debug.Log("  =========== player is same client =================  " + clientPosStart);
                         //player.transform.position = playerPos;
                     }
-
-
                 }
                 else if (_clientId != m_localClientId && data["isSpectator"].ToString() == "0")
                 {
@@ -660,8 +656,9 @@ public class SocketClient : MonoBehaviour
                 break;
             case "startGame":
                 Debug.Log(" [SocketClient] startGame =================  " + data);
-
-                if(m_aliveIndexPlayers.Count == m_otherPlayers.Count + 1)
+                GameManager.Instance.ShowDebugInfo($"\n m_otherPlayers.Count = {m_otherPlayers.Count}");
+                GameManager.Instance.ShowDebugInfo($"\n m_aliveIndexPlayers.Count = {m_aliveIndexPlayers.Count}");
+                if (m_aliveIndexPlayers.Count == m_otherPlayers.Count + 1)
                 {
                     Debug.Log($"[SocketClient] OK startGame with count other players = {m_otherPlayers.Count}");
                 }
@@ -923,48 +920,8 @@ public class SocketClient : MonoBehaviour
 
                 break;
             case "endGame":
-                Debug.Log("  endGame data ==========  " + data);
-                if (data.ContainsKey("players"))
-                {
-                    var players = JArray.Parse(data["players"].ToString());
-
-                    foreach (var player in players)
-                    {
-                        OnAddPlayer(player);
-                    }
-                }
-               
-                JArray sortedJArray = new JArray(m_players.OrderByDescending(j => j["timeWin"]));
-                Debug.Log("  sortedJArray data ==========  " + sortedJArray);
-                int indexPlayerEnd = 0;
-                if (isSpectator)
-                {
-                    // code spectator screen here
-                    for (int i = 0; i < sortedJArray.Count; i++)
-                    {
-                        if (sortedJArray[i]["isSpectator"].ToString() == "0")
-                        {
-                            indexPlayerEnd++;
-                            //player.GetComponent<PlayerMovement>().AddPlayerResult(players[i]["playerName"].ToString(), players[i]["playerStatus"].ToString(), i);
-                        }
-
-                    }
-
-                }
-                else
-                {
-                    for (int i = 0; i < sortedJArray.Count; i++)
-                    {
-                        if(sortedJArray[i]["isSpectator"].ToString() == "0")
-                        {
-                           
-                            indexPlayerEnd++;
-                            //player.GetComponent<PlayerMovement>().AddPlayerResult(players[i]["playerName"].ToString(), players[i]["playerStatus"].ToString(), i);
-                        }
-
-                    }
-
-                }
+                Debug.Log("  endGame data ==========  " + data);  
+                
                 
                 break;
             case "playerLeaveRoom":
@@ -1007,8 +964,7 @@ public class SocketClient : MonoBehaviour
                 {
                     m_otherPlayers[playerLeaveId].SetActive(false);
                     Destroy(m_otherPlayers[playerLeaveId]);
-                    m_otherPlayers.Remove(playerLeaveId);
-                    otherIds.Remove(playerLeaveId);
+                    m_otherPlayers.Remove(playerLeaveId);                
                 }
                 
                 // check new host 
@@ -1299,8 +1255,14 @@ public class SocketClient : MonoBehaviour
             m_player = null;
         }
         m_players.Clear();
+
+        foreach(var otherPlayer in m_otherPlayers.Values)
+        {
+            otherPlayer.SetActive(false);
+            Destroy(otherPlayer);
+        }    
         m_otherPlayers.Clear();
-        otherIds.Clear();
+        
         m_aliveIndexPlayers.Clear();
         m_aliveLobbyPlayer.Clear();
         await webSocket.Close();
@@ -1311,8 +1273,14 @@ public class SocketClient : MonoBehaviour
         ROOM = "";
         isEndGame = true;
         m_players.Clear();
+        
+        foreach (var otherPlayer in m_otherPlayers.Values)
+        {
+            otherPlayer.SetActive(false);
+            Destroy(otherPlayer);
+        }
         m_otherPlayers.Clear();
-        otherIds.Clear();
+      
         if (m_player)
         {
             Destroy(m_player);

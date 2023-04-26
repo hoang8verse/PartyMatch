@@ -1602,7 +1602,7 @@ MonoBehaviour:
   - {fileID: 1197782736041353399}
   - {fileID: 1197782736047235639}
   cubemesh2: []
-  targetmateriel: {fileID: 2100000, guid: fa7583f4941f3ec4695e3315f9ab341c, type: 2}
+  targetmateriel: {fileID: 0}
   materiellist:
   - {fileID: 2100000, guid: e1d515f6ec28e7240a8be81d84cdd329, type: 2}
   - {fileID: 2100000, guid: 57703941e30c5834aa9f38112119cb18, type: 2}
