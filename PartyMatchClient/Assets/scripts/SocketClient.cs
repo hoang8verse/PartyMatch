@@ -40,7 +40,7 @@ public class SocketClient : MonoBehaviour
     //static string HOST = "8081";
 
     public string ROOM = "";
-    public string clientId = "";
+    public string m_localClientId = "";
 
     public string playerJoinName = "";
     public int currentPlayerJoined = 0;
@@ -482,7 +482,7 @@ public class SocketClient : MonoBehaviour
         {
             case "roomDetected":
                 ROOM = data["room"].ToString();
-                clientId = data["clientId"].ToString();
+                m_localClientId = data["clientId"].ToString();
                 //OnJoinRoom();
                 OnJoinLobbyRoom();
 
@@ -534,7 +534,7 @@ public class SocketClient : MonoBehaviour
                 int countUserPlay = 0;
                 int countSpectator = 0;
                 // for new player
-                if (data["clientId"].ToString() == clientId && m_player == null)
+                if (data["clientId"].ToString() == m_localClientId && m_player == null)
                 {
 
                     for (int i = 0; i < m_players.Count; i++)
@@ -571,7 +571,7 @@ public class SocketClient : MonoBehaviour
                 //OnCheckPosition();
                 break;
             case "positionPlayer":
-                if (data["clientId"].ToString() == clientId)
+                if (data["clientId"].ToString() == m_localClientId)
                 {
                     int _indexRan = int.Parse(data["ranIndex"].ToString());
                     clientPosStart = PositionByIndex(_indexRan);
@@ -596,7 +596,7 @@ public class SocketClient : MonoBehaviour
                 JArray arrPos;
 
                 string _clientId = data["clientId"].ToString();
-                if (data["clientId"].ToString() == clientId )
+                if (data["clientId"].ToString() == m_localClientId )
                 {
                     if (m_player == null)
                     {
@@ -646,7 +646,7 @@ public class SocketClient : MonoBehaviour
 
 
                 }
-                else if (_clientId != clientId && data["isSpectator"].ToString() == "0")
+                else if (_clientId != m_localClientId && data["isSpectator"].ToString() == "0")
                 {
                     Debug.Log("  ===========  other player =================  ");
 
@@ -710,7 +710,7 @@ public class SocketClient : MonoBehaviour
             case "hitEnemy":
                 Debug.Log("  hitEnemy =================  " + data);
 
-                if(clientId == data["clientId"].ToString())
+                if(m_localClientId == data["clientId"].ToString())
                 {
                     hitEnemyId = data["hitEnemyId"].ToString();
                     Vector3 pos = Vector3.zero;
@@ -748,7 +748,7 @@ public class SocketClient : MonoBehaviour
             case "stunned":
                 Debug.Log("  stunned =================  " + data);
 
-                if (clientId == data["clientId"].ToString())
+                if (m_localClientId == data["clientId"].ToString())
                 {
                     stunnedByEnemyId = data["stunnedByEnemyId"].ToString();
                     Vector3 pos = Vector3.zero;
@@ -821,7 +821,7 @@ public class SocketClient : MonoBehaviour
                 }
 
                 Debug.Log("  moving position data posVeclocity =================  " + posVeclocity);
-                if (clientId == data["clientId"].ToString())
+                if (m_localClientId == data["clientId"].ToString())
                 {
                     //Debug.Log("  moving position data   ==========  " + player.transform.position);
                     //player.GetComponent<Mover>().SetVelocityFromServer(posVeclocity);
@@ -873,7 +873,7 @@ public class SocketClient : MonoBehaviour
                 break;
             case "roundPass":
                 Debug.Log("  roundPass data ==========  " + data);
-                if (clientId == data["clientId"].ToString())
+                if (m_localClientId == data["clientId"].ToString())
                 {
                     if(int.Parse(data["roundPass"].ToString()) >= 5 && int.Parse(data["countPlayer"].ToString()) == 1)
                     {
@@ -886,7 +886,7 @@ public class SocketClient : MonoBehaviour
             case "playerDie":
                 Debug.Log("  playerDie data ==========  " + data);
 
-                if (clientId == data["clientId"].ToString())
+                if (m_localClientId == data["clientId"].ToString())
                 {
                     StopCoroutine("CheckPlayerMoving");
                     isEndGame = true;
@@ -908,7 +908,7 @@ public class SocketClient : MonoBehaviour
                 break;
             case "playerWin":
                 Debug.Log("  playerWin data ==========  " + data);
-                if (clientId == data["clientId"].ToString())
+                if (m_localClientId == data["clientId"].ToString())
                 {
                     StopCoroutine("CheckPlayerMoving");
                     isEndGame = true;
@@ -1014,7 +1014,7 @@ public class SocketClient : MonoBehaviour
                 // check new host 
                 string checkNewHost = data["newHost"].ToString();
                 
-                if (checkNewHost != "" && checkNewHost == clientId)
+                if (checkNewHost != "" && checkNewHost == m_localClientId)
                 {
                     isHost = true;
 
@@ -1158,7 +1158,7 @@ public class SocketClient : MonoBehaviour
         Quaternion rot = m_player.GetComponent< AdvancedWalkerController>().modelTransform.localRotation;
         JObject jsData = new JObject();
         jsData.Add("meta", "updatePos");
-        jsData.Add("clientId", clientId);
+        jsData.Add("clientId", m_localClientId);
         jsData.Add("room", ROOM);
         jsData.Add("pos", pos.ToString());
         jsData.Add("rot", rot.ToString());
@@ -1208,7 +1208,7 @@ public class SocketClient : MonoBehaviour
         //Quaternion rot = player.transform.rotation;
         JObject jsData = new JObject();
         jsData.Add("meta", "moving");
-        jsData.Add("clientId", clientId);
+        jsData.Add("clientId", m_localClientId);
         jsData.Add("room", ROOM);
         jsData.Add("velocity", _velocity.ToString());
         jsData.Add("h", _h);
@@ -1223,7 +1223,7 @@ public class SocketClient : MonoBehaviour
         if (!isHost || isEndGame) return;
         JObject jsData = new JObject();
         jsData.Add("meta", "requestTarget");
-        jsData.Add("clientId", clientId);
+        jsData.Add("clientId", m_localClientId);
         jsData.Add("room", ROOM);
         jsData.Add("target", _target);
         jsData.Add("ran1", _ran1);
@@ -1237,7 +1237,7 @@ public class SocketClient : MonoBehaviour
         if (!isHost || isEndGame) return;
         JObject jsData = new JObject();
         jsData.Add("meta", "cubeFall");
-        jsData.Add("clientId", clientId);
+        jsData.Add("clientId", m_localClientId);
         jsData.Add("room", ROOM);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
     }
@@ -1246,7 +1246,7 @@ public class SocketClient : MonoBehaviour
         if (!isHost || isEndGame) return;
         JObject jsData = new JObject();
         jsData.Add("meta", "cubeReset");
-        jsData.Add("clientId", clientId);
+        jsData.Add("clientId", m_localClientId);
         jsData.Add("room", ROOM);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
     }
@@ -1255,7 +1255,7 @@ public class SocketClient : MonoBehaviour
         Debug.Log(" ======================== OnPlayerDie() ======================================");
         JObject jsData = new JObject();
         jsData.Add("meta", "playerDie");
-        jsData.Add("clientId", clientId);
+        jsData.Add("clientId", m_localClientId);
         jsData.Add("room", ROOM);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
     }
@@ -1264,7 +1264,7 @@ public class SocketClient : MonoBehaviour
     {
         JObject jsData = new JObject();
         jsData.Add("meta", "playerWin");
-        jsData.Add("clientId", clientId);
+        jsData.Add("clientId", m_localClientId);
         jsData.Add("room", ROOM);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
     }
@@ -1274,7 +1274,7 @@ public class SocketClient : MonoBehaviour
         if (!isHost) return;
         JObject jsData = new JObject();
         jsData.Add("meta", "endGame");
-        jsData.Add("clientId", clientId);
+        jsData.Add("clientId", m_localClientId);
         jsData.Add("room", ROOM);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
     }
@@ -1283,14 +1283,14 @@ public class SocketClient : MonoBehaviour
     {
         JObject jsData = new JObject();
         jsData.Add("meta", "leave");
-        jsData.Add("clientId", clientId);
+        jsData.Add("clientId", m_localClientId);
         jsData.Add("room", ROOM);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
     }
 
     public async void OnCloseConnectSocket()
     {
-        clientId = "";
+        m_localClientId = "";
         ROOM = "";
         isEndGame = true;
         if (m_player)
@@ -1307,7 +1307,7 @@ public class SocketClient : MonoBehaviour
     }
     public void OnDisconnect()
     {
-        clientId = "";
+        m_localClientId = "";
         ROOM = "";
         isEndGame = true;
         m_players.Clear();
