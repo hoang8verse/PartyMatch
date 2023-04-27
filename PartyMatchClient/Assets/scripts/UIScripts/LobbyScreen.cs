@@ -23,6 +23,7 @@ namespace UIElements
         [SerializeField] TextMeshProUGUI m_roomID;
         [SerializeField] TextMeshProUGUI m_playerJoinRoomNotification;
 
+        [SerializeField] GameObject m_startGameButton;
 
         float fadeTime = 1f; // Set the time it takes to fade in and out                
         float defaultHolderSize = 800f;
@@ -42,7 +43,7 @@ namespace UIElements
             gameObject.SetActive(true);
             m_roomID.text = roomId;            
             GenerateQRCode.Instance.OnCreateQRCode(roomId);
-            SetTotalPlayer("");
+            SetTotalPlayer(0);
             SetPlayerJoin("");
         }
         public void ShowPlayerJoinRoom(string _playerName)
@@ -57,15 +58,18 @@ namespace UIElements
             m_playerJoinRoomNotification.text = text;
             //Debug.Log("m_playerJoinRoom.text==============  " + m_playerJoinRoom.text);
         }
-        public void SetTotalPlayer(string _totalPlayer)
+        public void SetTotalPlayer(int totalPlayer)
         {
-            if (_totalPlayer == "")
-                return;
-
-            string text = "Tổng số người đã tham gia: " + _totalPlayer.ToString();
+            m_startGameButton.GetComponent<Button>().interactable = (totalPlayer != 0);  
+            string text = "Tổng số người đã tham gia: " + totalPlayer.ToString();
             m_totalPlayerAmountText.text = text;
 
-            if (int.Parse(_totalPlayer) > m_avatarsCountLimit)
+            if (totalPlayer == 0)
+            {
+                return;
+            }           
+
+            if (totalPlayer > m_avatarsCountLimit)
             {
                 float sizeAfterIncrease = (m_playerAvatarsHolder.childCount - m_avatarsCountLimit) * m_defaultAvatarSize + m_playerAvatarsHolder.sizeDelta.x;
                 m_playerAvatarsHolder.sizeDelta = new Vector2(sizeAfterIncrease, m_playerAvatarsHolder.sizeDelta.y);

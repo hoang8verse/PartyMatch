@@ -199,7 +199,7 @@ public class MainMenu : MonoBehaviour
     }
     public void ShowTotalPlayers(int player)
     {
-        LobbyScreen.Instance.SetTotalPlayer(player.ToString());
+        LobbyScreen.Instance.SetTotalPlayer(player);
     }
     public void ShowLobby()
     {
@@ -382,4 +382,8 @@ public class MainMenu : MonoBehaviour
 		//PlayerPrefs.SetInt("selectedCharacter", selectedCharacter);
 		SceneManager.LoadScene("Game");
 	}
+    public bool IsSpectatorMode()
+    {
+        return (isSpectator == "1");       
+    }    
 }

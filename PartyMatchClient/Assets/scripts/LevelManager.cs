@@ -14,6 +14,7 @@ public class LevelManager : Singleton<LevelManager>
     public GameObject startObject;
     public GameObject winpanel;
     public GameObject Loosepanel;
+    public GameObject m_spectatorPanel;
     public GameObject RigObject;
     public GameObject JoystickControl;
     bool isMoving = false;
@@ -22,6 +23,9 @@ public class LevelManager : Singleton<LevelManager>
     IEnumerator Start()
     {
         yield return new WaitUntil(() => (CubeManager.Instance != null && CubeManager.Instance.IsInitialized));
+
+        if (MainMenu.instance.IsSpectatorMode())
+            CameraController.Instance.OnSetupSpectatorViewMode();
 
         CheckDevice();
         RigObject.SetActive(false);
@@ -81,7 +85,7 @@ public class LevelManager : Singleton<LevelManager>
     {
         //Time.timeScale = 1;
         isStartGame = true;
-        RigObject.SetActive(true);
+        RigObject.SetActive(!MainMenu.instance.IsSpectatorMode());
         startObject.SetActive(false);
         StartCoroutine(CountDownTarget());
     }
@@ -96,6 +100,13 @@ public class LevelManager : Singleton<LevelManager>
         isStartGame = false;
         RigObject.SetActive(false);
         SocketClient.instance.OnPlayerDie();
+    }
+    
+    public void SetSpectatorEndGameScreen()
+    {
+        m_spectatorPanel.SetActive(true);
+        isStartGame = false;
+        RigObject.SetActive(false);        
     }
     private void Update()
     {

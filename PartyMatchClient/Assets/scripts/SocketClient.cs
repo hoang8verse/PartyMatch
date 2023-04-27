@@ -22,7 +22,12 @@ using CMF;
 
 public class SocketClient : MonoBehaviour
 {
-
+    public enum EGameState
+    {
+        None = 0,
+        InLobby,
+        InGame
+    }    
     public static SocketClient instance;
 
     public delegate void ReceiveAction(string message);
@@ -70,6 +75,8 @@ public class SocketClient : MonoBehaviour
     public bool isEndGame = false;
     bool isEndMovePlayer = false;
     private int m_localPlayerIndex = 0;
+    private EGameState m_gameState = EGameState.None;
+
     void Awake()
     {
         CheckDevice();
@@ -442,6 +449,32 @@ public class SocketClient : MonoBehaviour
 
         return isSpectator;
     }    
+
+    int CountAliveSpectator(bool isLobby)
+    {
+        int spectatorCount = 0;
+        var alivePlayers = isLobby ? m_aliveLobbyPlayer : m_aliveIndexPlayers;
+
+        foreach (var index in alivePlayers)
+        {
+            foreach(var player in m_players)
+            {
+                if (player["indexPlayer"].Value<int>() == index && player["isSpectator"].ToString() == "1")
+                    spectatorCount++;
+            }    
+        }
+        Debug.Log($"[SocketClient] GetAliveSpectator = {spectatorCount}");
+        return spectatorCount;
+    }    
+
+    int CountAllPlayerInGame()
+    {
+        return m_aliveIndexPlayers.Count - CountAliveSpectator(isLobby: false);
+    }
+    int CountAllPlayerInLobby()
+    {
+        return m_aliveLobbyPlayer.Count - CountAliveSpectator(isLobby: true);
+    }    
     void OnCreateOtherPlayer(JObject data)
     {
         Debug.Log("[SocketClient] OnCreateOtherPlayer  other player data:" + data);
@@ -572,15 +605,17 @@ public class SocketClient : MonoBehaviour
                     if (data["isSpectator"].ToString() == "0")
                         StartCoroutine(LoadAvatarImage(data["avatar"].ToString(), data["clientId"].ToString()));
                 }
+                if (data["isSpectator"].ToString() == "0")
+                    MainMenu.instance.ShowPlayerJoinRoom(data["playerName"].ToString());
 
-                MainMenu.instance.ShowPlayerJoinRoom(data["playerName"].ToString());
-                MainMenu.instance.ShowTotalPlayers(m_players.Count);
+                MainMenu.instance.ShowTotalPlayers(CountAllPlayerInLobby());
 
                 //clientPosStart = RandomPosition();
                 break;
 
             case "gotoGame":
                 MainMenu.instance.GotoGame();
+                m_gameState = EGameState.InGame;
                 //OnCheckPosition();
                 break;
             case "positionPlayer":
@@ -653,16 +688,14 @@ public class SocketClient : MonoBehaviour
                 Debug.Log(" [SocketClient] startGame =================  " + data);
                 //GameManager.Instance.ShowDebugInfo($"\n m_otherPlayers.Count = {m_otherPlayers.Count}");
                 
-                if(m_aliveLobbyPlayer.Count > 1)
+                if(CountAllPlayerInGame() >  1)
                     m_isSinglePlayer = false;
                 else
                     m_isSinglePlayer = true;
 
-                if (m_aliveIndexPlayers.Count == m_otherPlayers.Count + 1)
-                {
-                    Debug.Log($"[SocketClient] OK startGame with count other players = {m_otherPlayers.Count}");
-                }
-                else
+                int totalPlayer = MainMenu.instance.IsSpectatorMode() ? m_otherPlayers.Count : m_otherPlayers.Count + 1;
+
+                if (CountAllPlayerInGame() != totalPlayer)
                 {
                     Debug.Log($"[SocketClient] !!!startGame with count other players = {m_otherPlayers.Count}");
                   
@@ -872,12 +905,15 @@ public class SocketClient : MonoBehaviour
                 Debug.Log("  roundPass data ==========  " + data);
                 string playerID = data["clientId"].ToString();
 
-                if (!IsSpectator(playerID) && m_localClientId == playerID)
+                if (m_localClientId == playerID)
                 {
-                    if((m_isSinglePlayer && int.Parse(data["roundPass"].ToString()) >= 5) ||(!m_isSinglePlayer && int.Parse(data["countPlayer"].ToString()) == 1))
+                    if (!IsSpectator(playerID))                    
                     {
-                        CubeManager.Instance.SetPlayerWin();
-                    }                    
+                        if ((m_isSinglePlayer && int.Parse(data["roundPass"].ToString()) >= 5) || (!m_isSinglePlayer && int.Parse(data["countPlayer"].ToString()) - CountAliveSpectator(isLobby: false) == 1))
+                        {
+                            CubeManager.Instance.SetPlayerWin();
+                        }
+                    }
                 }               
                 break;
             case "playerDie":
@@ -932,15 +968,6 @@ public class SocketClient : MonoBehaviour
                     //Debug.Log(" players player leave ==   " + players[i].ToString());
                     if (playerLeaveId == m_players[i]["id"].ToString())
                     {
-                        if (m_player == null)
-                        {
-                            if (m_players[i]["isSpectator"].ToString() == "0")
-                            {
-                                MainMenu.instance.RemovePlayerJoinRoomByAvatar(playerLeaveId);
-                            }
-                            MainMenu.instance.ShowTotalPlayers(m_players.Count);
-                        }
-
                         int leaveIndex = m_players[i]["indexPlayer"].Value<int>();
 
                         if (m_aliveIndexPlayers.Count > 0)
@@ -948,12 +975,22 @@ public class SocketClient : MonoBehaviour
                             m_aliveIndexPlayers.Remove(leaveIndex);
                             Debug.Log($"[SocketClient] leave room player m_aliveIndexPlayers = {m_aliveIndexPlayers}");
                         }
-                        
+
                         if (m_aliveLobbyPlayer.Count > 0)
                         {
                             m_aliveLobbyPlayer.Remove(leaveIndex);
                             Debug.Log($"[SocketClient] leave room player m_aliveLobbyPlayer = {m_aliveLobbyPlayer}");
                         }
+
+                        if (m_gameState == EGameState.InLobby)
+                        {
+                            if (m_players[i]["isSpectator"].ToString() == "0")
+                            {
+                                MainMenu.instance.RemovePlayerJoinRoomByAvatar(playerLeaveId);
+                            }
+                            MainMenu.instance.ShowTotalPlayers(CountAllPlayerInLobby());
+                        }
+                       
                         m_players[i] = null;
                         m_players.RemoveAt(i);
                         Debug.Log(" players playerLeaveRoom 222222222222222  " + playerLeaveId);
@@ -966,27 +1003,40 @@ public class SocketClient : MonoBehaviour
                     Destroy(m_otherPlayers[playerLeaveId]);
                     m_otherPlayers.Remove(playerLeaveId);                
                 }
-                
-                // check new host 
-                string checkNewHost = data["newHost"].ToString();
-                
-                if (checkNewHost != "" && checkNewHost == m_localClientId)
+
+                if (MainMenu.instance.IsSpectatorMode() && m_gameState == EGameState.InGame)
                 {
-                    m_isHost = true;
-
-                    if (m_player != null)
+                    if (CountAllPlayerInGame() == 0)
                     {
-                        Debug.Log(" client is new host -----------    " );
-                        LevelManager.Instance.CheckHost();
-                    } 
-                    else
-                    {
-                        Debug.Log(" client is new lobby host ---=====  ");
-
-                        MainMenu.instance.isHost = "1";
-                        MainMenu.instance.CheckTheHost();
+                        LevelManager.Instance.SetSpectatorEndGameScreen();
+                        isEndGame = true;
+                        OnCloseConnectSocket();
                     }
-                    
+                }
+
+                if (m_gameState == EGameState.InLobby)
+                {
+                    // check new host 
+                    string checkNewHost = data["newHost"].ToString();
+
+                    if (checkNewHost != "" && checkNewHost == m_localClientId)
+                    {
+                        m_isHost = true;
+
+                        if (m_player != null)
+                        {
+                            Debug.Log(" client is new host -----------    ");
+                            LevelManager.Instance.CheckHost();
+                        }
+                        else
+                        {
+                            Debug.Log(" client is new lobby host ---=====  ");
+
+                            MainMenu.instance.isHost = "1";
+                            MainMenu.instance.CheckTheHost();
+                        }
+
+                    }
                 }
                 break;
 
@@ -1011,6 +1061,7 @@ public class SocketClient : MonoBehaviour
     }
     public void OnRequestRoom()
     {
+        m_gameState = EGameState.InLobby;
         Debug.Log("  MainMenu.instance.isSpectator OnRequestRoom =================  " + MainMenu.instance.isSpectator);
         string room = MainMenu.instance.roomId;
         JObject jsData = new JObject();
@@ -1045,7 +1096,7 @@ public class SocketClient : MonoBehaviour
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
     }
     public void OnGotoGame()
-    {
+    {      
         JObject jsData = new JObject();
         jsData.Add("meta", "gotoGame");
         jsData.Add("room", ROOM);
@@ -1053,7 +1104,7 @@ public class SocketClient : MonoBehaviour
     }
     public void OnJoinRoom()
     {
-        Debug.Log(" OnJoinRoom ==================  " );
+        Debug.Log(" OnJoinRoom ==================  " );       
         string playerName = MainMenu.instance.playerName;
 
         if (playerName.Length <= 1 )
@@ -1073,7 +1124,7 @@ public class SocketClient : MonoBehaviour
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
     }
     public void OnStartGame()
-    {
+    {        
         JObject jsData = new JObject();
         jsData.Add("meta", "startGame");
         jsData.Add("room", ROOM);
@@ -1246,6 +1297,7 @@ public class SocketClient : MonoBehaviour
 
     public async void OnCloseConnectSocket()
     {
+        m_gameState = EGameState.None;
         m_localClientId = "";
         ROOM = "";
         isEndGame = true;
