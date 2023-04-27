@@ -261,7 +261,18 @@ public class MainMenu : MonoBehaviour
         //failJoinRoomScreen.SetActive(true);
 
         //m_notificationText.text = message;
-        m_notificationText.text = "Mã phòng " + RoomId.text + " không tồn tại";
+        string errorMsg = "";
+
+        if(message.Contains("availiable"))
+            errorMsg = " không tồn tại.";   
+        else if(message.Contains("full spectator"))
+            errorMsg = " đã đầy người quan sát.";
+        else if(message.Contains("full players"))
+            errorMsg = " đã đầy người chơi.";  
+        else if(message.Contains("started"))
+            errorMsg = " đã bắt đầu rồi.";
+
+        m_notificationText.text = "Mã phòng " + RoomId.text + errorMsg;
         m_notificationText.gameObject.SetActive(true);
 
     }
