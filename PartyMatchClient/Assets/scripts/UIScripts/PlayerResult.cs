@@ -5,8 +5,7 @@ using UnityEngine.UI;
 public class PlayerResult : MonoBehaviour
 {
     [Header("Player Avatar")]
-    [SerializeField] RawImage m_playerAvatar;
-    [SerializeField] Image m_avatarHolder;
+    [SerializeField] Image m_avatarPlayer;
 
     [Header("Player Name")]
     [SerializeField] TextMeshProUGUI m_playerName;
@@ -16,29 +15,14 @@ public class PlayerResult : MonoBehaviour
     [SerializeField] Image m_resultPanel;
     [SerializeField] GameObject m_victoryMark;
     [SerializeField] GameObject m_loseMark;
+    [SerializeField] Sprite m_winBackground;
+    [SerializeField] Sprite m_loseBackground;
 
     public bool IsWin => m_isWin;
-    private Color VICTORY_COLOR = new Color32(22, 85, 30, 255);
-    private Color DEFEAT_COLOR = new Color32(226, 226, 226, 255);
 
     // Start is called before the first frame update
     void Start()
-    {
-        if (m_isWin)
-        {
-            m_victoryMark.SetActive(true);
-            m_resultPanel.color = VICTORY_COLOR;
-            m_avatarHolder.color = VICTORY_COLOR;
-            m_playerName.color = Color.white;
-        }
-        else
-        {
-            m_loseMark.SetActive(true);
-            m_resultPanel.color = DEFEAT_COLOR;
-            m_avatarHolder.color = DEFEAT_COLOR;
-            m_playerName.color = new Color32(0x16, 0x55, 0x1E, 0xFF);
-        }
-
+    {       
     }
 
     // Update is called once per frame
@@ -50,14 +34,18 @@ public class PlayerResult : MonoBehaviour
     public void SetPlayerResult(bool isWin)
     {
         m_isWin = isWin;
+        var background = isWin ? m_winBackground : m_loseBackground;
+        m_resultPanel.sprite = background;
+
+        m_victoryMark.SetActive(m_isWin);
+        m_loseMark.SetActive(!m_isWin);        
     }
     public void SetPlayerName(string playerName)
     {
-
         m_playerName.text = playerName;
     }
-    public void SetPlayerAvatar(Texture2D avatar)
+    public void SetPlayerAvatar(Sprite avatar)
     {
-        m_playerAvatar.texture = avatar;
+        m_avatarPlayer.sprite = avatar;
     }    
 }

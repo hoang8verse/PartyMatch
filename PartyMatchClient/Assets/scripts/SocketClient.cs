@@ -508,6 +508,36 @@ public class SocketClient : MonoBehaviour
         }
     }
 
+    string GetPlayerName(int index)
+    {
+        string playerName = "";
+
+        foreach (var player in m_players)
+        {
+            if (player["indexPlayer"].Value<int>() == index)
+            {
+                playerName = player["playerName"].ToString();
+            }
+        }
+
+        return playerName;
+    }
+
+    int GetPlayerIndex(string playerID)
+    {
+        int index = 0;
+
+        if(m_otherPlayers.TryGetValue(playerID, out GameObject player))
+        {
+            index = player.GetComponent<OtherPlayer>().IndexPlayer;
+            Debug.Log($"[SocketClient] GetPlayerIndex playerID = {playerID} => {index}");
+        }    
+        else
+        {
+            Debug.LogError($"[SocketClient] GetPlayerIndex playerID = {playerID} => don't exist!!!");
+        }    
+        return index;
+    }
     JObject GetPlayerData(int index)
     {
         foreach(var player in m_players)
@@ -918,8 +948,11 @@ public class SocketClient : MonoBehaviour
                 break;
             case "playerDie":
                 Debug.Log("  playerDie data ==========  " + data);
+                string diePlayerId = data["clientId"].ToString();
+                string diePlayerName = GetPlayerName(GetPlayerIndex(diePlayerId));
+                GameResultMgr.Instance.OnAddPlayerData(diePlayerId, diePlayerName, isWinner: false);
 
-                if (m_localClientId == data["clientId"].ToString())
+                if (m_localClientId == diePlayerId)
                 {
                     StopCoroutine("CheckPlayerMoving");
                     isEndGame = true;
@@ -941,7 +974,11 @@ public class SocketClient : MonoBehaviour
                 break;
             case "playerWin":
                 Debug.Log("  playerWin data ==========  " + data);
-                if (m_localClientId == data["clientId"].ToString())
+                string winPlayerId = data["clientId"].ToString();
+                string winPlayerName = GetPlayerName(GetPlayerIndex(winPlayerId));
+                GameResultMgr.Instance.OnAddPlayerData(winPlayerId, winPlayerName, isWinner: true);
+
+                if (m_localClientId == winPlayerId)
                 {
                     StopCoroutine("CheckPlayerMoving");
                     isEndGame = true;
@@ -1008,7 +1045,7 @@ public class SocketClient : MonoBehaviour
                 {
                     if (CountAllPlayerInGame() == 0)
                     {
-                        LevelManager.Instance.SetSpectatorEndGameScreen();
+                        LevelManager.Instance.ShowEndGameScreen();
                         isEndGame = true;
                         OnCloseConnectSocket();
                     }

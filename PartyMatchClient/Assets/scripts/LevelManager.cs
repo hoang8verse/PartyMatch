@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UIElements;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utility;
@@ -14,7 +15,7 @@ public class LevelManager : Singleton<LevelManager>
     public GameObject startObject;
     public GameObject winpanel;
     public GameObject Loosepanel;
-    public GameObject m_spectatorPanel;
+    public GameObject m_endGameScreen;
     public GameObject RigObject;
     public GameObject JoystickControl;
     bool isMoving = false;
@@ -102,11 +103,12 @@ public class LevelManager : Singleton<LevelManager>
         SocketClient.instance.OnPlayerDie();
     }
     
-    public void SetSpectatorEndGameScreen()
+    public void ShowEndGameScreen()
     {
-        m_spectatorPanel.SetActive(true);
+        m_endGameScreen.SetActive(true);
         isStartGame = false;
-        RigObject.SetActive(false);        
+        RigObject.SetActive(false);
+        m_endGameScreen.GetComponent<EndGameScreen>().OnShowResult();
     }
     private void Update()
     {
@@ -212,5 +214,7 @@ public class LevelManager : Singleton<LevelManager>
         //Destroy(level);
         //Advertisements.Instance.ShowInterstitial();
         SceneManager.LoadScene("MainMenu");
+        GameResultMgr.Instance.GameResultData.Clear();
+        MainMenu.instance.ResetAvatarList();
     }
 }

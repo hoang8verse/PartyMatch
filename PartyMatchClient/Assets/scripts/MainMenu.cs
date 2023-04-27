@@ -44,8 +44,7 @@ public class MainMenu : MonoBehaviour
 	public string isHost = "0";
 	public string gender = "0";
 	public string isSpectator = "0";
-	//public Dictionary<string, GameObject> listPlayers;
-	public Dictionary<string, Texture2D> listPlayerAvatars;
+	//public Dictionary<string, GameObject> listPlayers;	
 
 	//private const string CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	private const string CHARS = "0123456789";
@@ -62,6 +61,8 @@ public class MainMenu : MonoBehaviour
 	public AudioClip Click;
 	public AudioClip StartSound;
 	public AudioSource AudioSource;
+    private Dictionary<string, Sprite> m_spriteAvatars = new Dictionary<string, Sprite>();
+    public Dictionary<string, Sprite> SpriteAvatarPlayers => m_spriteAvatars;
     private void Awake()
     {
 		if (instance == null)
@@ -71,8 +72,7 @@ public class MainMenu : MonoBehaviour
 	}
     private void Start()
     {
-		//SocketClient.instance.OnConnectWebsocket();
-		listPlayerAvatars = new Dictionary<string, Texture2D>();
+		//SocketClient.instance.OnConnectWebsocket();		
 		StartCoroutine(WaitingReceiver());
         LobbyScreen.Instance.OnHide();
         createRoomScreen.SetActive(false);
@@ -292,17 +292,22 @@ public class MainMenu : MonoBehaviour
     {
         if (avatar != null)
         {
-            listPlayerAvatars[playerID]  =  avatar;
+            Rect rect = new Rect(0, 0, avatar.width, avatar.height);
+            Vector2 pivot = new Vector2(0.5f, 0.5f); // center pivot
+            Sprite sprite = Sprite.Create(avatar, rect, pivot);
+
+            SpriteAvatarPlayers[playerID]  = sprite;
             LobbyScreen.Instance.SetAvatarForPlayer(avatar, playerID);
         }
     }
     public void ResetAvatarList()
     {
-        listPlayerAvatars.Clear();
+        SpriteAvatarPlayers.Clear();
 
     }
     public void RemovePlayerJoinRoomByAvatar(string playerID)
     {
+        SpriteAvatarPlayers.Remove(playerID);
         LobbyScreen.Instance.RemoveAvatarForPlayer(playerID);
     }
 
