@@ -909,7 +909,7 @@ public class SocketClient : MonoBehaviour
                 {
                     if (!IsSpectator(playerID))                    
                     {
-                        if ((m_isSinglePlayer && int.Parse(data["roundPass"].ToString()) >= 5) || (!m_isSinglePlayer && int.Parse(data["countPlayer"].ToString()) - CountAliveSpectator(isLobby: false) == 1))
+                        if ((m_isSinglePlayer && int.Parse(data["roundPass"].ToString()) >= 5) || (!m_isSinglePlayer && int.Parse(data["countPlayer"].ToString()) - CountAliveSpectator(isLobby: false) <= 1))
                         {
                             CubeManager.Instance.SetPlayerWin();
                         }
