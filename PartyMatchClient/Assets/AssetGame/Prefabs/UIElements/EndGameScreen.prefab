@@ -66,7 +66,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "K\xEA\u0301t Qua\u0309"
+  m_text: "K\u1EBFt Qu\u1EA3"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b56419202b17a884e99b2295c1298560, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 4f0fd312ee9a0614da3995535f260976, type: 2}
@@ -820,7 +820,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Thoa\u0301t"
+  m_text: "Tho\xE1t"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b56419202b17a884e99b2295c1298560, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 4f0fd312ee9a0614da3995535f260976, type: 2}
