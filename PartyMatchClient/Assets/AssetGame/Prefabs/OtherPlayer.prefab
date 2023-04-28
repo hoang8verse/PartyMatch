@@ -142,6 +142,7 @@ GameObject:
   - component: {fileID: 8639039161300541457}
   - component: {fileID: 8639039161300541462}
   - component: {fileID: -8819251012384987088}
+  - component: {fileID: 3259731674687430950}
   m_Layer: 9
   m_Name: OtherPlayer
   m_TagString: enemy
@@ -317,6 +318,19 @@ MonoBehaviour:
   target: {fileID: 0}
   speed: 5
   turnSpeed: 500
+--- !u!114 &3259731674687430950
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8639039161300541456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4027f63d0ecfd7445a8ec4728039e394, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_playerVisualPrefab: {fileID: 3093470246043357446, guid: e5c5381e52ca97c4ab7274a90f08eab2, type: 3}
 --- !u!1001 &581159653760255626
 PrefabInstance:
   m_ObjectHideFlags: 0

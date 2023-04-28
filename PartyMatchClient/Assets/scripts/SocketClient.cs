@@ -502,6 +502,10 @@ public class SocketClient : MonoBehaviour
             OtherPlayer otherPlayer = m_otherPlayers[_clientId].GetComponent<OtherPlayer>();
             otherPlayer.IndexPlayer = data["indexPlayer"].Value<int>();
 
+            var playerUI = m_otherPlayers[_clientId].gameObject.GetComponent<Player>();
+            playerUI.IndexPlayer = otherPlayer.IndexPlayer;
+            playerUI.OnInitialize(m_otherPlayers[_clientId], data["playerName"].ToString());
+
             m_otherPlayers[_clientId].SetActive(true);
             //GameManager.Instance.ShowDebugInfo($"\n create player  = {_clientId}");
             Debug.Log($"===>[SocketClient] created instantiate  other player = {m_otherPlayers[_clientId]} otherPlayer.IndexPlayer = {otherPlayer.IndexPlayer} _clientId = {_clientId}");         
@@ -692,6 +696,10 @@ public class SocketClient : MonoBehaviour
                             playerPrefab.GetComponent<characterSpawn>().SetActiveCharacter(1);
                             m_player = Instantiate(playerPrefab, clientPosStart, Quaternion.identity);
                         }
+
+                        var playerUI = m_player.gameObject.GetComponent<Player>();
+                        playerUI.IndexPlayer = m_localPlayerIndex;
+                        playerUI.OnInitialize(m_player, data["playerName"].ToString());
 
                         m_player.name = "Player-" + data["playerName"].ToString();
                         m_player.transform.tag = "Player";
