@@ -504,7 +504,7 @@ public class SocketClient : MonoBehaviour
 
             var playerUI = m_otherPlayers[_clientId].gameObject.GetComponent<Player>();
             playerUI.IndexPlayer = otherPlayer.IndexPlayer;
-            playerUI.OnInitialize(m_otherPlayers[_clientId], data["playerName"].ToString());
+            playerUI.OnInitialize(m_otherPlayers[_clientId], data["playerName"].ToString(), MainMenu.instance.IsSpectatorMode());
 
             m_otherPlayers[_clientId].SetActive(true);
             //GameManager.Instance.ShowDebugInfo($"\n create player  = {_clientId}");
@@ -699,7 +699,7 @@ public class SocketClient : MonoBehaviour
 
                         var playerUI = m_player.gameObject.GetComponent<Player>();
                         playerUI.IndexPlayer = m_localPlayerIndex;
-                        playerUI.OnInitialize(m_player, data["playerName"].ToString());
+                        playerUI.OnInitialize(m_player, data["playerName"].ToString(), MainMenu.instance.IsSpectatorMode());
 
                         m_player.name = "Player-" + data["playerName"].ToString();
                         m_player.transform.tag = "Player";
