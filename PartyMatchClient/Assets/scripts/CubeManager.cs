@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Utility;
@@ -28,7 +28,7 @@ public class CubeManager : Singleton<CubeManager>
 
     public GameObject counter;
 
-    public int round = 0;
+    public int m_round = 0;
     public bool IsInitialized { set; get; } = false;
     // Start is called before the first frame update
     void Start()
@@ -39,6 +39,8 @@ public class CubeManager : Singleton<CubeManager>
             spawnpointsR[i] = CubeMeshs[i].transform.localRotation;
 
         }
+        LevelManager.Instance.textRound.text = "VÒNG " + (m_round + 1).ToString();
+
         IsInitialized = true;
         boardMateriel.SetActive(false);
     }
@@ -188,17 +190,17 @@ public class CubeManager : Singleton<CubeManager>
     }
    IEnumerator resetCube()
     {
-        round++;
-        LevelManager.Instance.textRound.text = round.ToString();
-        SocketClient.instance.OnRoundPass(round);      
+        m_round++;       
+        SocketClient.instance.OnRoundPass(m_round);      
 
         yield return new WaitForSeconds(3);
 
         SocketClient.instance.OnCubeReset();
         boardMateriel.SetActive(false);
+        LevelManager.Instance.textRound.text = "VÒNG " + (m_round + 1).ToString();
 
         yield return new WaitForSeconds(3.5f);
-       
+        
         if (LevelManager.Instance.winbool)
         {
             counter.SetActive(false);
