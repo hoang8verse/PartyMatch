@@ -1071,30 +1071,28 @@ public class SocketClient : MonoBehaviour
                     }
                 }
 
-                if (m_gameState == EGameState.InLobby)
+                
+                // check new host 
+                string checkNewHost = data["newHost"].ToString();
+
+                if (checkNewHost != "" && checkNewHost == m_localClientId)
                 {
-                    // check new host 
-                    string checkNewHost = data["newHost"].ToString();
+                    m_isHost = true;
 
-                    if (checkNewHost != "" && checkNewHost == m_localClientId)
+                    if (m_player != null)
                     {
-                        m_isHost = true;
+                        Debug.Log(" client is new host -----------    ");
+                        LevelManager.Instance.CheckHost();
+                    }
+                    else
+                    {
+                        Debug.Log(" client is new lobby host ---=====  ");
 
-                        if (m_player != null)
-                        {
-                            Debug.Log(" client is new host -----------    ");
-                            LevelManager.Instance.CheckHost();
-                        }
-                        else
-                        {
-                            Debug.Log(" client is new lobby host ---=====  ");
-
-                            MainMenu.instance.isHost = "1";
-                            MainMenu.instance.CheckTheHost();
-                        }
-
+                        MainMenu.instance.isHost = "1";
+                        MainMenu.instance.CheckTheHost();
                     }
                 }
+                
                 break;
 
             default:
