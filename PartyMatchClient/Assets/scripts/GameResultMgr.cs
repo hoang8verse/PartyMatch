@@ -24,6 +24,10 @@ public class GameResultMgr : Singleton<GameResultMgr>
     public void OnAddPlayerData(string playerId, string name, bool isWinner)
     {
         PlayerResultData data = new PlayerResultData(playerId, name, isWinner);
-        m_gameResultData.Add(data);
+
+        if (isWinner)
+            m_gameResultData.Insert(0, data);
+        else
+            m_gameResultData.Add(data);
     }    
 }
