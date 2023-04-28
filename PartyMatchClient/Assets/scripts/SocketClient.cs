@@ -525,17 +525,14 @@ public class SocketClient : MonoBehaviour
 
     int GetPlayerIndex(string playerID)
     {
-        int index = 0;
+        int index = -1;
 
         if(m_otherPlayers.TryGetValue(playerID, out GameObject player))
         {
             index = player.GetComponent<OtherPlayer>().IndexPlayer;
             Debug.Log($"[SocketClient] GetPlayerIndex playerID = {playerID} => {index}");
         }    
-        else
-        {
-            Debug.LogError($"[SocketClient] GetPlayerIndex playerID = {playerID} => don't exist!!!");
-        }    
+          
         return index;
     }
     JObject GetPlayerData(int index)
@@ -949,8 +946,15 @@ public class SocketClient : MonoBehaviour
             case "playerDie":
                 Debug.Log("  playerDie data ==========  " + data);
                 string diePlayerId = data["clientId"].ToString();
-                string diePlayerName = GetPlayerName(GetPlayerIndex(diePlayerId));
-                GameResultMgr.Instance.OnAddPlayerData(diePlayerId, diePlayerName, isWinner: false);
+                int dieIndex = GetPlayerIndex(diePlayerId);
+
+                if (dieIndex >= 0)
+                {
+                    string diePlayerName = GetPlayerName(dieIndex);
+
+                    if(!string.IsNullOrEmpty(diePlayerName))
+                        GameResultMgr.Instance.OnAddPlayerData(diePlayerId, diePlayerName, isWinner: false);
+                }
 
                 if (m_localClientId == diePlayerId)
                 {
@@ -975,8 +979,15 @@ public class SocketClient : MonoBehaviour
             case "playerWin":
                 Debug.Log("  playerWin data ==========  " + data);
                 string winPlayerId = data["clientId"].ToString();
-                string winPlayerName = GetPlayerName(GetPlayerIndex(winPlayerId));
-                GameResultMgr.Instance.OnAddPlayerData(winPlayerId, winPlayerName, isWinner: true);
+                int winIndex = GetPlayerIndex(winPlayerId);
+
+                if (winIndex >= 0)
+                {
+                    string winPlayerName = GetPlayerName(winIndex);
+
+                    if (!string.IsNullOrEmpty(winPlayerName))
+                        GameResultMgr.Instance.OnAddPlayerData(winPlayerId, winPlayerName, isWinner: true);
+                }              
 
                 if (m_localClientId == winPlayerId)
                 {
