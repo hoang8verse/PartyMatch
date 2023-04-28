@@ -815,6 +815,7 @@ public class SocketClient : MonoBehaviour
 
                 if (m_localClientId == data["clientId"].ToString())
                 {
+                    LevelManager.Instance.OnDisableController(1.5f);
                     stunnedByEnemyId = data["stunnedByEnemyId"].ToString();
                     Vector3 pos = Vector3.zero;
                     arrPos = JArray.Parse(data["hitPos"].ToString());

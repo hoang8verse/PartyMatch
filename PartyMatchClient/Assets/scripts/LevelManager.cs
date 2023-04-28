@@ -36,6 +36,17 @@ public class LevelManager : Singleton<LevelManager>
         //SocketClient.instance.OnJoinLobbyRoom();
         StartCoroutine(CheckAlreadyPlay());
     }
+
+    IEnumerator OnActiveController(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        RigObject.SetActive(true);
+    }    
+    public void OnDisableController(float timer)
+    {
+        RigObject.SetActive(false);
+        StartCoroutine(OnActiveController(timer));
+    }    
     bool isRunOnMobile;
     void CheckDevice()
     {
