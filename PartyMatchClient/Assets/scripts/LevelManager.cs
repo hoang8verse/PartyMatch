@@ -20,6 +20,7 @@ public class LevelManager : Singleton<LevelManager>
     public GameObject JoystickControl;
     bool isMoving = false;
     public bool isStartGame = false;
+    private Coroutine m_coroutineDisableController = null;
     // Start is called before the first frame update
     IEnumerator Start()
     {
@@ -41,11 +42,12 @@ public class LevelManager : Singleton<LevelManager>
     {
         yield return new WaitForSeconds(delay);
         RigObject.SetActive(true);
+        m_coroutineDisableController = null;
     }    
     public void OnDisableController(float timer)
     {
         RigObject.SetActive(false);
-        StartCoroutine(OnActiveController(timer));
+        m_coroutineDisableController = StartCoroutine(OnActiveController(timer));
     }    
     bool isRunOnMobile;
     void CheckDevice()
@@ -108,6 +110,9 @@ public class LevelManager : Singleton<LevelManager>
     }
     public void SetLooseScreen()
     {
+        if (m_coroutineDisableController != null)
+            StopCoroutine(m_coroutineDisableController);
+
         Loosepanel.SetActive(true);
         isStartGame = false;
         RigObject.SetActive(false);
@@ -116,6 +121,9 @@ public class LevelManager : Singleton<LevelManager>
     
     public void ShowEndGameScreen()
     {
+        if (m_coroutineDisableController != null)
+            StopCoroutine(m_coroutineDisableController);
+
         m_endGameScreen.SetActive(true);
         isStartGame = false;
         RigObject.SetActive(false);
@@ -212,6 +220,8 @@ public class LevelManager : Singleton<LevelManager>
     public void SetPlayerWin()
     {
         Debug.Log("win");
+        if (m_coroutineDisableController != null)
+            StopCoroutine(m_coroutineDisableController);
 
         winbool = true;
         winpanel.SetActive(true);
