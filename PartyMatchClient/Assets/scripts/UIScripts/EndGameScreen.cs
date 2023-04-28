@@ -11,24 +11,13 @@ namespace UIElements
         [SerializeField] GameObject m_playerResultPrefab;
 
         public void OnShowResult()
-        {
-            //for (int i = 0; i < 7; i++)
-            //{
-            //    GameResultMgr.Instance.OnAddPlayerData((i + 1).ToString(), "haiahai", i % 2 == 0);
-            //}
-            GameResultMgr.Instance.GameResultData.Sort((p1, p2) => p1.IsWinner.CompareTo(p2.IsWinner));
-
+        {        
             foreach (var item in GameResultMgr.Instance.GameResultData)
             {
                 OnAddPlayerResult(item.PlayerID, item.PlayerName, item.IsWinner);
             }    
         }    
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
-
+     
         public void OnAddPlayerResult(string playerId, string playerName, bool isWinner)
         {
             var avatar = MainMenu.instance.SpriteAvatarPlayers[playerId];
@@ -36,11 +25,7 @@ namespace UIElements
             playerResult.SetPlayerName(playerName);
             playerResult.SetPlayerAvatar(avatar);            
             playerResult.SetPlayerResult(isWinner);
-        }
-        public void OnExitScreen()
-        {
-        
-        }
+        }      
 
         private void OnResetData()
         {
