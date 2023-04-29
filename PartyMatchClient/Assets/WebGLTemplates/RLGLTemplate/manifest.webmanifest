@@ -1,6 +1,6 @@
 {
-    "name": "SquidGame",
-    "short_name": "SquidGame",
+    "name": "PartyMatch",
+    "short_name": "PartyMatch",
     "start_url": "index.html",
     "display": "fullscreen",
     "background_color": "#231F20",

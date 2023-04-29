@@ -1,4 +1,4 @@
-const cacheName = "DefaultCompany-SquidGame-0.1";
+const cacheName = "EightVerse-PartyMatch-0.1";
 const contentToCache = [
     "Build/WebGL.loader.js",
     "Build/WebGL.framework.js",
