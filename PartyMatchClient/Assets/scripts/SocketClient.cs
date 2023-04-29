@@ -318,13 +318,13 @@ public class SocketClient : MonoBehaviour
         }
     }
 
-    public void OnConnectWebsocket()
+    public void OnConnectWebsocket(Action<bool> callback = null)
     {
         url = baseUrl + ":" + HOST;
-        Connect(url);
+        Connect(url, callback);
         //OnReceived = ReceiveSocket;
     }
-    async void Connect(string uri)
+    async void Connect(string uri, Action<bool> callback = null)
     {
         try
         {
@@ -335,6 +335,7 @@ public class SocketClient : MonoBehaviour
             {
                 Debug.Log("WS OnOpen  ");
                 OnRequestRoom();
+                callback?.Invoke(true);
             };
             webSocket.OnMessage += (bytes) =>
             {
@@ -347,6 +348,7 @@ public class SocketClient : MonoBehaviour
             webSocket.OnError += (string errMsg) =>
             {
                 Debug.Log("WS error: " + errMsg);
+                callback?.Invoke(false);
             };
 
             // Add OnClose event listener

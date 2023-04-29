@@ -187,12 +187,25 @@ public class MainMenu : MonoBehaviour
             playerName = "anonymous";
         }
 
-        SocketClient.instance.OnConnectWebsocket();
+        MessageBox.Instance.OnShowLoadingScreen();
+        SocketClient.instance.OnConnectWebsocket(OnConnectWebSocketResult);
         //createRoomScreen.SetActive(true);
         //homeScreen.SetActive(false);
         //joinRoomScreen.SetActive(false);
         //CheckTheHost();
     }
+
+    void OnConnectWebSocketResult(bool isOK)
+    {
+        if(isOK)
+        {
+            MessageBox.Instance.OnHide();
+        }   
+        else
+        {
+            MessageBox.Instance.OnShowPopup();
+        }    
+    }    
     public void ShowPlayerJoinRoom(string playerName)
     {
         LobbyScreen.Instance.ShowPlayerJoinRoom(playerName);
