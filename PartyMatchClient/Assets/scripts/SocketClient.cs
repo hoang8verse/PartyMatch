@@ -477,6 +477,18 @@ public class SocketClient : MonoBehaviour
     {
         return m_aliveLobbyPlayer.Count - CountAliveSpectator(isLobby: true);
     }    
+
+    byte[] StringToByteArray(string hex)
+    {
+        int numberChars = hex.Length;
+        byte[] bytes = new byte[numberChars / 2];
+        for (int i = 0; i < numberChars; i += 2)
+        {
+            bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+        }
+        return bytes;
+    }
+
     void OnCreateOtherPlayer(JObject data)
     {
         Debug.Log("[SocketClient] OnCreateOtherPlayer  other player data:" + data);
@@ -925,10 +937,10 @@ public class SocketClient : MonoBehaviour
                 int _ran1 = int.Parse(data["ran1"].ToString());
                 int _ran2 = int.Parse(data["ran2"].ToString());
                 int _ran3 = int.Parse(data["ran3"].ToString());
+                Debug.Log($"[SocketClient] Cube responseTarget: {data["rans"].ToString()}");
 
-                CubeManager.Instance.PerformCube(_target, _ran1, _ran2, _ran3);
-
-
+                byte[] _rans = StringToByteArray(data["rans"].ToString());  
+                CubeManager.Instance.PerformCube(_target, _ran1, _ran2, _ran3, _rans);
                 break;
             case "cubeFall":
                 Debug.Log("  cubeFall data ==========  " + data);
@@ -1282,7 +1294,7 @@ public class SocketClient : MonoBehaviour
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
     }
 
-    public void OnRequestRandomTarget(int _target, int _ran1, int _ran2, int _ran3)
+    public void OnRequestRandomTarget(int _target, int _ran1, int _ran2, int _ran3, byte[] _rans)
     {
         if (!m_isHost || isEndGame) return;
         JObject jsData = new JObject();
@@ -1293,6 +1305,10 @@ public class SocketClient : MonoBehaviour
         jsData.Add("ran1", _ran1);
         jsData.Add("ran2", _ran2);
         jsData.Add("ran3", _ran3);
+
+        string byteArray = BitConverter.ToString(_rans).Replace("-", "");
+        Debug.Log($"[SocketClient] Cube request: {byteArray}  _target = {_target}");
+        jsData.Add("rans", byteArray);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
     }
     

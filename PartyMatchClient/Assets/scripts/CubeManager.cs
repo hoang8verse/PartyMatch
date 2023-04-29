@@ -19,10 +19,11 @@ public class CubeManager : Singleton<CubeManager>
     public GameObject cam2;
 
 
-    int target;
-    int ran1;
-    int ran2;
-    int ran3;
+    int m_target;
+    int m_ran1;
+    int m_ran2;
+    int m_ran3;
+    byte[] m_rans;
 
     public bool backPosition;  
 
@@ -51,15 +52,23 @@ public class CubeManager : Singleton<CubeManager>
         int _ran1 = Random.Range(0, CubeMeshs.Length);
         int _ran2 = Random.Range(0, CubeMeshs.Length);
         int _ran3 = Random.Range(0, CubeMeshs.Length);
-        SocketClient.instance.OnRequestRandomTarget(_target, _ran1, _ran2, _ran3);
+        byte[] _rans = new byte[CubeMeshs.Length];
+
+        m_target = _target;
+
+        for (int i = 0; i < CubeMeshs.Length; i++)
+            _rans[i] = (byte)GetRandomMaterialCube();            
+       
+        SocketClient.instance.OnRequestRandomTarget(_target, _ran1, _ran2, _ran3, _rans);
     }
 
-    public void PerformCube(int _target, int _ran1, int _ran2, int _ran3)
+    public void PerformCube(int _target, int _ran1, int _ran2, int _ran3, byte[] _rans)
     {
-        target = _target;
-        ran1 = _ran1;
-        ran2 = _ran2;
-        ran3 = _ran3;
+        m_target = _target;
+        m_ran1 = _ran1;
+        m_ran2 = _ran2;
+        m_ran3 = _ran3;
+        m_rans = _rans;
         selectCube();
     }
 
@@ -69,7 +78,7 @@ public class CubeManager : Singleton<CubeManager>
         do
         {
             rand = Random.Range(0, nogomateriel.Length);
-        } while (rand == target);
+        } while (rand == m_target);
  
 
         return rand;
@@ -80,7 +89,7 @@ public class CubeManager : Singleton<CubeManager>
         {
             boardMateriel.SetActive(true);
             //targetmateriel = materiellist[Random.Range(0, materiellist.Length)];
-            targetmateriel = materiellist[target];
+            targetmateriel = materiellist[m_target];
             boardMateriel.GetComponent<MeshRenderer>().material = targetmateriel;
 
             cubemesh2.Clear();
@@ -97,27 +106,28 @@ public class CubeManager : Singleton<CubeManager>
             //CubeMeshs[ran2].GetComponent<MeshRenderer>().material = targetmateriel;
             //CubeMeshs[ran3].GetComponent<MeshRenderer>().material = targetmateriel;
 
-            CubeMeshs[ran1].GetComponent<Cube>().SetMaterial(targetmateriel);
-            CubeMeshs[ran2].GetComponent<Cube>().SetMaterial(targetmateriel);
-            CubeMeshs[ran3].GetComponent<Cube>().SetMaterial(targetmateriel);
+            CubeMeshs[m_ran1].GetComponent<Cube>().SetMaterial(targetmateriel);
+            CubeMeshs[m_ran2].GetComponent<Cube>().SetMaterial(targetmateriel);
+            CubeMeshs[m_ran3].GetComponent<Cube>().SetMaterial(targetmateriel);
 
-            cubemesh2.Remove(CubeMeshs[ran1]);
-            cubemesh2.Remove(CubeMeshs[ran2]);
-            cubemesh2.Remove(CubeMeshs[ran3]);
 
             for (int i = 0; i < cubemesh2.Count; i++)
             {
-                //cubemesh2[i].GetComponent<MeshRenderer>().material = nogomateriel[Random.Range(0, nogomateriel.Length)];
-                cubemesh2[i].GetComponent<Cube>().SetMaterial(nogomateriel[GetRandomMaterialCube()]);
+                if(i != m_ran1 && i != m_ran2 && i != m_ran3)
+                        cubemesh2[i].GetComponent<Cube>().SetMaterial(nogomateriel[m_rans[i]]);
             }
 
-            CubeMeshs[ran1].transform.tag = "go";
-            CubeMeshs[ran2].transform.tag = "go";
-            CubeMeshs[ran3].transform.tag = "go";
+            cubemesh2.Remove(CubeMeshs[m_ran1]);
+            cubemesh2.Remove(CubeMeshs[m_ran2]);
+            cubemesh2.Remove(CubeMeshs[m_ran3]);
 
-            print("selected number is " + ran1);
-            print("selected number is " + ran2);
-            print("selected number is " + ran3);
+            CubeMeshs[m_ran1].transform.tag = "go";
+            CubeMeshs[m_ran2].transform.tag = "go";
+            CubeMeshs[m_ran3].transform.tag = "go";
+
+            print("selected number is " + m_ran1);
+            print("selected number is " + m_ran2);
+            print("selected number is " + m_ran3);
 
             if (LevelManager.Instance.winbool)
             {
@@ -155,7 +165,7 @@ public class CubeManager : Singleton<CubeManager>
     {
         foreach (GameObject item in CubeMeshs)
         {
-            if (item.name == CubeMeshs[ran1].name || item.name == CubeMeshs[ran2].name || item.name == CubeMeshs[ran3].name)
+            if (item.name == CubeMeshs[m_ran1].name || item.name == CubeMeshs[m_ran2].name || item.name == CubeMeshs[m_ran3].name)
             {
                 print("not falling " + item.name);
 
@@ -229,27 +239,27 @@ public class CubeManager : Singleton<CubeManager>
             print("materiel is " + blue);
             item.GetComponent<Rigidbody>().isKinematic = true;
             item.GetComponent<Rigidbody>().useGravity = false;
-            CubeMeshs[ran1].transform.tag = "ngo";
-            CubeMeshs[ran2].transform.tag = "ngo";
-            CubeMeshs[ran3].transform.tag = "ngo";
+            CubeMeshs[m_ran1].transform.tag = "ngo";
+            CubeMeshs[m_ran2].transform.tag = "ngo";
+            CubeMeshs[m_ran3].transform.tag = "ngo";
 
-            if (ran1 == ran2)
+            if (m_ran1 == m_ran2)
             {
-                if (ran2 > CubeMeshs.Length && ran2 > 0)
+                if (m_ran2 > CubeMeshs.Length && m_ran2 > 0)
                 {
 
-                    CubeMeshs[ran2 - 1].transform.tag = "ngo";
+                    CubeMeshs[m_ran2 - 1].transform.tag = "ngo";
 
 
                 }
                 else
                 {
-                    CubeMeshs[ran2 + 1].transform.tag = "ngo";
+                    CubeMeshs[m_ran2 + 1].transform.tag = "ngo";
                 }
             }
             else
             {
-                CubeMeshs[ran2].transform.tag = "ngo";
+                CubeMeshs[m_ran2].transform.tag = "ngo";
 
             }
 
