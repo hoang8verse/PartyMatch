@@ -36,11 +36,13 @@ public class MainMenu : MonoBehaviour
 	[SerializeField]
 	private TMPro.TMP_InputField inputRoomId;
 
-	public static string deepLinkZaloApp = "https://zalo.me/s/543482719351051682/";
+	public static string deepLinkZaloApp = "https://zalo.me/s/4371932308695912656/";
 	public string userAppId = "";
-	public string userAvatar = "https://h5.zdn.vn/static/images/avatar.png";
-	public string playerName = "anonymous";
-	public string roomId = "";
+    public string userAvatar = "https://h5.zdn.vn/static/images/avatar.png";
+    public string playerName = "User Name";
+    public string phoneNumber = "";
+    public string followedOA = "0"; // 0 : false , 1 : true
+    public string roomId = "";
 	public string isHost = "0";
 	public string gender = "0";
 	public string isSpectator = "0";

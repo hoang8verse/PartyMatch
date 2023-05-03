@@ -1162,6 +1162,8 @@ public class SocketClient : MonoBehaviour
         jsData.Add("playerName", playerName);
         jsData.Add("userAppId", MainMenu.instance.userAppId);
         jsData.Add("avatar", MainMenu.instance.userAvatar);
+        jsData.Add("phoneNumber", MainMenu.instance.phoneNumber);
+        jsData.Add("followedOA", MainMenu.instance.followedOA);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
     }
     public void OnGotoGame()

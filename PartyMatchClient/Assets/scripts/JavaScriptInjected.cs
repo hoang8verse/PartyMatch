@@ -50,7 +50,12 @@ public class JavaScriptInjected : MonoBehaviour
     {
         // Get the current URL
         string url = Application.absoluteURL;
-        Debug.Log("url: =================================   " +  url);
+
+        if (url == "")
+        {
+            url = "https://rlgl2.brandgames.vn/?roomId=&userAppId=3368637342326461234&userName=User%20Name&userAvatar=https://h5.zdn.vn/static/images/avatar.png&phoneNumber=&followedOA=1";
+            Debug.Log("url: =================================   " + url);
+        }
         // Parse the URL parameters
         string[] parts = url.Split('?');
 
@@ -89,6 +94,14 @@ public class JavaScriptInjected : MonoBehaviour
                     {
                         //https://h5.zdn.vn/static/images/avatar.png
                         MainMenu.instance.userAvatar = value;
+                    }
+                    if (key == "phoneNumber")
+                    {
+                        MainMenu.instance.phoneNumber = value;
+                    }
+                    if (key == "followedOA")
+                    {
+                        MainMenu.instance.followedOA = value;
                     }
                 }
             }
