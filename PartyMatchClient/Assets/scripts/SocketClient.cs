@@ -113,6 +113,21 @@ public class SocketClient : MonoBehaviour
         Debug.Log($"[SocketClient] GetPlayerIndex createdIndex = {createdIndex} => index = {index}");
         return index;
     }    
+
+    void OnCheckWinnerPlayer(string playerID, int serverCountPlayer, int countRoundPassed)
+    {
+        if (m_localClientId == playerID)
+        {
+            if (!IsSpectator(playerID))
+            {
+                if ((m_isSinglePlayer && countRoundPassed >= 5) || (!m_isSinglePlayer && serverCountPlayer - CountAliveSpectator(isLobby: false) <= 1))
+                {
+                    CubeManager.Instance.SetPlayerWin();
+                }
+            }
+        }
+    }
+
     void Update()
     {
         if (!isEndGame)
@@ -952,18 +967,13 @@ public class SocketClient : MonoBehaviour
                 CubeManager.Instance.PerformCubeReset();
                 break;
             case "roundPass":
-                Debug.Log("  roundPass data ==========  " + data);
-                string playerID = data["clientId"].ToString();
-
-                if (m_localClientId == playerID)
                 {
-                    if (!IsSpectator(playerID))                    
-                    {
-                        if ((m_isSinglePlayer && int.Parse(data["roundPass"].ToString()) >= 5) || (!m_isSinglePlayer && int.Parse(data["countPlayer"].ToString()) - CountAliveSpectator(isLobby: false) <= 1))
-                        {
-                            CubeManager.Instance.SetPlayerWin();
-                        }
-                    }
+                    Debug.Log("  roundPass data ==========  " + data);
+                    string playerID = data["clientId"].ToString();
+                    int serverCountPlayer = int.Parse(data["countPlayer"].ToString());
+                    int countRoundPassed = int.Parse(data["roundPass"].ToString());
+
+                    OnCheckWinnerPlayer(playerID, serverCountPlayer, countRoundPassed);
                 }               
                 break;
             case "playerDie":
@@ -1074,6 +1084,9 @@ public class SocketClient : MonoBehaviour
                     Destroy(m_otherPlayers[playerLeaveId]);
                     m_otherPlayers.Remove(playerLeaveId);                
                 }
+
+                if (!m_isSinglePlayer && playerLeaveId != m_localClientId)
+                    OnCheckWinnerPlayer(m_localClientId, m_aliveLobbyPlayer.Count, CubeManager.Instance.RoundCount);                
 
                 if (MainMenu.instance.IsSpectatorMode() && m_gameState == EGameState.InGame)
                 {

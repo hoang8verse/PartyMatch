@@ -30,6 +30,7 @@ public class CubeManager : Singleton<CubeManager>
     public GameObject counter;
 
     public int m_round = 0;
+    public int RoundCount => m_round;
     public bool IsInitialized { set; get; } = false;
     // Start is called before the first frame update
     void Start()
