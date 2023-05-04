@@ -72,10 +72,11 @@ public class MainMenu : MonoBehaviour
 		else if (instance != this)
 			Destroy(gameObject);
 	}
-    private void Start()
+    private IEnumerator Start()
     {
-		//SocketClient.instance.OnConnectWebsocket();		
-		StartCoroutine(WaitingReceiver());
+        yield return new WaitUntil(() => (JavaScriptInjected.Instance != null && JavaScriptInjected.Instance.IsInitialized));
+        //SocketClient.instance.OnConnectWebsocket();		
+        StartCoroutine(WaitingReceiver());
         LobbyScreen.Instance.OnHide();
         createRoomScreen.SetActive(false);
         joinRoomScreen.SetActive(false);
@@ -344,7 +345,7 @@ public class MainMenu : MonoBehaviour
     public void ShareLinkToInvite()
     {
         OnClickVfx();
-        JavaScriptInjected.instance.SendRequestShareRoom();
+        JavaScriptInjected.Instance.SendRequestShareRoom();
     }
 
     public void OnClickVfx()

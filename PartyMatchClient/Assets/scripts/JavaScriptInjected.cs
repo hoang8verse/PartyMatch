@@ -2,18 +2,14 @@
 using System.Runtime.InteropServices;
 using Newtonsoft.Json.Linq;
 using System.Collections;
-
-public class JavaScriptInjected : MonoBehaviour
-{
-    public static JavaScriptInjected instance;
-
+using Utility;
+public class JavaScriptInjected : Singleton<JavaScriptInjected>
+{    
+    public bool IsInitialized { set; get; } = false;
     [System.Obsolete]
     void Start()
     {
-        if (instance == null)
-            instance = this;
-        else if (instance != this)
-            Destroy(gameObject);
+        DontDestroyOnLoad(Instance);
         //Hello();
 
         //HelloString("This is a string.");
@@ -21,6 +17,7 @@ public class JavaScriptInjected : MonoBehaviour
         //SendMessageToParent("Hello, parent window!");
 
         GetParamUrl();
+        IsInitialized = true;
     }
 
     [System.Obsolete]
