@@ -113,7 +113,21 @@ public class SocketClient : MonoBehaviour
         Debug.Log($"[SocketClient] GetPlayerIndex createdIndex = {createdIndex} => index = {index}");
         return index;
     }    
+   
+    void OnUpdateCountPlayers(int leaveIndex)
+    {        
+        if (m_aliveIndexPlayers.Contains(leaveIndex))
+        {
+            m_aliveIndexPlayers.Remove(leaveIndex);
+            Debug.Log($"[SocketClient] leave room player m_aliveIndexPlayers = {m_aliveIndexPlayers}");
+        }
 
+        if (m_aliveLobbyPlayer.Contains(leaveIndex))
+        {
+            m_aliveLobbyPlayer.Remove(leaveIndex);
+            Debug.Log($"[SocketClient] leave room player m_aliveLobbyPlayer = {m_aliveLobbyPlayer}");
+        }       
+    }    
     void OnCheckWinnerPlayer(string playerID, int serverCountPlayer, int countRoundPassed)
     {
         if (m_localClientId == playerID)
@@ -895,8 +909,9 @@ public class SocketClient : MonoBehaviour
             case "countDown":
                 //Debug.Log("  countDown =================  " + data);
                 float timer = float.Parse(data["timer"].ToString());
+                OnCheckWinnerPlayer(m_localClientId, m_aliveLobbyPlayer.Count, CubeManager.Instance.RoundCount);
 
-                if(Mathf.FloorToInt(timer) > 0)
+                if (Mathf.FloorToInt(timer) > 0)
                 {
                     StartCoroutine(TimerCountdown());
                 }
@@ -956,14 +971,18 @@ public class SocketClient : MonoBehaviour
 
                 byte[] _rans = StringToByteArray(data["rans"].ToString());  
                 CubeManager.Instance.PerformCube(_target, _ran1, _ran2, _ran3, _rans);
+                OnCheckWinnerPlayer(m_localClientId, m_aliveLobbyPlayer.Count, CubeManager.Instance.RoundCount);
+
                 break;
             case "cubeFall":
                 Debug.Log("  cubeFall data ==========  " + data);
+                OnCheckWinnerPlayer(m_localClientId, m_aliveLobbyPlayer.Count, CubeManager.Instance.RoundCount);
                 CubeManager.Instance.PerformCubeFall();
                 break;
 
             case "cubeReset":
                 Debug.Log("  cubeReset data ==========  " + data);
+                OnCheckWinnerPlayer(m_localClientId, m_aliveLobbyPlayer.Count, CubeManager.Instance.RoundCount);
                 CubeManager.Instance.PerformCubeReset();
                 break;
             case "roundPass":
@@ -987,6 +1006,8 @@ public class SocketClient : MonoBehaviour
 
                     if(!string.IsNullOrEmpty(diePlayerName))
                         GameResultMgr.Instance.OnAddPlayerData(diePlayerId, diePlayerName, isWinner: false);
+
+                    OnUpdateCountPlayers(dieIndex);
                 }
 
                 if (m_localClientId == diePlayerId)
@@ -1051,17 +1072,7 @@ public class SocketClient : MonoBehaviour
                     {
                         int leaveIndex = m_players[i]["indexPlayer"].Value<int>();
 
-                        if (m_aliveIndexPlayers.Count > 0)
-                        {
-                            m_aliveIndexPlayers.Remove(leaveIndex);
-                            Debug.Log($"[SocketClient] leave room player m_aliveIndexPlayers = {m_aliveIndexPlayers}");
-                        }
-
-                        if (m_aliveLobbyPlayer.Count > 0)
-                        {
-                            m_aliveLobbyPlayer.Remove(leaveIndex);
-                            Debug.Log($"[SocketClient] leave room player m_aliveLobbyPlayer = {m_aliveLobbyPlayer}");
-                        }
+                        OnUpdateCountPlayers(leaveIndex);
 
                         if (m_gameState == EGameState.InLobby)
                         {
@@ -1083,10 +1094,7 @@ public class SocketClient : MonoBehaviour
                     m_otherPlayers[playerLeaveId].SetActive(false);
                     Destroy(m_otherPlayers[playerLeaveId]);
                     m_otherPlayers.Remove(playerLeaveId);                
-                }
-
-                if (!m_isSinglePlayer && playerLeaveId != m_localClientId)
-                    OnCheckWinnerPlayer(m_localClientId, m_aliveLobbyPlayer.Count, CubeManager.Instance.RoundCount);                
+                }                    
 
                 if (MainMenu.instance.IsSpectatorMode() && m_gameState == EGameState.InGame)
                 {
