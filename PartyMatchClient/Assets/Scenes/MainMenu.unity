@@ -1201,6 +1201,10 @@ PrefabInstance:
     serializedVersion: 2
     m_TransformParent: {fileID: 1374144583}
     m_Modifications:
+    - target: {fileID: 577633288328904708, guid: 13f6446029ccb3f47a842543dadf37ea, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1193695485118913396, guid: 13f6446029ccb3f47a842543dadf37ea, type: 3}
       propertyPath: m_Name
       value: MessageBox
@@ -1886,6 +1890,7 @@ GameObject:
   - component: {fileID: 1374144582}
   - component: {fileID: 1374144581}
   - component: {fileID: 1374144580}
+  - component: {fileID: 1374144588}
   - component: {fileID: 1374144584}
   - component: {fileID: 1374144587}
   m_Layer: 5
@@ -2030,6 +2035,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1374144579}
   m_CullTransparentMesh: 1
+--- !u!114 &1374144588
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1374144579}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9aebfa44cc3026f4abe404c31e8da498, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1458366563
 GameObject:
   m_ObjectHideFlags: 0
@@ -2039,7 +2056,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1458366565}
-  - component: {fileID: 1458366566}
   - component: {fileID: 1458366564}
   m_Layer: 0
   m_Name: SocketClient
@@ -2088,18 +2104,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1458366566
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1458366563}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9aebfa44cc3026f4abe404c31e8da498, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1575072636 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1193695484729205236, guid: dcaebb2ddd2a8ba4a8ca545598a5dbb4, type: 3}

@@ -8,8 +8,7 @@ public class JavaScriptInjected : Singleton<JavaScriptInjected>
     public bool IsInitialized { set; get; } = false;
     [System.Obsolete]
     void Start()
-    {
-        DontDestroyOnLoad(Instance);
+    {     
         //Hello();
 
         //HelloString("This is a string.");

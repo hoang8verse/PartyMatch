@@ -72,9 +72,8 @@ public class MainMenu : MonoBehaviour
 		else if (instance != this)
 			Destroy(gameObject);
 	}
-    private IEnumerator Start()
+    private void Start()
     {
-        yield return new WaitUntil(() => (JavaScriptInjected.Instance != null && JavaScriptInjected.Instance.IsInitialized));
         //SocketClient.instance.OnConnectWebsocket();		
         StartCoroutine(WaitingReceiver());
         LobbyScreen.Instance.OnHide();
