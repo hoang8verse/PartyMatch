@@ -45,6 +45,7 @@ namespace UIElements
             GenerateQRCode.Instance.OnCreateQRCode(roomId);
             SetTotalPlayer(0);
             SetPlayerJoin("");
+            m_playerJoinRoomNotification.gameObject.SetActive(false);
         }
         public void ShowPlayerJoinRoom(string _playerName)
         {

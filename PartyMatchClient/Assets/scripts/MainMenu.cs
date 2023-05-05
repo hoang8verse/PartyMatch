@@ -36,7 +36,7 @@ public class MainMenu : MonoBehaviour
 	[SerializeField]
 	private TMPro.TMP_InputField inputRoomId;
 
-	public static string deepLinkZaloApp = "https://zalo.me/s/4371932308695912656/";
+	public static string deepLinkZaloApp = "https://zalo.me/s/2958811489567530077/";
 	public string userAppId = "";
     public string userAvatar = "https://h5.zdn.vn/static/images/avatar.png";
     public string playerName = "User Name";
@@ -74,8 +74,8 @@ public class MainMenu : MonoBehaviour
 	}
     private void Start()
     {
-		//SocketClient.instance.OnConnectWebsocket();		
-		StartCoroutine(WaitingReceiver());
+        //SocketClient.instance.OnConnectWebsocket();		
+        StartCoroutine(WaitingReceiver());
         LobbyScreen.Instance.OnHide();
         createRoomScreen.SetActive(false);
         joinRoomScreen.SetActive(false);
@@ -344,7 +344,7 @@ public class MainMenu : MonoBehaviour
     public void ShareLinkToInvite()
     {
         OnClickVfx();
-        JavaScriptInjected.instance.SendRequestShareRoom();
+        JavaScriptInjected.Instance.SendRequestShareRoom();
     }
 
     public void OnClickVfx()

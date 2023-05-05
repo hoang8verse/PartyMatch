@@ -2,18 +2,13 @@
 using System.Runtime.InteropServices;
 using Newtonsoft.Json.Linq;
 using System.Collections;
-
-public class JavaScriptInjected : MonoBehaviour
-{
-    public static JavaScriptInjected instance;
-
+using Utility;
+public class JavaScriptInjected : Singleton<JavaScriptInjected>
+{    
+    public bool IsInitialized { set; get; } = false;
     [System.Obsolete]
     void Start()
-    {
-        if (instance == null)
-            instance = this;
-        else if (instance != this)
-            Destroy(gameObject);
+    {     
         //Hello();
 
         //HelloString("This is a string.");
@@ -21,6 +16,7 @@ public class JavaScriptInjected : MonoBehaviour
         //SendMessageToParent("Hello, parent window!");
 
         GetParamUrl();
+        IsInitialized = true;
     }
 
     [System.Obsolete]
@@ -53,7 +49,7 @@ public class JavaScriptInjected : MonoBehaviour
 
         if (url == "")
         {
-            url = "https://rlgl2.brandgames.vn/?roomId=&userAppId=3368637342326461234&userName=User%20Name&userAvatar=https://h5.zdn.vn/static/images/avatar.png&phoneNumber=&followedOA=1";
+            url = "https://rlgl2.brandgames.vn/?roomId=&userAppId=3368637342326461234&userName=User%20Name&userAvatar=https://h5.zdn.vn/static/images/avatar.png&phoneNumber=&followedOA=0&deepLink=";
             Debug.Log("url: =================================   " + url);
         }
         // Parse the URL parameters
@@ -102,6 +98,15 @@ public class JavaScriptInjected : MonoBehaviour
                     if (key == "followedOA")
                     {
                         MainMenu.instance.followedOA = value;
+                    }
+
+                    if (key == "deepLink")
+                    {
+                        if (value != "")
+                        {
+                            MainMenu.deepLinkZaloApp = value;
+                        }
+
                     }
                 }
             }

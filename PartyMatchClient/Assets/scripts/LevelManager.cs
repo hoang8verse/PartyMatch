@@ -20,6 +20,7 @@ public class LevelManager : Singleton<LevelManager>
     public GameObject JoystickControl;
     bool isMoving = false;
     public bool isStartGame = false;
+    private bool m_isEndGame = false;
     private Coroutine m_coroutineDisableController = null;
     // Start is called before the first frame update
     IEnumerator Start()
@@ -36,12 +37,14 @@ public class LevelManager : Singleton<LevelManager>
         SocketClient.instance.OnJoinRoom();
         //SocketClient.instance.OnJoinLobbyRoom();
         StartCoroutine(CheckAlreadyPlay());
+        m_isEndGame = false;
     }
 
     IEnumerator OnActiveController(float delay)
     {
         yield return new WaitForSeconds(delay);
-        RigObject.SetActive(true);
+        RigObject.SetActive(!m_isEndGame);
+
         m_coroutineDisableController = null;
     }    
     public void OnDisableController(float timer)
@@ -110,6 +113,7 @@ public class LevelManager : Singleton<LevelManager>
     }
     public void SetLooseScreen()
     {
+        m_isEndGame = true;
         if (m_coroutineDisableController != null)
             StopCoroutine(m_coroutineDisableController);
 
@@ -121,6 +125,7 @@ public class LevelManager : Singleton<LevelManager>
     
     public void ShowEndGameScreen()
     {
+        m_isEndGame = true; 
         if (m_coroutineDisableController != null)
             StopCoroutine(m_coroutineDisableController);
 
@@ -220,6 +225,7 @@ public class LevelManager : Singleton<LevelManager>
     public void SetPlayerWin()
     {
         Debug.Log("win");
+        m_isEndGame = true;
         if (m_coroutineDisableController != null)
             StopCoroutine(m_coroutineDisableController);
 
