@@ -55,13 +55,13 @@ namespace CMF
                 //animator.Play("hit");
                 if (isMoving)
                 {
-					SocketClient.instance.OnHitEnemy(other.transform.position, other.gameObject.name);
+					SocketClient.Instance.OnHitEnemy(other.transform.position, other.gameObject.name);
 				}
 				else
                 {
                     if (other.gameObject.GetComponent<OtherPlayer>().isMoving)
                     {
-						SocketClient.instance.OnStunnedByEnemy(other.transform.position, other.gameObject.name);
+						SocketClient.Instance.OnStunnedByEnemy(other.transform.position, other.gameObject.name);
 					}
 					
 				}
@@ -138,7 +138,7 @@ namespace CMF
         {
 			yield return new WaitForSeconds(0.5f);
 			stun = false;
-			SocketClient.instance.OnUpdatePosPlayer();
+			SocketClient.Instance.OnUpdatePosPlayer();
 			print(stun);
 		}
 		//Update;

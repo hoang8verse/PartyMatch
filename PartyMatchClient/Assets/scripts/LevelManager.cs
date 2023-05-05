@@ -34,7 +34,7 @@ public class LevelManager : Singleton<LevelManager>
         RigObject.SetActive(false);
         JoystickControl.transform.position = new Vector3(-5000, -5000, 0);
 
-        SocketClient.instance.OnJoinRoom();
+        SocketClient.Instance.OnJoinRoom();
         //SocketClient.instance.OnJoinLobbyRoom();
         StartCoroutine(CheckAlreadyPlay());
         m_isEndGame = false;
@@ -71,7 +71,7 @@ public class LevelManager : Singleton<LevelManager>
         //SocketClient.instance.OnJoinRoom();
         yield return new WaitForSeconds(0.1f);
 
-        if (SocketClient.instance.m_isHost)
+        if (SocketClient.Instance.IsHost)
         {
             
             buttonReadyPlay.SetActive(true);
@@ -83,7 +83,7 @@ public class LevelManager : Singleton<LevelManager>
             buttonReadyPlay.SetActive(false);
             textStartGame.text = "Chờ chủ phòng bắt đầu !!!";
         }
-        Debug.Log(" SocketClient.instance.isHost------------------------ " + SocketClient.instance.m_isHost);
+        Debug.Log(" SocketClient.instance.isHost------------------------ " + SocketClient.Instance.IsHost);
     }
     public void CheckHost()
     {
@@ -96,7 +96,7 @@ public class LevelManager : Singleton<LevelManager>
     }
     public void RequestStartGame()
     {
-        SocketClient.instance.OnStartGame();
+        SocketClient.Instance.OnStartGame();
     }
     public void startGame()
     {
@@ -120,7 +120,7 @@ public class LevelManager : Singleton<LevelManager>
         Loosepanel.SetActive(true);
         isStartGame = false;
         RigObject.SetActive(false);
-        SocketClient.instance.OnPlayerDie();
+        SocketClient.Instance.OnPlayerDie();
     }
     
     public void ShowEndGameScreen()

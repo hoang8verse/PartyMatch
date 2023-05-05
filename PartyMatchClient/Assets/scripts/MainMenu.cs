@@ -190,7 +190,7 @@ public class MainMenu : MonoBehaviour
         }
 
         MessageBox.Instance.OnShowLoadingScreen();
-        SocketClient.instance.OnConnectWebsocket(OnConnectWebSocketResult);
+        SocketClient.Instance.OnConnectWebsocket(OnConnectWebSocketResult);
         //createRoomScreen.SetActive(true);
         //homeScreen.SetActive(false);
         //joinRoomScreen.SetActive(false);
@@ -228,7 +228,7 @@ public class MainMenu : MonoBehaviour
     public void JoinTheGame()
     {
         //SceneManager.LoadScene("Game");
-        SocketClient.instance.OnGotoGame();
+        SocketClient.Instance.OnGotoGame();
     }
     public void GotoGame()
     {
@@ -338,7 +338,7 @@ public class MainMenu : MonoBehaviour
        
         LobbyScreen.Instance.ResetAvatarList();
         LobbyScreen.Instance.OnHide();
-        SocketClient.instance.OnCloseConnectSocket();
+        SocketClient.Instance.OnCloseConnectSocket();
     }
 
     public void ShareLinkToInvite()
@@ -406,7 +406,7 @@ public class MainMenu : MonoBehaviour
 		
 	public void StartGame()
 	{
-		SocketClient.instance.OnConnectWebsocket();
+		SocketClient.Instance.OnConnectWebsocket();
 		//SocketClient.instance.OnGotoGame();
 		AudioSource.PlayOneShot(StartSound);
 

@@ -60,7 +60,7 @@ public class CubeManager : Singleton<CubeManager>
         for (int i = 0; i < CubeMeshs.Length; i++)
             _rans[i] = (byte)GetRandomMaterialCube();            
        
-        SocketClient.instance.OnRequestRandomTarget(_target, _ran1, _ran2, _ran3, _rans);
+        SocketClient.Instance.OnRequestRandomTarget(_target, _ran1, _ran2, _ran3, _rans);
     }
 
     public void PerformCube(int _target, int _ran1, int _ran2, int _ran3, byte[] _rans)
@@ -153,7 +153,7 @@ public class CubeManager : Singleton<CubeManager>
         counter.SetActive(false);
 
         yield return new WaitForSeconds(3);
-        SocketClient.instance.OnCubeFall();
+        SocketClient.Instance.OnCubeFall();
 
 
         yield return new WaitForSeconds(3);
@@ -196,17 +196,17 @@ public class CubeManager : Singleton<CubeManager>
         //if (round >= 5)
         {
             LevelManager.Instance.SetPlayerWin();
-            SocketClient.instance.OnPlayerWin();
+            SocketClient.Instance.OnPlayerWin();
         }
     }
    IEnumerator resetCube()
     {
         m_round++;       
-        SocketClient.instance.OnRoundPass(m_round);      
+        SocketClient.Instance.OnRoundPass(m_round);      
 
         yield return new WaitForSeconds(3);
 
-        SocketClient.instance.OnCubeReset();
+        SocketClient.Instance.OnCubeReset();
         boardMateriel.SetActive(false);
         LevelManager.Instance.textRound.text = "VÒNG " + (m_round + 1).ToString();
 
