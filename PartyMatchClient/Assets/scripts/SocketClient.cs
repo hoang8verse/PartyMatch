@@ -21,7 +21,7 @@ using CMF;
 //using System.Globalization;
 using Utility;
 
-public enum ServerCmd: byte
+public enum EServerCmd: byte
 {   
     RoomDetected = 0,
     RequestRoom,
@@ -50,6 +50,28 @@ public enum ServerCmd: byte
     PlayerLeaveRoom,
     Leave,
     EndGame    
+}
+
+public enum EPlayerProfile
+{
+    Id = 0,
+    Index,
+    AppId,
+    Avatar,
+    Gender,
+    NickName,
+    RoomId,
+    IsHost,
+    IsSpectator,
+    CharacterIndex,
+    StartIndex,
+    Position,   
+    IsStarted,    
+    Status,    
+    Round,
+    AlivePlayers,
+    AliveLobbyPlayers,
+    CountPlayers
 }
 
 
@@ -107,25 +129,46 @@ public class SocketClient : Singleton<SocketClient>
 
     public bool IsHost => m_isHost;
 
-    static string ServerCmd2String(ServerCmd serverCmd)
+    public static string EServerCmd2String(EServerCmd serverCmd)
     {
         int iCmd = (int)serverCmd;
         string stringValue = iCmd.ToString();
 
         return stringValue;
-    }    
-    static ServerCmd String2ServerCmd(string str)
+    }
+    public static EServerCmd String2EServerCmd(string str)
     {
-        foreach (ServerCmd serverCmd in Enum.GetValues(typeof(ServerCmd)))
+        foreach (EServerCmd serverCmd in Enum.GetValues(typeof(EServerCmd)))
         {            
-            string stringValue = ServerCmd2String(serverCmd);
+            string stringValue = EServerCmd2String(serverCmd);
 
             if (stringValue.ToLower() == str.ToLower())
             {
                 return serverCmd;
             }
         }
-        throw new ArgumentException("Invalid ServerCmd string.");
+        throw new ArgumentException("Invalid EServerCmd string.");
+    }
+
+    public static string EPlayerProfile2String(EPlayerProfile serverCmd)
+    {
+        int iCmd = (int)serverCmd;
+        string stringValue = iCmd.ToString();
+
+        return stringValue;
+    }    
+    public static EPlayerProfile String2EPlayerProfile(string str)
+    {
+        foreach (EPlayerProfile serverCmd in Enum.GetValues(typeof(EPlayerProfile)))
+        {            
+            string stringValue = EPlayerProfile2String(serverCmd);
+
+            if (stringValue.ToLower() == str.ToLower())
+            {
+                return serverCmd;
+            }
+        }
+        throw new ArgumentException("Invalid EServerCmd string.");
     }
 
     void Awake()
@@ -145,7 +188,7 @@ public class SocketClient : Singleton<SocketClient>
 
         foreach(var player in m_players)
         {
-            if(player["indexPlayer"].Value<int>() == createdIndex)
+            if(player[EPlayerProfile2String(EPlayerProfile.Index)].Value<int>() == createdIndex)
             {
                 index = counter;
                 break;
@@ -373,17 +416,17 @@ public class SocketClient : Singleton<SocketClient>
         yield return new WaitForSeconds(Time.fixedDeltaTime);
         foreach (var item in m_players)
         {
-            if (m_otherPlayers.ContainsKey(item["id"].ToString()))
+            if (m_otherPlayers.ContainsKey(item[EPlayerProfile2String(EPlayerProfile.Id)].ToString()))
             {
                 Vector3 pos = Vector3.zero;
-                JArray arrPos = JArray.Parse(item["position"].ToString());
+                JArray arrPos = JArray.Parse(item[EPlayerProfile2String(EPlayerProfile.Position)].ToString());
                 if (arrPos.Count > 0)
                 {
                     pos = new Vector3(arrPos[0].Value<float>(),
                             arrPos[1].Value<float>(),
                             arrPos[2].Value<float>());
                 }
-                m_otherPlayers[item["id"].ToString()].transform.position = pos;
+                m_otherPlayers[item[EPlayerProfile2String(EPlayerProfile.Id)].ToString()].transform.position = pos;
                 Debug.Log(" otherPlayers pos :  " + pos);
             }
         }
@@ -494,7 +537,7 @@ public class SocketClient : Singleton<SocketClient>
         bool isFound = false;
 
         for(int i = 0; i < m_players.Count; i++)
-            if(m_players[i]["indexPlayer"].Value<int>() ==  player["indexPlayer"].Value<int>())
+            if(m_players[i][EPlayerProfile2String(EPlayerProfile.Index)].Value<int>() ==  player[EPlayerProfile2String(EPlayerProfile.Index)].Value<int>())
             {
                 m_players[i] = player;
                 isFound = true;
@@ -511,9 +554,9 @@ public class SocketClient : Singleton<SocketClient>
 
         foreach(var player in m_players)
         {
-            if(player["id"].ToString() == playerId)
+            if(player[EPlayerProfile2String(EPlayerProfile.Id)].ToString() == playerId)
             {
-                if (player["isSpectator"].ToString() == "1")
+                if (player[EPlayerProfile2String(EPlayerProfile.IsSpectator)].ToString() == "1")
                     isSpectator = true;
 
                 break;
@@ -532,7 +575,7 @@ public class SocketClient : Singleton<SocketClient>
         {
             foreach(var player in m_players)
             {
-                if (player["indexPlayer"].Value<int>() == index && player["isSpectator"].ToString() == "1")
+                if (player[EPlayerProfile2String(EPlayerProfile.Index)].Value<int>() == index && player[EPlayerProfile2String(EPlayerProfile.IsSpectator)].ToString() == "1")
                     spectatorCount++;
             }    
         }
@@ -567,11 +610,11 @@ public class SocketClient : Singleton<SocketClient>
 
         if (!m_otherPlayers.ContainsKey(_clientId))
         {
-            int rand = GetPlayerIndex(data["indexPlayer"].Value<int>());
+            int rand = GetPlayerIndex(data[EPlayerProfile2String(EPlayerProfile.Index)].Value<int>());
             Vector3 pos = PositionByIndex(rand);
             Debug.Log("[SocketClient] OnCreateOtherPlayer  other player =================  " + pos);
             // other player
-            if (data["gender"].ToString() == "0")
+            if (data[EPlayerProfile2String(EPlayerProfile.Gender)].ToString() == "0")
             {
                 otherPlayerPrefab.GetComponent<OtherPlayer>().SetActiveCharacter(0);
                 m_otherPlayers[_clientId] = Instantiate(otherPlayerPrefab, pos, Quaternion.identity);
@@ -585,11 +628,11 @@ public class SocketClient : Singleton<SocketClient>
             m_otherPlayers[_clientId].name = _clientId;
             m_otherPlayers[_clientId].transform.tag = "enemy";
             OtherPlayer otherPlayer = m_otherPlayers[_clientId].GetComponent<OtherPlayer>();
-            otherPlayer.IndexPlayer = data["indexPlayer"].Value<int>();
+            otherPlayer.IndexPlayer = data[EPlayerProfile2String(EPlayerProfile.Index)].Value<int>();
 
             var playerUI = m_otherPlayers[_clientId].gameObject.GetComponent<Player>();
             playerUI.IndexPlayer = otherPlayer.IndexPlayer;
-            playerUI.OnInitialize(m_otherPlayers[_clientId], data["playerName"].ToString(), MainMenu.instance.IsSpectatorMode());
+            playerUI.OnInitialize(m_otherPlayers[_clientId], data[EPlayerProfile2String(EPlayerProfile.NickName)].ToString(), MainMenu.instance.IsSpectatorMode());
 
             m_otherPlayers[_clientId].SetActive(true);
             //GameManager.Instance.ShowDebugInfo($"\n create player  = {_clientId}");
@@ -603,9 +646,9 @@ public class SocketClient : Singleton<SocketClient>
 
         foreach (var player in m_players)
         {
-            if (player["indexPlayer"].Value<int>() == index)
+            if (player[EPlayerProfile2String(EPlayerProfile.Index)].Value<int>() == index)
             {
-                playerName = player["playerName"].ToString();
+                playerName = player[EPlayerProfile2String(EPlayerProfile.NickName)].ToString();
             }
         }
 
@@ -628,7 +671,7 @@ public class SocketClient : Singleton<SocketClient>
     {
         foreach(var player in m_players)
         {
-            if(player["indexPlayer"].Value<int>() == index)
+            if(player[EPlayerProfile2String(EPlayerProfile.Index)].Value<int>() == index)
             {
                 return player.Value<JObject>();
             }    
@@ -639,22 +682,22 @@ public class SocketClient : Singleton<SocketClient>
     void ReceiveSocket(string message)
     {
         JObject data = JObject.Parse(message);
-        ServerCmd serverCmd = String2ServerCmd(data["event"].ToString());       
+        EServerCmd serverCmd = String2EServerCmd(data["event"].ToString());       
 
         switch (serverCmd)
         {
-            case ServerCmd.RoomDetected:
-                ROOM = data["room"].ToString();
+            case EServerCmd.RoomDetected:
+                ROOM = data[EPlayerProfile2String(EPlayerProfile.RoomId)].ToString();
                 m_localClientId = data["clientId"].ToString();
                 //OnJoinRoom();
                 OnJoinLobbyRoom();
 
                 break;
-            case ServerCmd.FailJoinRoom:
+            case EServerCmd.FailJoinRoom:
 
                 MainMenu.instance.ShowFailScreen(data["message"].ToString());
                 break;
-            case ServerCmd.RoundAlready:
+            case EServerCmd.RoundAlready:
                 Debug.Log("roundAlready  ===============================  " + data );
                 if (LevelManager.Instance.isStartGame == false)
                 {
@@ -663,7 +706,7 @@ public class SocketClient : Singleton<SocketClient>
                 }
                     
                 break;
-            case ServerCmd.JoinLobbyRoom:
+            case EServerCmd.JoinLobbyRoom:
 
                 IS_FIRST_JOIN = false;
                 MainMenu.instance.ShowLobby();
@@ -683,7 +726,7 @@ public class SocketClient : Singleton<SocketClient>
                     OnAddPlayer(newPlayer);
                 }
                                
-                var aliveLobbyPlayer = JArray.Parse(data["aliveLobbyPlayer"].ToString());
+                var aliveLobbyPlayer = JArray.Parse(data[EPlayerProfile2String(EPlayerProfile.AliveLobbyPlayers)].ToString());
 
                 foreach (var item in aliveLobbyPlayer)
                     if (!m_aliveLobbyPlayer.Contains(item.Value<int>()))
@@ -692,7 +735,7 @@ public class SocketClient : Singleton<SocketClient>
                 Debug.Log($"[SocketClient] joinRoom player m_aliveLobbyPlayer.Count = {m_aliveLobbyPlayer.Count}");
 
                 currentPlayerJoined = m_players.Count;
-                Debug.Log(" playerName  join room  " + data["playerName"].ToString());
+                Debug.Log(" playerName  join room  " + data[EPlayerProfile2String(EPlayerProfile.NickName)].ToString());
 
                 int countUserPlay = 0;
                 int countSpectator = 0;
@@ -702,12 +745,12 @@ public class SocketClient : Singleton<SocketClient>
 
                     for (int i = 0; i < m_players.Count; i++)
                     {
-                        m_isHost = data["isHost"].ToString() == "1";
+                        m_isHost = data[EPlayerProfile2String(EPlayerProfile.IsHost)].ToString() == "1";
 
-                        if (m_players[i]["isSpectator"].ToString() == "0")
+                        if (m_players[i][EPlayerProfile2String(EPlayerProfile.IsSpectator)].ToString() == "0")
                         {
                             countUserPlay++;
-                            StartCoroutine(LoadAvatarImage(m_players[i]["avatar"].ToString(), m_players[i]["id"].ToString()));
+                            StartCoroutine(LoadAvatarImage(m_players[i][EPlayerProfile2String(EPlayerProfile.Avatar)].ToString(), m_players[i][EPlayerProfile2String(EPlayerProfile.Id)].ToString()));
                         }
                         else
                         {
@@ -719,23 +762,23 @@ public class SocketClient : Singleton<SocketClient>
                 else
                 {
                     
-                    if (data["isSpectator"].ToString() == "0")
-                        StartCoroutine(LoadAvatarImage(data["avatar"].ToString(), data["clientId"].ToString()));
+                    if (data[EPlayerProfile2String(EPlayerProfile.IsSpectator)].ToString() == "0")
+                        StartCoroutine(LoadAvatarImage(data[EPlayerProfile2String(EPlayerProfile.Avatar)].ToString(), data["clientId"].ToString()));
                 }
-                if (data["isSpectator"].ToString() == "0")
-                    MainMenu.instance.ShowPlayerJoinRoom(data["playerName"].ToString());
+                if (data[EPlayerProfile2String(EPlayerProfile.IsSpectator)].ToString() == "0")
+                    MainMenu.instance.ShowPlayerJoinRoom(data[EPlayerProfile2String(EPlayerProfile.NickName)].ToString());
 
                 MainMenu.instance.ShowTotalPlayers(CountAllPlayerInLobby());
 
                 //clientPosStart = RandomPosition();
                 break;
 
-            case ServerCmd.GotoGame:
+            case EServerCmd.GotoGame:
                 MainMenu.instance.GotoGame();
                 m_gameState = EGameState.InGame;
                 //OnCheckPosition();
                 break;
-            case ServerCmd.PositionPlayer:
+            case EServerCmd.PositionPlayer:
                 if (data["clientId"].ToString() == m_localClientId)
                 {
                     int _indexRan = int.Parse(data["ranIndex"].ToString());
@@ -743,11 +786,11 @@ public class SocketClient : Singleton<SocketClient>
                 }
                 
                 break;            
-            case ServerCmd.JoinRoom:
+            case EServerCmd.JoinRoom:
 
                 //players = JArray.Parse(data["players"].ToString());
                 JArray arrRanPos = JArray.Parse(data["roomPos"].ToString());
-                var aliveIndexPlayers = JArray.Parse(data["alivePlayers"].ToString());
+                var aliveIndexPlayers = JArray.Parse(data[EPlayerProfile2String(EPlayerProfile.AlivePlayers)].ToString());
 
                 foreach (var item in aliveIndexPlayers)
                 {
@@ -762,17 +805,17 @@ public class SocketClient : Singleton<SocketClient>
                 string _clientId = data["clientId"].ToString();
                 if (_clientId == m_localClientId )
                 {
-                    m_localPlayerIndex = data["indexPlayer"].Value<int>();
+                    m_localPlayerIndex = data[EPlayerProfile2String(EPlayerProfile.Index)].Value<int>();
 
-                    if (m_player == null && data["isSpectator"].ToString() == "0")
+                    if (m_player == null && data[EPlayerProfile2String(EPlayerProfile.IsSpectator)].ToString() == "0")
                     {   
                         int rand = GetPlayerIndex(m_localPlayerIndex);
                         m_clientPosStart = PositionByIndex(rand);
                         
                         Debug.Log("[SocketClient]  ===========  player ================= m_localPlayerIndex = " + m_localPlayerIndex);           
                         
-                        m_isHost = data["isHost"].ToString() == "1";   
-                        if (data["gender"].ToString() == "0")
+                        m_isHost = data[EPlayerProfile2String(EPlayerProfile.IsHost)].ToString() == "1";   
+                        if (data[EPlayerProfile2String(EPlayerProfile.Gender)].ToString() == "0")
                         {
                             playerPrefab.GetComponent<characterSpawn>().SetActiveCharacter(0);
                             m_player = Instantiate(playerPrefab, m_clientPosStart, Quaternion.identity);
@@ -785,15 +828,15 @@ public class SocketClient : Singleton<SocketClient>
 
                         var playerUI = m_player.gameObject.GetComponent<Player>();
                         playerUI.IndexPlayer = m_localPlayerIndex;
-                        playerUI.OnInitialize(m_player, data["playerName"].ToString(), MainMenu.instance.IsSpectatorMode());
+                        playerUI.OnInitialize(m_player, data[EPlayerProfile2String(EPlayerProfile.NickName)].ToString(), MainMenu.instance.IsSpectatorMode());
 
-                        m_player.name = "Player-" + data["playerName"].ToString();
+                        m_player.name = "Player-" + data[EPlayerProfile2String(EPlayerProfile.NickName)].ToString();
                         m_player.transform.tag = "Player";
                         m_player.SetActive(true);
                         Debug.Log(" Instantiate  player =================  " + m_player);                        
                     }                
                 }
-                else if (_clientId != m_localClientId && data["isSpectator"].ToString() == "0")
+                else if (_clientId != m_localClientId && data[EPlayerProfile2String(EPlayerProfile.IsSpectator)].ToString() == "0")
                 {
                     Debug.Log("  ===========  other player =================  ");
 
@@ -805,7 +848,7 @@ public class SocketClient : Singleton<SocketClient>
                 //StartCoroutine(UpdatePositionOtherPlayers());
 
                 break;
-            case ServerCmd.StartGame:
+            case EServerCmd.StartGame:
                 Debug.Log(" [SocketClient] startGame =================  " + data);
                 //GameManager.Instance.ShowDebugInfo($"\n m_otherPlayers.Count = {m_otherPlayers.Count}");
                 
@@ -858,7 +901,7 @@ public class SocketClient : Singleton<SocketClient>
                     isEndGame = false;
                 }
                 break;
-            case ServerCmd.HitEnemy:
+            case EServerCmd.HitEnemy:
                 Debug.Log("  hitEnemy =================  " + data);
 
                 if(m_localClientId == data["clientId"].ToString())
@@ -895,7 +938,7 @@ public class SocketClient : Singleton<SocketClient>
                 //}
 
                 break;
-            case ServerCmd.Stunned:
+            case EServerCmd.Stunned:
                 Debug.Log("  stunned =================  " + data);
 
                 if (m_localClientId == data["clientId"].ToString())
@@ -920,7 +963,7 @@ public class SocketClient : Singleton<SocketClient>
 
 
                 break;
-            case ServerCmd.UpdatePos:
+            case EServerCmd.UpdatePos:
                 Debug.Log("  updatePos =================  " + data);
                 if (m_otherPlayers.ContainsKey(data["clientId"].ToString()))
                 {
@@ -948,7 +991,7 @@ public class SocketClient : Singleton<SocketClient>
                     
 
                 break;
-            case ServerCmd.CountDown:
+            case EServerCmd.CountDown:
                 //Debug.Log("  countDown =================  " + data);
                 float timer = float.Parse(data["timer"].ToString());
                 OnCheckWinnerPlayer(m_localClientId, m_aliveLobbyPlayer.Count, CubeManager.Instance.RoundCount);
@@ -959,7 +1002,7 @@ public class SocketClient : Singleton<SocketClient>
                 }
                 
                 break;
-            case ServerCmd.Moving:
+            case EServerCmd.Moving:
 
                 float h = float.Parse(data["h"].ToString());
                 float v = float.Parse(data["v"].ToString());
@@ -1003,7 +1046,7 @@ public class SocketClient : Singleton<SocketClient>
                 }
 
                 break;
-            case ServerCmd.ResponseTarget:
+            case EServerCmd.ResponseTarget:
                 Debug.Log("  responseTarget data ==========  " + data);
                 int _target = int.Parse(data["target"].ToString());
                 int _ran1 = int.Parse(data["ran1"].ToString());
@@ -1016,28 +1059,28 @@ public class SocketClient : Singleton<SocketClient>
                 OnCheckWinnerPlayer(m_localClientId, m_aliveLobbyPlayer.Count, CubeManager.Instance.RoundCount);
 
                 break;
-            case ServerCmd.CubeFall:
+            case EServerCmd.CubeFall:
                 Debug.Log("  cubeFall data ==========  " + data);
                 OnCheckWinnerPlayer(m_localClientId, m_aliveLobbyPlayer.Count, CubeManager.Instance.RoundCount);
                 CubeManager.Instance.PerformCubeFall();
                 break;
 
-            case ServerCmd.CubeReset:
+            case EServerCmd.CubeReset:
                 Debug.Log("  cubeReset data ==========  " + data);
                 OnCheckWinnerPlayer(m_localClientId, m_aliveLobbyPlayer.Count, CubeManager.Instance.RoundCount);
                 CubeManager.Instance.PerformCubeReset();
                 break;
-            case ServerCmd.RoundPass:
+            case EServerCmd.RoundPass:
                 {
                     Debug.Log("  roundPass data ==========  " + data);
                     string playerID = data["clientId"].ToString();
-                    int serverCountPlayer = int.Parse(data["countPlayer"].ToString());
+                    int serverCountPlayer = int.Parse(data[EPlayerProfile2String(EPlayerProfile.CountPlayers)].ToString());
                     int countRoundPassed = int.Parse(data["roundPass"].ToString());
 
                     OnCheckWinnerPlayer(playerID, serverCountPlayer, countRoundPassed);
                 }               
                 break;
-            case ServerCmd.PlayerDie:
+            case EServerCmd.PlayerDie:
                 Debug.Log("  playerDie data ==========  " + data);
                 string diePlayerId = data["clientId"].ToString();
                 int dieIndex = GetPlayerIndex(diePlayerId);
@@ -1072,7 +1115,7 @@ public class SocketClient : Singleton<SocketClient>
                 //}
 
                 break;
-            case ServerCmd.PlayerWin:
+            case EServerCmd.PlayerWin:
                 Debug.Log("  playerWin data ==========  " + data);
                 string winPlayerId = data["clientId"].ToString();
                 int winIndex = GetPlayerIndex(winPlayerId);
@@ -1099,26 +1142,26 @@ public class SocketClient : Singleton<SocketClient>
                 }
 
                 break;
-            case ServerCmd.EndGame:
+            case EServerCmd.EndGame:
                 Debug.Log("  endGame data ==========  " + data);  
                 
                 
                 break;
-            case ServerCmd.PlayerLeaveRoom:
+            case EServerCmd.PlayerLeaveRoom:
                 string playerLeaveId = data["clientId"].ToString();
 
                 for (int i = 0; i < m_players.Count; i++)
                 {
                     //Debug.Log(" players player leave ==   " + players[i].ToString());
-                    if (playerLeaveId == m_players[i]["id"].ToString())
+                    if (playerLeaveId == m_players[i][EPlayerProfile2String(EPlayerProfile.Id)].ToString())
                     {
-                        int leaveIndex = m_players[i]["indexPlayer"].Value<int>();
+                        int leaveIndex = m_players[i][EPlayerProfile2String(EPlayerProfile.Index)].Value<int>();
 
                         OnUpdateCountPlayers(leaveIndex);
 
                         if (m_gameState == EGameState.InLobby)
                         {
-                            if (m_players[i]["isSpectator"].ToString() == "0")
+                            if (m_players[i][EPlayerProfile2String(EPlayerProfile.IsSpectator)].ToString() == "0")
                             {
                                 MainMenu.instance.RemovePlayerJoinRoomByAvatar(playerLeaveId);
                             }
@@ -1196,11 +1239,11 @@ public class SocketClient : Singleton<SocketClient>
         Debug.Log("  MainMenu.instance.isSpectator OnRequestRoom =================  " + MainMenu.instance.isSpectator);
         string room = MainMenu.instance.roomId;
         JObject jsData = new JObject();
-        jsData.Add("meta", ServerCmd2String(ServerCmd.RequestRoom));
+        jsData.Add("meta", EServerCmd2String(EServerCmd.RequestRoom));
         jsData.Add("playerLen", 8);
-        jsData.Add("room", room);
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.RoomId), room);
         jsData.Add("host", MainMenu.instance.isHost);
-        jsData.Add("isSpectator", MainMenu.instance.isSpectator);
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.IsSpectator), MainMenu.instance.isSpectator);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData).ToString());
     }
 
@@ -1216,14 +1259,14 @@ public class SocketClient : Singleton<SocketClient>
         }
 
         JObject jsData = new JObject();
-        jsData.Add("meta", ServerCmd2String(ServerCmd.JoinLobby));
-        jsData.Add("room", ROOM);
-        jsData.Add("isHost", MainMenu.instance.isHost);
-        jsData.Add("gender", MainMenu.instance.gender);
-        jsData.Add("isSpectator", MainMenu.instance.isSpectator);
-        jsData.Add("playerName", playerName);
-        jsData.Add("userAppId", MainMenu.instance.userAppId);
-        jsData.Add("avatar", MainMenu.instance.userAvatar);
+        jsData.Add("meta", EServerCmd2String(EServerCmd.JoinLobby));
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.RoomId), ROOM);
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.IsHost), MainMenu.instance.isHost);
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.Gender), MainMenu.instance.gender);
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.IsSpectator), MainMenu.instance.isSpectator);
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.NickName), playerName);
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.AppId), MainMenu.instance.userAppId);
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.Avatar), MainMenu.instance.userAvatar);
         jsData.Add("phoneNumber", MainMenu.instance.phoneNumber);
         jsData.Add("followedOA", MainMenu.instance.followedOA);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
@@ -1231,8 +1274,8 @@ public class SocketClient : Singleton<SocketClient>
     public void OnGotoGame()
     {      
         JObject jsData = new JObject();
-        jsData.Add("meta", ServerCmd2String(ServerCmd.GotoGame));
-        jsData.Add("room", ROOM);
+        jsData.Add("meta", EServerCmd2String(EServerCmd.GotoGame));
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.RoomId), ROOM);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData).ToString());
     }
     public void OnJoinRoom()
@@ -1248,19 +1291,19 @@ public class SocketClient : Singleton<SocketClient>
         //clientPosStart = RandomPosition();
 
         JObject jsData = new JObject();
-        jsData.Add("meta", ServerCmd2String(ServerCmd.Join));
-        jsData.Add("room", ROOM);
-        jsData.Add("isHost", MainMenu.instance.isHost);
-        jsData.Add("playerName", playerName);
-        jsData.Add("characterIndex", MainMenu.instance.selectedCharacter);
+        jsData.Add("meta", EServerCmd2String(EServerCmd.Join));
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.RoomId), ROOM);
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.IsHost), MainMenu.instance.isHost);
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.NickName), playerName);
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.CharacterIndex), MainMenu.instance.selectedCharacter);
         jsData.Add("pos", m_clientPosStart.ToString());
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
     }
     public void OnStartGame()
     {        
         JObject jsData = new JObject();
-        jsData.Add("meta", ServerCmd2String(ServerCmd.StartGame));
-        jsData.Add("room", ROOM);
+        jsData.Add("meta", EServerCmd2String(EServerCmd.StartGame));
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.RoomId), ROOM);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData).ToString());
     }
     public void OnHitEnemy(Vector3 hitPos, string enemyName)
@@ -1271,8 +1314,8 @@ public class SocketClient : Singleton<SocketClient>
         //Debug.Log("enemyName ==================  " + enemyName + "    , sub  = " + enemyId);
         if (isEndGame) return;
         JObject jsData = new JObject();
-        jsData.Add("meta", ServerCmd2String(ServerCmd.HitEnemy));
-        jsData.Add("room", ROOM);
+        jsData.Add("meta", EServerCmd2String(EServerCmd.HitEnemy));
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.RoomId), ROOM);
         jsData.Add("hitPos", hitPos.ToString());
         jsData.Add("enemyId", enemyName);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData).ToString());
@@ -1285,8 +1328,8 @@ public class SocketClient : Singleton<SocketClient>
         //Debug.Log("enemyName ==================  " + enemyName + "    , sub  = " + enemyId);
         if (isEndGame) return;
         JObject jsData = new JObject();
-        jsData.Add("meta", ServerCmd2String(ServerCmd.Stunned));
-        jsData.Add("room", ROOM);
+        jsData.Add("meta", EServerCmd2String(EServerCmd.Stunned));
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.RoomId), ROOM);
         jsData.Add("hitPos", hitPos.ToString());
         jsData.Add("enemyId", enemyName);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData).ToString());
@@ -1297,9 +1340,9 @@ public class SocketClient : Singleton<SocketClient>
         Vector3 pos = m_player.transform.position;
         Quaternion rot = m_player.GetComponent< AdvancedWalkerController>().modelTransform.localRotation;
         JObject jsData = new JObject();
-        jsData.Add("meta", ServerCmd2String(ServerCmd.UpdatePos));
+        jsData.Add("meta", EServerCmd2String(EServerCmd.UpdatePos));
         jsData.Add("clientId", m_localClientId);
-        jsData.Add("room", ROOM);
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.RoomId), ROOM);
         jsData.Add("pos", pos.ToString());
         jsData.Add("rot", rot.ToString());
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
@@ -1308,8 +1351,8 @@ public class SocketClient : Singleton<SocketClient>
     {
 
         JObject jsData = new JObject();
-        jsData.Add("meta", ServerCmd2String(ServerCmd.CheckPosition));
-        jsData.Add("room", ROOM);
+        jsData.Add("meta", EServerCmd2String(EServerCmd.CheckPosition));
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.RoomId), ROOM);
         jsData.Add("ranLength", GetRandomLength());
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData).ToString());
     }
@@ -1318,17 +1361,17 @@ public class SocketClient : Singleton<SocketClient>
         if (!m_isHost || isEndGame) return;
         Debug.Log(" OnCountDown =================  ");
         JObject jsData = new JObject();
-        jsData.Add("meta", ServerCmd2String(ServerCmd.RoundAlready));
-        jsData.Add("room", ROOM);
+        jsData.Add("meta", EServerCmd2String(EServerCmd.RoundAlready));
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.RoomId), ROOM);
         jsData.Add("ready", "1");
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData).ToString());
     }
     public void OnRoundPass(int round)
     {
         JObject jsData = new JObject();
-        jsData.Add("meta", ServerCmd2String(ServerCmd.RoundPass));
-        jsData.Add("room", ROOM);
-        jsData.Add("round", round);
+        jsData.Add("meta", EServerCmd2String(EServerCmd.RoundPass));
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.RoomId), ROOM);
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.Round), round);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData).ToString());
     }
     public void OnCountDown()
@@ -1336,8 +1379,8 @@ public class SocketClient : Singleton<SocketClient>
         if (!m_isHost || isEndGame) return;
         Debug.Log(" OnCountDown =================  ");
         JObject jsData = new JObject();
-        jsData.Add("meta", ServerCmd2String(ServerCmd.CountDown));
-        jsData.Add("room", ROOM);
+        jsData.Add("meta", EServerCmd2String(EServerCmd.CountDown));
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.RoomId), ROOM);
         jsData.Add("timer", "");
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData).ToString());
     }
@@ -1347,9 +1390,9 @@ public class SocketClient : Singleton<SocketClient>
         m_clientPosStart = m_player.transform.position;
         //Quaternion rot = player.transform.rotation;
         JObject jsData = new JObject();
-        jsData.Add("meta", ServerCmd2String(ServerCmd.Moving));
+        jsData.Add("meta", EServerCmd2String(EServerCmd.Moving));
         jsData.Add("clientId", m_localClientId);
-        jsData.Add("room", ROOM);
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.RoomId), ROOM);
         jsData.Add("velocity", _velocity.ToString());
         jsData.Add("h", _h);
         jsData.Add("v", _v);
@@ -1362,9 +1405,9 @@ public class SocketClient : Singleton<SocketClient>
     {
         if (!m_isHost || isEndGame) return;
         JObject jsData = new JObject();
-        jsData.Add("meta", ServerCmd2String(ServerCmd.RequestTarget));
+        jsData.Add("meta", EServerCmd2String(EServerCmd.RequestTarget));
         jsData.Add("clientId", m_localClientId);
-        jsData.Add("room", ROOM);
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.RoomId), ROOM);
         jsData.Add("target", _target);
         jsData.Add("ran1", _ran1);
         jsData.Add("ran2", _ran2);
@@ -1380,36 +1423,36 @@ public class SocketClient : Singleton<SocketClient>
     {
         if (!m_isHost || isEndGame) return;
         JObject jsData = new JObject();
-        jsData.Add("meta", ServerCmd2String(ServerCmd.CubeFall));
+        jsData.Add("meta", EServerCmd2String(EServerCmd.CubeFall));
         jsData.Add("clientId", m_localClientId);
-        jsData.Add("room", ROOM);
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.RoomId), ROOM);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
     }
     public void OnCubeReset()
     {
         if (!m_isHost || isEndGame) return;
         JObject jsData = new JObject();
-        jsData.Add("meta", ServerCmd2String(ServerCmd.CubeReset));
+        jsData.Add("meta", EServerCmd2String(EServerCmd.CubeReset));
         jsData.Add("clientId", m_localClientId);
-        jsData.Add("room", ROOM);
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.RoomId), ROOM);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
     }
     public void OnPlayerDie()
     {
         Debug.Log(" ======================== OnPlayerDie() ======================================");
         JObject jsData = new JObject();
-        jsData.Add("meta", ServerCmd2String(ServerCmd.PlayerDie));
+        jsData.Add("meta", EServerCmd2String(EServerCmd.PlayerDie));
         jsData.Add("clientId", m_localClientId);
-        jsData.Add("room", ROOM);
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.RoomId), ROOM);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
     }
 
     public void OnPlayerWin()
     {
         JObject jsData = new JObject();
-        jsData.Add("meta", ServerCmd2String(ServerCmd.PlayerWin));
+        jsData.Add("meta", EServerCmd2String(EServerCmd.PlayerWin));
         jsData.Add("clientId", m_localClientId);
-        jsData.Add("room", ROOM);
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.RoomId), ROOM);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
     }
 
@@ -1417,18 +1460,18 @@ public class SocketClient : Singleton<SocketClient>
     {
         if (!m_isHost) return;
         JObject jsData = new JObject();
-        jsData.Add("meta", ServerCmd2String(ServerCmd.EndGame));
+        jsData.Add("meta", EServerCmd2String(EServerCmd.EndGame));
         jsData.Add("clientId", m_localClientId);
-        jsData.Add("room", ROOM);
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.RoomId), ROOM);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
     }
 
     public void OnLeaveRoom()
     {
         JObject jsData = new JObject();
-        jsData.Add("meta", ServerCmd2String(ServerCmd.Leave));
+        jsData.Add("meta", EServerCmd2String(EServerCmd.Leave));
         jsData.Add("clientId", m_localClientId);
-        jsData.Add("room", ROOM);
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.RoomId), ROOM);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
     }
 
