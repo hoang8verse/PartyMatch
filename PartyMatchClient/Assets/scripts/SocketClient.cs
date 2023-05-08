@@ -54,7 +54,7 @@ public enum EServerCmd: byte
 
 public enum EPlayerProfile
 {
-    Id = 0,
+    ClientId = 0,
     Index,
     AppId,
     Avatar,
@@ -416,7 +416,7 @@ public class SocketClient : Singleton<SocketClient>
         yield return new WaitForSeconds(Time.fixedDeltaTime);
         foreach (var item in m_players)
         {
-            if (m_otherPlayers.ContainsKey(item[EPlayerProfile2String(EPlayerProfile.Id)].ToString()))
+            if (m_otherPlayers.ContainsKey(item[EPlayerProfile2String(EPlayerProfile.ClientId)].ToString()))
             {
                 Vector3 pos = Vector3.zero;
                 JArray arrPos = JArray.Parse(item[EPlayerProfile2String(EPlayerProfile.Position)].ToString());
@@ -426,7 +426,7 @@ public class SocketClient : Singleton<SocketClient>
                             arrPos[1].Value<float>(),
                             arrPos[2].Value<float>());
                 }
-                m_otherPlayers[item[EPlayerProfile2String(EPlayerProfile.Id)].ToString()].transform.position = pos;
+                m_otherPlayers[item[EPlayerProfile2String(EPlayerProfile.ClientId)].ToString()].transform.position = pos;
                 Debug.Log(" otherPlayers pos :  " + pos);
             }
         }
@@ -554,7 +554,7 @@ public class SocketClient : Singleton<SocketClient>
 
         foreach(var player in m_players)
         {
-            if(player[EPlayerProfile2String(EPlayerProfile.Id)].ToString() == playerId)
+            if(player[EPlayerProfile2String(EPlayerProfile.ClientId)].ToString() == playerId)
             {
                 if (player[EPlayerProfile2String(EPlayerProfile.IsSpectator)].ToString() == "1")
                     isSpectator = true;
@@ -750,7 +750,7 @@ public class SocketClient : Singleton<SocketClient>
                         if (m_players[i][EPlayerProfile2String(EPlayerProfile.IsSpectator)].ToString() == "0")
                         {
                             countUserPlay++;
-                            StartCoroutine(LoadAvatarImage(m_players[i][EPlayerProfile2String(EPlayerProfile.Avatar)].ToString(), m_players[i][EPlayerProfile2String(EPlayerProfile.Id)].ToString()));
+                            StartCoroutine(LoadAvatarImage(m_players[i][EPlayerProfile2String(EPlayerProfile.Avatar)].ToString(), m_players[i][EPlayerProfile2String(EPlayerProfile.ClientId)].ToString()));
                         }
                         else
                         {
@@ -1147,7 +1147,7 @@ public class SocketClient : Singleton<SocketClient>
                 for (int i = 0; i < m_players.Count; i++)
                 {
                     //Debug.Log(" players player leave ==   " + players[i].ToString());
-                    if (playerLeaveId == m_players[i][EPlayerProfile2String(EPlayerProfile.Id)].ToString())
+                    if (playerLeaveId == m_players[i][EPlayerProfile2String(EPlayerProfile.ClientId)].ToString())
                     {
                         int leaveIndex = m_players[i][EPlayerProfile2String(EPlayerProfile.Index)].Value<int>();
 
