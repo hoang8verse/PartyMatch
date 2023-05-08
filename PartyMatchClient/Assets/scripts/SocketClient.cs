@@ -1047,15 +1047,9 @@ public class SocketClient : Singleton<SocketClient>
 
                 break;
             case EServerCmd.ResponseTarget:
-                Debug.Log("  responseTarget data ==========  " + data);
-                int _target = int.Parse(data["target"].ToString());
-                int _ran1 = int.Parse(data["ran1"].ToString());
-                int _ran2 = int.Parse(data["ran2"].ToString());
-                int _ran3 = int.Parse(data["ran3"].ToString());
-                Debug.Log($"[SocketClient] Cube responseTarget: {data["rans"].ToString()}");
-
+                Debug.Log("  responseTarget data ==========  " + data);     
                 byte[] _rans = StringToByteArray(data["rans"].ToString());  
-                CubeManager.Instance.PerformCube(_target, _ran1, _ran2, _ran3, _rans);
+                CubeManager.Instance.PerformCube(_rans);
                 OnCheckWinnerPlayer(m_localClientId, m_aliveLobbyPlayer.Count, CubeManager.Instance.RoundCount);
 
                 break;
@@ -1401,20 +1395,14 @@ public class SocketClient : Singleton<SocketClient>
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
     }
 
-    public void OnRequestRandomTarget(int _target, int _ran1, int _ran2, int _ran3, byte[] _rans)
+    public void OnRequestRandomTarget(byte[] _rans)
     {
         if (!m_isHost || isEndGame) return;
         JObject jsData = new JObject();
         jsData.Add("meta", EServerCmd2String(EServerCmd.RequestTarget));
         jsData.Add("clientId", m_localClientId);
         jsData.Add(EPlayerProfile2String(EPlayerProfile.RoomId), ROOM);
-        jsData.Add("target", _target);
-        jsData.Add("ran1", _ran1);
-        jsData.Add("ran2", _ran2);
-        jsData.Add("ran3", _ran3);
-
-        string byteArray = BitConverter.ToString(_rans).Replace("-", "");
-        Debug.Log($"[SocketClient] Cube request: {byteArray}  _target = {_target}");
+        string byteArray = BitConverter.ToString(_rans).Replace("-", "");        
         jsData.Add("rans", byteArray);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
     }

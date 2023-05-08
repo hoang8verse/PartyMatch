@@ -53,22 +53,26 @@ public class CubeManager : Singleton<CubeManager>
         int _ran1 = Random.Range(0, CubeMeshs.Length);
         int _ran2 = Random.Range(0, CubeMeshs.Length);
         int _ran3 = Random.Range(0, CubeMeshs.Length);
-        byte[] _rans = new byte[CubeMeshs.Length];
+        byte[] _rans = new byte[CubeMeshs.Length + 4];
 
         m_target = _target;
 
         for (int i = 0; i < CubeMeshs.Length; i++)
-            _rans[i] = (byte)GetRandomMaterialCube();            
-       
-        SocketClient.Instance.OnRequestRandomTarget(_target, _ran1, _ran2, _ran3, _rans);
+            _rans[i] = (byte)GetRandomMaterialCube();
+        
+        _rans[CubeMeshs.Length] = (byte)_target;
+        _rans[CubeMeshs.Length + 1] = (byte)_ran1;
+        _rans[CubeMeshs.Length + 2] = (byte)_ran2;
+        _rans[CubeMeshs.Length + 3] = (byte)_ran3;
+        SocketClient.Instance.OnRequestRandomTarget(_rans);
     }
 
-    public void PerformCube(int _target, int _ran1, int _ran2, int _ran3, byte[] _rans)
+    public void PerformCube(byte[] _rans)
     {
-        m_target = _target;
-        m_ran1 = _ran1;
-        m_ran2 = _ran2;
-        m_ran3 = _ran3;
+        m_target = _rans[CubeMeshs.Length];
+        m_ran1 = _rans[CubeMeshs.Length + 1];
+        m_ran2 = _rans[CubeMeshs.Length + 2];
+        m_ran3 = _rans[CubeMeshs.Length + 3];
         m_rans = _rans;
         selectCube();
     }
@@ -311,22 +315,9 @@ public class CubeManager : Singleton<CubeManager>
         yield return null;
         Invoke("selectCube", 3);
     }
-      
-            
-                   
-            
 
-  
-    
+    // Update is called once per frame
 
-        
-
-     
-           
-
-
-       
-
-        // Update is called once per frame
-   
 }
+
+
