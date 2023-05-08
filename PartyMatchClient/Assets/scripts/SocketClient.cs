@@ -38,11 +38,11 @@ public class SocketClient : MonoBehaviour
 
     [SerializeField]
     private string url = "";
-    static string baseUrl = "ws://192.168.0.107";
-    static string HOST = "8082";
+    //static string baseUrl = "ws://192.168.1.39";
+    //static string HOST = "8082";
 
-    //static string baseUrl = "wss://rlgl2-api.brandgames.vn";
-    //static string HOST = "8081";
+    static string baseUrl = "wss://rlgl2-api.brandgames.vn";
+    static string HOST = "8083";
 
     public string ROOM = "";
     public string m_localClientId = "";
