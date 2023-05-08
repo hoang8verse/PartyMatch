@@ -71,9 +71,10 @@ public enum EPlayerProfile
     Round,
     AlivePlayers,
     AliveLobbyPlayers,
-    CountPlayers
+    CountPlayers,
+    PhoneNumber,
+    FollowedOA
 }
-
 
 public class SocketClient : Singleton<SocketClient>
 {
@@ -1261,8 +1262,8 @@ public class SocketClient : Singleton<SocketClient>
         jsData.Add(EPlayerProfile2String(EPlayerProfile.NickName), playerName);
         jsData.Add(EPlayerProfile2String(EPlayerProfile.AppId), MainMenu.instance.userAppId);
         jsData.Add(EPlayerProfile2String(EPlayerProfile.Avatar), MainMenu.instance.userAvatar);
-        jsData.Add("phoneNumber", MainMenu.instance.phoneNumber);
-        jsData.Add("followedOA", MainMenu.instance.followedOA);
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.PhoneNumber), MainMenu.instance.phoneNumber);
+        jsData.Add(EPlayerProfile2String(EPlayerProfile.FollowedOA), MainMenu.instance.followedOA);
         Send(Newtonsoft.Json.JsonConvert.SerializeObject(jsData));
     }
     public void OnGotoGame()
